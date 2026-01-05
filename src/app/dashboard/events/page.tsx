@@ -66,7 +66,7 @@ export default function EventsPage() {
                         </thead>
                         <tbody className="divide-y divide-neutral-200">
                             {events.map((event) => (
-                                <tr key={event.id} className="hover:bg-neutral-50">
+                                <tr key={event.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
                                     <td className="p-4 font-medium">{event.title}</td>
                                     <td className="p-4 text-neutral-600">{new Date(event.date).toLocaleDateString('tr-TR')}</td>
                                     <td className="p-4 text-neutral-600 flex items-center gap-1">

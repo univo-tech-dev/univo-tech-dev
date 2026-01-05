@@ -6,12 +6,12 @@ import { Calendar, MessageSquare, Heart, MessageCircle } from 'lucide-react';
 
 export interface ActivityItem {
   id: string;
-  type: 'event_attendance' | 'voice_post' | 'comment' | 'reaction'; // Expanded types
-  title?: string; // For events
-  content?: string; // For voices/comments
-  target_id?: string; // ID to link to
+  type: 'event_attendance' | 'voice_post' | 'comment' | 'reaction';
+  title?: string;
+  content?: string;
+  target_id?: string;
   created_at: string;
-  metadata?: any; // Extra info (e.g. event location, voice category)
+  metadata?: any;
 }
 
 interface ActivityTimelineProps {
@@ -30,53 +30,60 @@ export default function ActivityTimeline({ activities }: ActivityTimelineProps) 
   }
 
   return (
-    <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-neutral-200 before:to-transparent">
+    <div className="space-y-4">
       {activities.map((activity, index) => (
-        <div key={activity.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+        <div key={activity.id} className="relative pl-6 pb-6 border-l-2 border-neutral-200 dark:border-neutral-800 last:border-0 last:pb-0">
           
-          {/* Icon / Bullet */}
-          <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-neutral-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-            {activity.type === 'event_attendance' && <Calendar size={18} className="text-[#C8102E]" />}
-            {activity.type === 'voice_post' && <MessageSquare size={18} className="text-blue-500" />}
-            {activity.type === 'comment' && <MessageCircle size={18} className="text-green-500" />}
-            {activity.type === 'reaction' && <Heart size={18} className="text-pink-500" />}
-          </div>
+          {/* Timeline Dot */}
+          <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-black dark:bg-white border-2 border-white dark:border-neutral-900"></div>
           
           {/* Card */}
-          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-xl border border-neutral-200 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex flex-col gap-1">
-               <time className="font-mono text-xs text-neutral-400 mb-1">
-                 {new Date(activity.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
-               </time>
-               
-               {activity.type === 'event_attendance' && (
-                 <div onClick={() => router.push(`/events/${activity.target_id}`)} className="cursor-pointer">
-                    <span className="text-xs font-bold text-[#C8102E] uppercase tracking-wider">Etkinlik Katılımı</span>
-                    <h4 className="font-bold text-neutral-900 mt-1">"{activity.title}" etkinliğine katılıyor</h4>
-                    {activity.metadata?.location && (
-                      <p className="text-sm text-neutral-500 mt-1 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-neutral-300"></span>
-                        {activity.metadata.location}
-                      </p>
-                    )}
+          <div className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] p-4 transition-colors">
+             <div className="flex justify-between items-start mb-2">
+                 <div className="flex items-center gap-2">
+                    {activity.type === 'event_attendance' && <span className="bg-[#C8102E] text-white text-[10px] font-bold px-2 py-0.5 uppercase">Etkinlik</span>}
+                    {activity.type === 'voice_post' && <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 uppercase">Paylaşım</span>}
+                    {activity.type === 'comment' && <span className="bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 uppercase">Yorum</span>}
+                    
+                    <time className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
+                      {new Date(activity.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                    </time>
                  </div>
-               )}
+             </div>
 
-               {activity.type === 'voice_post' && (
-                 <div className="cursor-default">
-                    <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Paylaşım</span>
-                    <p className="text-neutral-800 mt-1 italic">"{activity.content}"</p>
-                 </div>
-               )}
+             {/* Content */}
+             <div className="space-y-2">
+                {activity.type === 'event_attendance' && (
+                    <div onClick={() => router.push(`/events/${activity.target_id}`)} className="cursor-pointer group">
+                        <h4 className="font-bold font-serif text-lg text-neutral-900 dark:text-white group-hover:underline decoration-2 underline-offset-2">
+                            {activity.title}
+                        </h4>
+                        {activity.metadata?.location && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mt-1">
+                                <Calendar size={12} />
+                                {activity.metadata.location}
+                            </div>
+                        )}
+                    </div>
+                )}
 
-               {activity.type === 'comment' && (
-                  <div className="cursor-default">
-                    <span className="text-xs font-bold text-green-600 uppercase tracking-wider">Yorum</span>
-                    <p className="text-neutral-600 mt-1 text-sm">Bir gönderiye yorum yaptı:</p>
-                    <p className="text-neutral-800 mt-1">"{activity.content}"</p>
-                  </div>
-               )}
-            </div>
+                {activity.type === 'voice_post' && (
+                    <div>
+                        <p className="font-serif italic text-lg text-neutral-800 dark:text-neutral-200 leading-relaxed">
+                            "{activity.content}"
+                        </p>
+                    </div>
+                )}
+
+                {activity.type === 'comment' && (
+                     <div>
+                        <p className="text-sm text-neutral-500 mb-1">Şuna yorum yaptı:</p>
+                        <p className="font-medium text-neutral-900 dark:text-neutral-200 border-l-2 border-neutral-300 dark:border-neutral-700 pl-3 italic">
+                            "{activity.content}"
+                        </p>
+                     </div>
+                )}
+             </div>
           </div>
         </div>
       ))}

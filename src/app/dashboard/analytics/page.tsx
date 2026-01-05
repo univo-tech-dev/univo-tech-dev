@@ -156,7 +156,9 @@ function AnalyticsContent() {
                             />
                             <YAxis />
                             <Tooltip 
-                                contentStyle={{ borderRadius: '8px', border: '2px solid black' }}
+                                contentStyle={{ borderRadius: '8px', border: '2px solid black', backgroundColor: '#fff' }}
+                                itemStyle={{ color: '#000' }}
+                                wrapperClassName="dark:!bg-neutral-900 dark:!border-neutral-700 dark:!text-white [&_.recharts-tooltip-item]:dark:!text-white [&_.recharts-default-tooltip]:dark:!bg-neutral-900 [&_.recharts-default-tooltip]:dark:!border-neutral-700"
                                 labelFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('tr-TR')}
                             />
                             <Line 
@@ -192,7 +194,9 @@ function AnalyticsContent() {
                             />
                             <YAxis allowDecimals={false} />
                             <Tooltip 
-                                contentStyle={{ borderRadius: '8px', border: '2px solid black' }}
+                                contentStyle={{ borderRadius: '8px', border: '2px solid black', backgroundColor: '#fff' }}
+                                itemStyle={{ color: '#000' }}
+                                wrapperClassName="dark:!bg-neutral-900 dark:!border-neutral-700 dark:!text-white [&_.recharts-tooltip-item]:dark:!text-white [&_.recharts-default-tooltip]:dark:!bg-neutral-900 [&_.recharts-default-tooltip]:dark:!border-neutral-700"
                                 labelFormatter={(unixTime) => new Date(unixTime).toLocaleDateString('tr-TR')}
                             />
                             <Line 
