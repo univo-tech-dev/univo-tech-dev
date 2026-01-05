@@ -66,7 +66,7 @@ function HeaderContent() {
   };
 
   return (
-    <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-black dark:border-neutral-700 transition-colors duration-300">
+    <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-black dark:border-white transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
 
@@ -168,7 +168,7 @@ function HeaderContent() {
 
 export default function Header() {
   return (
-    <Suspense fallback={<div className="h-16 bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800"></div>}>
+    <Suspense fallback={<div className="h-16 bg-white dark:bg-[#0a0a0a] border-b-2 border-black dark:border-white"></div>}>
       <HeaderContent />
     </Suspense>
   );

@@ -31,7 +31,7 @@ function HomeContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center dark:text-white">Yükleniyor...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center text-neutral-500 dark:text-neutral-400">Yükleniyor...</div>}>
       <HomeContent />
     </Suspense>
   );
