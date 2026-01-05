@@ -694,11 +694,11 @@ export default function OfficialView() {
                                   type="text"
                                   required
                                   placeholder="e123456 (Sadece kod)"
-                                  className="w-full p-3 border-2 border-black font-mono text-sm placeholder:text-neutral-400 focus:outline-none focus:bg-neutral-50 transition-colors"
+                                  className="w-full p-3 border-2 border-black dark:border-white font-mono text-sm placeholder:text-neutral-400 focus:outline-none focus:bg-neutral-50 dark:focus:bg-neutral-800 dark:text-white transition-colors dark:bg-neutral-900"
                                   value={loginForm.username}
                                   onChange={e => setLoginForm({...loginForm, username: e.target.value})}
                               />
-                              <span className="absolute right-3 top-3.5 text-neutral-500 text-xs font-bold pointer-events-none bg-white px-1">@metu.edu.tr</span>
+                              <span className="absolute right-3 top-3.5 text-neutral-500 font-bold pointer-events-none bg-white dark:bg-neutral-900 px-1 text-xs">@metu.edu.tr</span>
                           </div>
                       </div>
                       
@@ -708,7 +708,7 @@ export default function OfficialView() {
                               type="password"
                               required
                               placeholder="ODTÜ Şifreniz"
-                              className="w-full p-3 border-2 border-black font-mono text-sm placeholder:text-neutral-400 focus:outline-none focus:bg-neutral-50 transition-colors"
+                              className="w-full p-3 border-2 border-black dark:border-white font-mono text-sm placeholder:text-neutral-400 focus:outline-none focus:bg-neutral-50 dark:focus:bg-neutral-800 dark:text-white transition-colors dark:bg-neutral-900"
                               value={loginForm.password}
                               onChange={e => setLoginForm({...loginForm, password: e.target.value})}
                           />
@@ -720,8 +720,8 @@ export default function OfficialView() {
                           </div>
                       )}
 
-                      <div className="bg-neutral-100 p-4 border-2 border-black text-xs text-black relative">
-                          <p className="font-black mb-1 uppercase flex items-center gap-1">
+                      <div className="bg-neutral-100 dark:bg-neutral-800 p-4 border-2 border-black dark:border-white text-xs text-black dark:text-neutral-300 relative">
+                          <p className="font-black mb-1 uppercase flex items-center gap-1 dark:text-white">
                              <Lock size={12}/> Güvenlik Notu
                           </p>
                           Şifreniz yalnızca şifreli bağlantı kurmak için anlık olarak kullanılır ve sunucularımıza <u>asla kaydedilmez</u>.
@@ -730,7 +730,7 @@ export default function OfficialView() {
                       <button 
                           type="submit"
                           disabled={loadingEmails}
-                          className="w-full py-4 bg-[#C8102E] text-white font-black text-sm uppercase hover:bg-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full py-4 bg-[#C8102E] text-white font-black text-sm uppercase hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                           {loadingEmails ? (
                               <>

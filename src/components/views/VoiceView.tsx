@@ -773,7 +773,7 @@ export default function VoiceView() {
                         <div className="text-center py-8 text-neutral-400 animate-pulse">Yapay zeka anket hazırlıyor...</div>
                     ) : (
                         <>
-                            <h4 className="font-bold text-lg mb-6 font-serif text-center leading-tight">
+                            <h4 className="font-bold text-lg mb-6 font-serif text-center leading-tight dark:text-white">
                                 "{activePoll?.question}"
                             </h4>
                             

@@ -56,9 +56,9 @@ export default function EventCard({ event, isAttending = false }: EventCardProps
       onClick={() => router.push(`/events/${event.id}`)}
       className="block h-full group relative cursor-pointer"
     >
-      <div className={`h-full flex flex-col bg-white border-2 border-black transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${isPastEvent ? 'opacity-80 grayscale-[0.5] hover:grayscale-0 hover:opacity-100' : ''}`}>
+      <div className={`h-full flex flex-col bg-white dark:bg-neutral-900 border-2 border-black dark:border-white transition-all duration-200 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] ${isPastEvent ? 'opacity-80 grayscale-[0.5] hover:grayscale-0 hover:opacity-100' : ''}`}>
         {/* Header / Category */}
-        <div className="border-b-2 border-black p-3 flex justify-between items-center bg-neutral-50">
+        <div className="border-b-2 border-black dark:border-white p-3 flex justify-between items-center bg-neutral-50 dark:bg-neutral-800 transition-colors">
            <span className="font-bold font-serif uppercase text-sm tracking-wide text-[#C8102E]">
              {event.community.category || event.category}
            </span>
@@ -75,29 +75,29 @@ export default function EventCard({ event, isAttending = false }: EventCardProps
 
         {/* Content */}
         <div className="p-5 flex-1 flex flex-col">
-          <h3 className="text-xl font-black font-serif text-black mb-3 leading-tight group-hover:underline decoration-2 underline-offset-2">
+          <h3 className="text-xl font-black font-serif text-black dark:text-white mb-3 leading-tight group-hover:underline decoration-2 underline-offset-2">
             {event.title}
           </h3>
 
           {/* Meta Information */}
-          <div className="space-y-2 mb-4 text-sm font-medium border-l-2 border-neutral-200 pl-3">
-            <div className="flex items-center gap-2 text-neutral-800">
+          <div className="space-y-2 mb-4 text-sm font-medium border-l-2 border-neutral-200 dark:border-neutral-700 pl-3">
+            <div className="flex items-center gap-2 text-neutral-800 dark:text-neutral-300">
               <Users size={16} />
               <Link 
                 href={`/community/${event.community.id}`}
                 onClick={(e) => e.stopPropagation()} 
-                className="uppercase tracking-tight text-xs hover:underline hover:text-black font-bold"
+                className="uppercase tracking-tight text-xs hover:underline hover:text-black dark:hover:text-white font-bold"
               >
                   {event.community.name}
               </Link>
             </div>
-            <div className="flex items-center gap-2 text-neutral-600">
+            <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
               <Calendar size={16} />
               <span>
                 {formatDate(event.date)} · {event.time}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-neutral-600">
+            <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
               <MapPin size={16} />
               <a 
                 href="https://www.google.com/maps/search/?api=1&query=ODTÜ+Devrim+Stadyumu"
@@ -112,19 +112,19 @@ export default function EventCard({ event, isAttending = false }: EventCardProps
           </div>
 
           {/* Excerpt */}
-          <p className="text-neutral-600 font-serif leading-relaxed line-clamp-3 mb-6 flex-1 text-sm">
+          <p className="text-neutral-600 dark:text-neutral-400 font-serif leading-relaxed line-clamp-3 mb-6 flex-1 text-sm">
             {event.excerpt}
           </p>
 
           {/* Action Footer */}
-          <div className="mt-auto pt-4 border-t-2 border-neutral-100 flex justify-between items-center">
+          <div className="mt-auto pt-4 border-t-2 border-neutral-100 dark:border-neutral-800 flex justify-between items-center">
              
              {/* Attendees Preview */}
              {attendeeCount > 0 ? (
                  <div className="flex items-center gap-2">
                     <div className="flex -space-x-2 items-center">
                         {attendees.map((attendee, i) => (
-                            <div key={i} className="w-6 h-6 rounded-full bg-white border border-white flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
+                            <div key={i} className="w-6 h-6 rounded-full bg-white dark:bg-neutral-800 border border-white dark:border-neutral-700 flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
                                 {attendee.avatar_url ? (
                                     <img src={attendee.avatar_url} alt="user" className="w-full h-full object-cover" />
                                 ) : (
@@ -143,7 +143,7 @@ export default function EventCard({ event, isAttending = false }: EventCardProps
                 <span className="text-[10px] text-neutral-400 font-bold uppercase whitespace-nowrap">Henüz katılımcı yok</span>
              )}
 
-             <span className="text-sm font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all ml-auto">
+             <span className="text-sm font-bold uppercase tracking-wider flex items-center gap-1 group-hover:gap-2 transition-all ml-auto dark:text-white">
                 Detaylar 
                 <span className="text-lg">→</span>
              </span>
