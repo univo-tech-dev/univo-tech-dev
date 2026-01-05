@@ -14,11 +14,12 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     // Get user email from session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user?.email) {
-        setEmail(session.user.email);
+      if (session) {
+        // User is already logged in, redirect to home
+        router.push('/');
       }
     });
-  }, []);
+  }, [router]);
 
   const handleResendEmail = async () => {
     if (!email) return;

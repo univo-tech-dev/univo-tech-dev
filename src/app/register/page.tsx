@@ -70,8 +70,14 @@ export default function RegisterPage() {
         if (profileError) throw profileError;
       }
 
-      // Redirect to verification page
-      router.push('/verify');
+      // Redirect based on whether verification is required
+      if (authData.session) {
+        // Confirmation is disabled, user is automatically logged in
+        router.push('/');
+      } else {
+        // Confirmation is enabled, user needs to verify email
+        router.push('/verify');
+      }
     } catch (error: any) {
       setError(error.message || 'Kayıt sırasında bir hata oluştu');
     } finally {
