@@ -21,7 +21,17 @@ export default function RootLayout({
         <AuthProvider>
           <Header />
           <main className="flex-1">
-            <Toaster position="top-center" richColors />
+            <Toaster 
+              position="top-center" 
+              richColors 
+              toastOptions={{
+                style: {
+                  fontFamily: 'var(--font-inter), Inter, sans-serif',
+                  borderRadius: '12px',
+                  border: '1px solid #e5e5e5',
+                },
+              }}
+            />
             {children}
           </main>
           <Footer />
