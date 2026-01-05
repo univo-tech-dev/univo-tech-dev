@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 export const metadata: Metadata = {
   title: "Univo - University Events & Announcements",
@@ -23,22 +24,24 @@ export default function RootLayout({
     <html lang="tr" suppressHydrationWarning>
       <body className="antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <AuthProvider>
-          <Header />
-          <main className="flex-1">
-            <Toaster 
-              position="top-center" 
-              richColors 
-              toastOptions={{
-                style: {
-                  fontFamily: 'var(--font-inter), Inter, sans-serif',
-                  borderRadius: '12px',
-                  border: '1px solid #e5e5e5',
-                },
-              }}
-            />
-            {children}
-          </main>
-          <Footer />
+          <ThemeProvider>
+            <Header />
+            <main className="flex-1 bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
+              <Toaster 
+                position="top-center" 
+                richColors 
+                toastOptions={{
+                  style: {
+                    fontFamily: 'var(--font-inter), Inter, sans-serif',
+                    borderRadius: '12px',
+                    border: '1px solid #e5e5e5',
+                  },
+                }}
+              />
+              {children}
+            </main>
+            <Footer />
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

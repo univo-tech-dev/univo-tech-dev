@@ -323,22 +323,22 @@ export default function OfficialView() {
   return (
     <div className="container mx-auto px-4 py-8 relative">
       {/* Newspaper Header */}
-      <div className="border-b-2 border-black pb-2 mb-2 flex justify-between items-end">
-         <div className="text-xs font-bold text-neutral-500">
+      <div className="border-b-2 border-black dark:border-white pb-2 mb-2 flex justify-between items-end transition-colors">
+         <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
             ANKARA, {formattedDate.toUpperCase()}
          </div>
          <div className="flex items-center gap-4">
             <div className="text-right">
-                <div className="text-xs font-bold text-neutral-500">HAVA DURUMU</div>
-                <div className="font-bold text-sm">6°C, Parçalı Bulutlu</div>
+                <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">HAVA DURUMU</div>
+                <div className="font-bold text-sm dark:text-white">6°C, Parçalı Bulutlu</div>
             </div>
          </div>
       </div>
-      <div className="border-b-4 border-black pb-4 mb-8 text-center">
-        <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2">Resmi Gündem</h2>
-        <div className="flex justify-between items-center text-sm font-medium border-t border-black pt-2 max-w-2xl mx-auto text-neutral-600">
+      <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors">
+        <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 dark:text-white">Resmi Gündem</h2>
+        <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
           <span>SAYI: {issueNumber}</span>
-          <a href="/official/archive" className="flex items-center gap-1 hover:text-[#C8102E] transition-colors font-bold uppercase hover:underline decoration-2 underline-offset-4 cursor-pointer">
+          <a href="/official/archive" className="flex items-center gap-1 hover:text-[#C8102E] transition-colors font-bold uppercase hover:underline decoration-2 underline-offset-4 cursor-pointer dark:text-neutral-300 dark:hover:text-[#C8102E]">
               <Briefcase size={16} />
               Belge Arşivi
           </a>
@@ -351,7 +351,7 @@ export default function OfficialView() {
         <div className="lg:col-span-2 space-y-8">
             
             {/* Tab Navigation */}
-            <div className="flex border-b-2 border-neutral-200 mb-6 gap-6 relative">
+            <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-6 relative">
                 {[
                     { id: 'agenda', label: 'GÜNDEM', count: agendaItems.length },
                     { id: 'emails', label: 'E-POSTALAR', count: emailItems.length },
@@ -362,18 +362,18 @@ export default function OfficialView() {
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`pb-3 font-black text-sm tracking-wider uppercase transition-colors relative flex items-center gap-2 ${
                             activeTab === tab.id 
-                            ? 'text-black' 
-                            : 'text-neutral-400 hover:text-neutral-600'
+                            ? 'text-black dark:text-white' 
+                            : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'
                         }`}
                     >
                         {tab.label}
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
-                            activeTab === tab.id ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-500'
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors ${
+                            activeTab === tab.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
                         }`}>
                             {tab.count}
                         </span>
                         {activeTab === tab.id && (
-                            <div className="absolute bottom-[-2px] left-0 right-0 h-[3px] bg-black" />
+                            <div className="absolute bottom-[-2px] left-0 right-0 h-[3px] bg-black dark:bg-white" />
                         )}
                     </button>
                 ))}
@@ -381,17 +381,17 @@ export default function OfficialView() {
 
             {/* Featured Post (Only show on Agenda for impact, or always? Let's hide on Archive) */}
             {activeTab !== 'history' && news.length > 0 && (
-                <article className="bg-neutral-50 p-6 border border-neutral-200 rounded-sm mb-6">
+                <article className="bg-neutral-50 dark:bg-neutral-900 p-6 border border-neutral-200 dark:border-neutral-800 rounded-sm mb-6 transition-colors">
                     <span className="inline-block bg-[#C8102E] text-white text-xs px-2 py-1 font-bold mb-3">ÖNEMLİ DUYURU</span>
-                    <h4 className="text-2xl font-bold font-serif mb-3 leading-tight hover:underline cursor-pointer">
+                    <h4 className="text-2xl font-bold font-serif mb-3 leading-tight hover:underline cursor-pointer dark:text-white">
                         {news[0].title}
                     </h4>
-                    <p className="text-neutral-700 leading-relaxed mb-4">
+                    <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4">
                         {news[0].summary}
                     </p>
                     <div className="flex justify-between items-center text-sm">
-                        <span className="font-semibold text-neutral-900">{news[0].source}</span>
-                        <span className="text-neutral-500">{news[0].date}</span>
+                        <span className="font-semibold text-neutral-900 dark:text-neutral-100">{news[0].source}</span>
+                        <span className="text-neutral-500 dark:text-neutral-400">{news[0].date}</span>
                     </div>
                 </article>
             )}
@@ -399,8 +399,8 @@ export default function OfficialView() {
             {/* News List */}
             <div className="grid gap-6">
                 {displayedItems.length === 0 ? (
-                    <div className="text-center py-12 bg-neutral-50 border-2 border-dashed border-neutral-200">
-                        <p className="text-neutral-400 font-bold uppercase">Bu listede içerik bulunmuyor.</p>
+                    <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900 border-2 border-dashed border-neutral-200 dark:border-neutral-800 transition-colors">
+                        <p className="text-neutral-400 dark:text-neutral-500 font-bold uppercase">Bu listede içerik bulunmuyor.</p>
                     </div>
                 ) : (
                     displayedItems.map((item, index) => {
@@ -413,10 +413,10 @@ export default function OfficialView() {
                         <article 
                             key={index} 
                             onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                            className={`flex gap-4 items-start p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white shadow-sm group
-                                ${isExpanded ? 'bg-neutral-50 ring-1 ring-black/5' : 'hover:bg-neutral-50 border-[#C8102E]'}
+                            className={`flex gap-4 items-start p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group
+                                ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white/5' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800 border-[#C8102E]'}
                                 ${isRead && activeTab !== 'history' ? 'hidden' : ''} 
-                                ${isRead ? 'opacity-75 grayscale border-neutral-300' : ''}
+                                ${isRead ? 'opacity-75 grayscale border-neutral-300 dark:border-neutral-700' : ''}
                             `}
                         >   
                             {/* Expand Icon Indicator & Actions */}
@@ -427,15 +427,15 @@ export default function OfficialView() {
                                         <button
                                             onClick={(e) => handleMarkRead(String(item.id), e)}
                                             title={isRead ? "Okundu" : "Okundu olarak işaretle"}
-                                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isRead ? 'text-green-600 bg-green-50' : 'text-neutral-400 hover:text-green-600 hover:bg-green-50'}`}
+                                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isRead ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-neutral-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30'}`}
                                         >
-                                            <CheckCircle size={20} className={isRead ? 'fill-green-100' : ''} />
+                                            <CheckCircle size={20} className={isRead ? 'fill-green-100 dark:fill-green-900/50' : ''} />
                                         </button>
                                         <div className="w-px h-5 bg-neutral-200 mx-1"></div>
                                         <button
                                             onClick={(e) => handleFollow(item.source, e)}
                                             title={isFollowing ? "Favorilerden Çıkar" : "Favorilere Ekle"}
-                                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isFollowing ? 'text-[#C8102E] bg-red-50' : 'text-neutral-400 hover:text-[#C8102E] hover:bg-red-50'}`}
+                                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isFollowing ? 'text-[#C8102E] bg-red-50 dark:bg-red-900/30' : 'text-neutral-400 hover:text-[#C8102E] hover:bg-red-50 dark:hover:bg-red-900/30'}`}
                                         >
                                             <Bookmark size={20} className={isFollowing ? 'fill-[#C8102E]' : ''} />
                                         </button>
@@ -446,7 +446,7 @@ export default function OfficialView() {
                                      <button
                                         onClick={(e) => handleUndoRead(String(item.id), e)}
                                         title="Geri Al (Tekrar Gündeme Taşı)"
-                                        className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-neutral-200 shadow-sm text-[10px] font-black uppercase text-neutral-500 hover:text-black hover:border-black transition-all hover:scale-105 active:scale-95"
+                                        className="flex items-center gap-2 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-sm text-[10px] font-black uppercase text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all hover:scale-105 active:scale-95"
                                     >
                                         <RotateCcw size={14} />
                                         Geri Al
@@ -472,23 +472,23 @@ export default function OfficialView() {
                                     </span>
                                 </div>
                                 
-                                <h4 className={`text-lg font-bold font-serif mb-2 transition-colors ${isExpanded ? (item.type === 'email' ? 'text-yellow-700' : 'text-[#C8102E]') : 'text-black'}`}>
+                                <h4 className={`text-lg font-bold font-serif mb-2 transition-colors ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : 'text-[#C8102E]') : 'text-black dark:text-white'}`}>
                                     {item.title}
                                 </h4>
                                 
                                 {/* Summary */}
                                 <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                                    <p className="text-sm text-neutral-700 leading-relaxed mb-3 pt-2 border-t border-neutral-200">
+                                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
                                         {item.summary || 'Detaylar için bağlantıya tıklayınız.'}
                                     </p>
                                     <a 
                                         href={item.link} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className={`mt-3 inline-flex items-center gap-2 px-4 py-2 border-2 text-xs font-black uppercase tracking-wider transition-all group/btn shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px]
+                                        className={`mt-3 inline-flex items-center gap-2 px-4 py-2 border-2 text-xs font-black uppercase tracking-wider transition-all group/btn shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] hover:translate-x-[2px] hover:translate-y-[2px]
                                             ${item.type === 'email' 
-                                                ? 'bg-amber-50 border-amber-700 text-amber-800 hover:bg-amber-100' 
-                                                : 'bg-white border-black text-black hover:bg-neutral-100'
+                                                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-700 text-amber-800 dark:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30' 
+                                                : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'
                                             }
                                         `}
                                         onClick={(e) => e.stopPropagation()} 
@@ -510,27 +510,27 @@ export default function OfficialView() {
         {/* Sidebar / Teknokent */}
         <div className="space-y-6">
             {/* Email Integration Card */}
-            <div className="bg-white border border-neutral-200 rounded-lg shadow-sm p-6 relative overflow-hidden">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 pb-2 text-neutral-900">
-                    <Mail size={20} className="text-neutral-900" />
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-6 relative overflow-hidden transition-colors">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-neutral-900 dark:text-white">
+                    <Mail size={20} className="text-neutral-900 dark:text-white" />
                     E-Posta Entegrasyonu
                 </h3>
-                <p className="text-sm text-neutral-600 mb-4">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                     ODTÜ e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.
                 </p>
                 {isEmailConnected ? (
-                    <div className="bg-neutral-50 border-2 border-black p-4 relative">
-                        <div className="flex items-center gap-2 font-black uppercase text-sm mb-1">
-                            <CheckCircle size={18} className="text-black fill-white" />
+                    <div className="bg-neutral-50 dark:bg-neutral-800 border-2 border-black dark:border-white p-4 relative transition-colors">
+                        <div className="flex items-center gap-2 font-black uppercase text-sm mb-1 dark:text-white">
+                            <CheckCircle size={18} className="text-black dark:text-white fill-white dark:fill-black" />
                             BAĞLANTI AKTİF
                         </div>
-                        <div className="text-xs font-mono text-neutral-600 mb-3 pl-6">
+                        <div className="text-xs font-mono text-neutral-600 dark:text-neutral-400 mb-3 pl-6">
                              {loginForm.username}@metu.edu.tr
                         </div>
                         <div className="pl-6 flex gap-2">
                              <button 
                                 onClick={() => setShowLoginModal(true)}
-                                className="text-[10px] font-bold uppercase underline decoration-2 hover:bg-black hover:text-white px-1 transition-colors"
+                                className="text-[10px] font-bold uppercase underline decoration-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black px-1 transition-colors dark:text-white"
                              >
                                 YENİLE / GÜNCELLE
                              </button>
@@ -547,40 +547,40 @@ export default function OfficialView() {
                              </button>
                         </div>
                         {/* Status bar */}
-                        {loadingEmails && <span className="text-xs ml-6 text-neutral-500 animate-pulse block mt-1">E-postalar güncelleniyor...</span>}
+                        {loadingEmails && <span className="text-xs ml-6 text-neutral-500 dark:text-neutral-400 animate-pulse block mt-1">E-postalar güncelleniyor...</span>}
                     </div>
                 ) : (
                     <button 
                         onClick={() => setShowLoginModal(true)}
-                        className="w-full py-2.5 bg-neutral-900 text-white font-bold text-sm uppercase rounded hover:bg-neutral-800 transition-colors shadow-sm"
+                        className="w-full py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-black font-bold text-sm uppercase rounded hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-sm"
                     >
                          ODTÜ Hesabını Bağla
                     </button>
                 )}
             </div>
 
-            <div className="bg-white border border-neutral-200 rounded-lg shadow-sm p-6 relative overflow-hidden group hover:border-[#C8102E]/30 transition-colors">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#C8102E]/5 to-[#C8102E]/10 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-6 relative overflow-hidden group hover:border-[#C8102E]/30 transition-all">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#C8102E]/5 to-[#C8102E]/10 dark:from-[#C8102E]/10 dark:to-[#C8102E]/20 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
                 
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 pb-2 relative z-10 text-neutral-900">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 relative z-10 text-neutral-900 dark:text-white">
                     <Briefcase size={20} className="text-[#C8102E]" />
                     Teknokent Fırsatları
                 </h3>
                 {/* Static sidebar jobs */}
                 <div className="space-y-4 relative z-10">
-                    <div className="p-4 bg-neutral-50 rounded-lg hover:bg-white hover:shadow-md transition-all cursor-pointer border border-neutral-100 group/item">
-                        <h5 className="font-bold text-neutral-900 mb-1 group-hover/item:text-[#C8102E] transition-colors">{news[1].title}</h5>
-                        <p className="text-sm text-neutral-600 mb-2 line-clamp-2">{news[1].summary}</p>
-                        <div className="flex justify-between text-xs text-neutral-400 font-medium">
+                    <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md transition-all cursor-pointer border border-neutral-100 dark:border-neutral-800 group/item">
+                        <h5 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 group-hover/item:text-[#C8102E] transition-colors">{news[1].title}</h5>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2 line-clamp-2">{news[1].summary}</p>
+                        <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 font-medium">
                             <span>{news[1].source}</span>
                             <span>{news[1].date}</span>
                         </div>
                     </div>
                     
-                    <div className="p-4 bg-neutral-50 rounded-lg hover:bg-white hover:shadow-md transition-all cursor-pointer border border-neutral-100 group/item">
-                        <h5 className="font-bold text-neutral-900 mb-1 group-hover/item:text-[#C8102E] transition-colors">Stajyer (Marketing)</h5>
-                        <p className="text-sm text-neutral-600 mb-2">GameDev Stüdyomuz için sosyal medya yönetebilecek stajyerler...</p>
-                        <div className="flex justify-between text-xs text-neutral-400 font-medium">
+                    <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md transition-all cursor-pointer border border-neutral-100 dark:border-neutral-800 group/item">
+                        <h5 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 group-hover/item:text-[#C8102E] transition-colors">Stajyer (Marketing)</h5>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">GameDev Stüdyomuz için sosyal medya yönetebilecek stajyerler...</p>
+                        <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 font-medium">
                             <span>Pixel Games</span>
                             <span>Bugün</span>
                         </div>
@@ -591,8 +591,8 @@ export default function OfficialView() {
                 </button>
             </div>
 
-            <div className="p-4 border border-neutral-200 bg-white shadow-sm rounded-lg">
-                <h4 className="font-bold text-lg mb-4 text-center font-serif text-neutral-900 border-b border-neutral-100 pb-2">Günün Menüsü</h4>
+            <div className="p-4 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm rounded-lg transition-colors">
+                <h4 className="font-bold text-lg mb-4 text-center font-serif text-neutral-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 pb-2">Günün Menüsü</h4>
                 
                 {loadingMenu ? (
                     <div className="text-center text-sm text-neutral-500 py-4">Menü Yükleniyor...</div>
@@ -600,12 +600,12 @@ export default function OfficialView() {
                     <div className="space-y-6">
                         {menu.breakfast?.length > 0 && (
                              <div>
-                                <h5 className="font-bold text-neutral-500 text-sm uppercase mb-2 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-300"></span>
+                                <h5 className="font-bold text-neutral-500 dark:text-neutral-400 text-sm uppercase mb-2 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
                                     Kahvaltı
                                 </h5>
-                                <div className="text-sm text-neutral-700 bg-neutral-50 p-3 rounded border border-neutral-100">
-                                    {menu.breakfast.map(i => i.name).join(', ')}
+                                <div className="text-sm text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800 p-3 rounded border border-neutral-100 dark:border-neutral-700 transition-colors">
+                                    {menu.breakfast.map((i: any) => i.name).join(', ')}
                                 </div>
                             </div>
                         )}
@@ -618,7 +618,7 @@ export default function OfficialView() {
                                 </h5>
                                 <div className="grid grid-cols-2 gap-3">
                                     {(menu.lunch).map((item: any, index: number) => (
-                                        <div key={index} className="group relative overflow-hidden rounded-lg aspect-square border border-neutral-200">
+                                        <div key={index} className="group relative overflow-hidden rounded-lg aspect-square border border-neutral-200 dark:border-neutral-700">
                                             <img 
                                                 src={item.image} 
                                                 alt={item.name}
@@ -641,7 +641,7 @@ export default function OfficialView() {
                                 </h5>
                                 <div className="grid grid-cols-2 gap-3">
                                     {menu.dinner.map((item: any, index: number) => (
-                                        <div key={index} className="group relative overflow-hidden rounded-lg aspect-square border border-neutral-200">
+                                        <div key={index} className="group relative overflow-hidden rounded-lg aspect-square border border-neutral-200 dark:border-neutral-700">
                                             <img 
                                                 src={item.image} 
                                                 alt={item.name}
@@ -666,29 +666,29 @@ export default function OfficialView() {
       </div>
 
       {/* LOGIN MODAL */}
-      {showLoginModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-              <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-md p-8 relative animate-in fade-in zoom-in duration-200">
+       {showLoginModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-white/10 backdrop-blur-sm p-4">
+              <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] w-full max-w-md p-8 relative animate-in fade-in zoom-in duration-200">
                   <button 
                     onClick={() => setShowLoginModal(false)}
-                    className="absolute right-4 top-4 text-black hover:rotate-90 transition-transform"
+                    className="absolute right-4 top-4 text-black dark:text-white hover:rotate-90 transition-transform"
                   >
                       <X size={24} strokeWidth={3}/>
                   </button>
                   
                   <div className="text-center mb-8">
-                      <div className="w-16 h-16 bg-black text-white flex items-center justify-center mx-auto mb-4 border-2 border-transparent">
+                      <div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mx-auto mb-4 border-2 border-transparent">
                           <Lock size={32} />
                       </div>
-                      <h3 className="text-2xl font-black font-serif uppercase tracking-tight">ODTÜ Giriş</h3>
-                      <p className="text-sm text-neutral-600 mt-2 font-medium">
+                      <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">ODTÜ Giriş</h3>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 font-medium">
                           E-postalarınıza erişmek için ODTÜ kullanıcı kodunuzu kullanın.
                       </p>
                   </div>
 
                   <form onSubmit={handleImapLogin} className="space-y-6">
                       <div>
-                          <label className="block text-xs font-black uppercase text-black mb-2">Kullanıcı Kodu</label>
+                          <label className="block text-xs font-black uppercase text-black dark:text-white mb-2">Kullanıcı Kodu</label>
                           <div className="relative group">
                               <input 
                                   type="text"
@@ -703,7 +703,7 @@ export default function OfficialView() {
                       </div>
                       
                       <div>
-                          <label className="block text-xs font-black uppercase text-black mb-2">Şifre</label>
+                          <label className="block text-xs font-black uppercase text-black dark:text-white mb-2">Şifre</label>
                           <input 
                               type="password"
                               required

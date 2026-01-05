@@ -485,9 +485,9 @@ export default function VoiceView() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Newspaper Header */}
-      <div className="border-b-4 border-black pb-4 mb-8 text-center">
-        <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2">Kampüsün Sesi</h2>
-        <div className="flex justify-between items-center text-sm font-medium border-t border-black pt-2 max-w-2xl mx-auto text-neutral-600">
+      <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors">
+        <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 dark:text-white">Kampüsün Sesi</h2>
+        <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
           <span>SAYI: {issueNumber}</span>
           <span>SERBEST KÜRSÜ</span>
           <span>{formattedDate.toUpperCase()}</span>
@@ -497,8 +497,8 @@ export default function VoiceView() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Column: Forum / Letters */}
         <div className="lg:col-span-2 space-y-8">
-            <div className="flex justify-between items-end border-b-2 border-black pb-2 mb-6">
-                <h3 className="text-xl font-bold flex items-center gap-2 font-serif">
+            <div className="flex justify-between items-end border-b-2 border-black dark:border-white pb-2 mb-6">
+                <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
                     <MessageSquare size={24} />
                     Öğrenci Kürsüsü
                 </h3>
@@ -514,12 +514,12 @@ export default function VoiceView() {
             
             {/* Input Area */}
             {user ? (
-                <div className="bg-neutral-50 p-6 border border-neutral-200 mb-8 rounded-sm shadow-sm relative">
-                    <div className="absolute top-0 right-0 p-2 opacity-5">
+                <div className="bg-neutral-50 dark:bg-neutral-900 p-6 border border-neutral-200 dark:border-neutral-800 mb-8 rounded-sm shadow-sm relative">
+                    <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-10 dark:text-white">
                          <MessageSquare size={100} />
                     </div>
                     
-                    <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2">
+                    <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white">
                         Sesini Duyur
                     </h4>
                     
@@ -528,7 +528,7 @@ export default function VoiceView() {
                             ref={textareaRef}
                             rows={3}
                             maxLength={280}
-                            className="w-full p-3 border border-neutral-300 focus:outline-none focus:border-black bg-white mb-3 font-serif resize-none"
+                            className="w-full p-3 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-black dark:focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors"
                             placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
                             value={newStatus}
                             onChange={handleTextChange}
@@ -538,13 +538,13 @@ export default function VoiceView() {
                         
                         {/* Autocomplete Suggestions */}
                         {showSuggestions && (
-                            <div className="absolute left-0 bottom-full mb-1 w-64 bg-white border-2 border-black shadow-lg z-[1000] max-h-48 overflow-y-auto">
+                            <div className="absolute left-0 bottom-full mb-1 w-64 bg-white dark:bg-neutral-900 border-2 border-black dark:border-white shadow-lg z-[1000] max-h-48 overflow-y-auto">
                                 <ul className="py-1">
                                     {suggestionList.map(tag => (
                                         <li 
                                             key={tag}
                                             onClick={() => insertTag(tag)}
-                                            className="px-4 py-2 hover:bg-neutral-100 cursor-pointer font-bold font-serif text-sm flex items-center gap-2"
+                                            className="px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer font-bold font-serif text-sm flex items-center gap-2 dark:text-neutral-200"
                                         >
                                             <Tag size={12} />
                                             {tag}
@@ -556,10 +556,10 @@ export default function VoiceView() {
                         
                         {/* REMOVED OLD TAG SELECTION */}
 
-                        <div className="flex justify-between items-center border-t border-neutral-200 pt-3">
+                        <div className="flex justify-between items-center border-t border-neutral-200 dark:border-neutral-800 pt-3">
                             <label className="flex items-center gap-2 cursor-pointer group">
-                                <div className={`w-4 h-4 border transition-colors flex items-center justify-center ${isAnonymous ? 'bg-black border-black' : 'border-neutral-400 group-hover:border-black'}`}>
-                                    {isAnonymous && <span className="text-white text-[10px]">✓</span>}
+                                <div className={`w-4 h-4 border transition-colors flex items-center justify-center ${isAnonymous ? 'bg-black dark:bg-white border-black dark:border-white' : 'border-neutral-400 group-hover:border-black dark:group-hover:border-white'}`}>
+                                    {isAnonymous && <span className="text-white dark:text-black text-[10px]">✓</span>}
                                 </div>
                                 <input 
                                     type="checkbox" 
@@ -567,15 +567,15 @@ export default function VoiceView() {
                                     checked={isAnonymous} 
                                     onChange={(e) => setIsAnonymous(e.target.checked)} 
                                 />
-                                <span className={`text-sm ${isAnonymous ? 'font-bold text-black' : 'text-neutral-500'}`}>Anonim Paylaş</span>
+                                <span className={`text-sm ${isAnonymous ? 'font-bold text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>Anonim Paylaş</span>
                             </label>
 
                             <div className="flex items-center gap-3">
-                                <span className="text-xs text-neutral-400">{newStatus.length}/280</span>
+                                <span className="text-xs text-neutral-400 dark:text-neutral-500">{newStatus.length}/280</span>
                                 <button
                                     type="submit"
                                     disabled={!newStatus.trim() || isPosting}
-                                    className="px-6 py-2 bg-black text-white font-bold uppercase text-sm hover:bg-neutral-800 disabled:opacity-50 flex items-center gap-2"
+                                    className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center gap-2 transition-colors"
                                 >
                                     <Send size={14} />
                                     {isPosting ? 'Yayınlanıyor...' : 'Yayınla'}
@@ -585,8 +585,8 @@ export default function VoiceView() {
                     </form>
                 </div>
             ) : (
-                <div className="bg-neutral-100 p-6 text-center border border-neutral-200 mb-8">
-                    <p className="text-neutral-600">Paylaşım yapmak için <Link href="/" className="underline font-bold">giriş yapmalısın</Link>.</p>
+                <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
+                    <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/" className="underline font-bold dark:text-white">giriş yapmalısın</Link>.</p>
                 </div>
             )}
 
@@ -604,9 +604,9 @@ export default function VoiceView() {
                         const netVote = likeCount - dislikeCount;
 
                         return (
-                            <article key={voice.id} className={`bg-white border-b border-neutral-200 pb-6 last:border-0 px-2 relative ${voice.is_editors_choice ? 'bg-yellow-50/50 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200' : ''}`}>
+                            <article key={voice.id} className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}>
                                 {voice.is_editors_choice && (
-                                    <div className="absolute -top-3 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+                                    <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-500 text-yellow-900 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
                                         <Award size={12} />
                                         Editörün Seçimi
                                     </div>
@@ -614,7 +614,7 @@ export default function VoiceView() {
                                 
                                 <div className="flex gap-4 items-start">
                                     {/* Avatar */}
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 ${voice.is_anonymous ? 'bg-neutral-800 text-neutral-400' : 'bg-black text-white'}`}>
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'bg-black dark:bg-white text-white dark:text-black'}`}>
                                         {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
                                     </div>
 
@@ -622,35 +622,35 @@ export default function VoiceView() {
                                         {/* Meta */}
                                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                                             {voice.is_anonymous ? (
-                                                <span className="font-bold text-neutral-600 italic">Rumuzlu Öğrenci</span>
+                                                <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">Rumuzlu Öğrenci</span>
                                             ) : (
-                                                <Link href="#" className="font-bold text-neutral-900 hover:underline">
+                                                <Link href="#" className="font-bold text-neutral-900 dark:text-white hover:underline">
                                                     {voice.user.full_name}
                                                 </Link>
                                             )}
                                             
-                                            <span className="text-xs text-neutral-500 uppercase tracking-widest border-l border-neutral-300 pl-2 ml-1">
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1">
                                                 {voice.user.department || 'Kampüs'}
                                             </span>
                                             
-                                            <span className="text-xs text-neutral-400 ml-auto block">
+                                            <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-auto block">
                                                 {formatRelativeTime(voice.created_at)}
                                             </span>
                                         </div>
 
                                         {/* Content */}
                                         <div className="mb-4">
-                                            <p className="text-neutral-900 leading-relaxed text-lg font-serif">
+                                            <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
                                                 {renderContentWithTags(voice.content)}
                                             </p>
                                         </div>
                                         
                                         {/* Actions */}
-                                        <div className="flex items-center gap-6 pt-2 border-t border-neutral-50 border-dashed">
-                                            <div className="flex items-center gap-1 bg-neutral-50 rounded-full px-2 py-1">
+                                        <div className="flex items-center gap-6 pt-2 border-t border-neutral-50 dark:border-neutral-900 border-dashed">
+                                            <div className="flex items-center gap-1 bg-neutral-50 dark:bg-neutral-800/50 rounded-full px-2 py-1">
                                                 <button 
                                                     onClick={() => handleReaction(voice.id, 'like')}
-                                                    className={`p-1.5 rounded-full hover:bg-white transition-all ${myReaction === 'like' ? 'text-green-600 scale-110' : 'text-neutral-400 hover:text-green-500'}`}
+                                                    className={`p-1.5 rounded-full hover:bg-white dark:hover:bg-neutral-800 transition-all ${myReaction === 'like' ? 'text-green-600 scale-110' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-500'}`}
                                                     title="Yükselt"
                                                 >
                                                     <ArrowBigUp size={24} className={myReaction === 'like' ? 'fill-current' : ''} />
@@ -658,14 +658,14 @@ export default function VoiceView() {
                                                 
                                                 <span className={`text-sm font-bold w-6 text-center ${
                                                     netVote > 0 ? 'text-green-600' : 
-                                                    netVote < 0 ? 'text-red-600' : 'text-neutral-500'
+                                                    netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'
                                                 }`}>
                                                     {netVote}
                                                 </span>
                                                 
                                                 <button 
                                                     onClick={() => handleReaction(voice.id, 'dislike')}
-                                                    className={`p-1.5 rounded-full hover:bg-white transition-all ${myReaction === 'dislike' ? 'text-red-600 scale-110' : 'text-neutral-400 hover:text-red-500'}`}
+                                                    className={`p-1.5 rounded-full hover:bg-white dark:hover:bg-neutral-800 transition-all ${myReaction === 'dislike' ? 'text-red-600 scale-110' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-500'}`}
                                                     title="Düşür"
                                                 >
                                                     <ArrowBigDown size={24} className={myReaction === 'dislike' ? 'fill-current' : ''} />
@@ -674,7 +674,7 @@ export default function VoiceView() {
 
                                             <button 
                                                 onClick={() => setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id)}
-                                                className={`flex items-center gap-2 text-sm font-bold transition-colors ml-auto ${activeCommentBox === voice.id ? 'text-black' : 'text-neutral-500 hover:text-black'}`}
+                                                className={`flex items-center gap-2 text-sm font-bold transition-colors ml-auto ${activeCommentBox === voice.id ? 'text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'}`}
                                             >
                                                 <MessageSquare size={16} />
                                                 <span>{voice.comments.length > 0 ? `${voice.comments.length} Yorum` : 'Yorum Yap'}</span>
@@ -683,14 +683,14 @@ export default function VoiceView() {
 
                                         {/* Comments */}
                                         {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
-                                            <div className="mt-4 bg-neutral-50 p-4 border-l-2 border-neutral-300 space-y-3 animation-fade-in">
+                                            <div className="mt-4 bg-neutral-50 dark:bg-neutral-900 border-l-2 border-neutral-300 dark:border-neutral-700 p-4 space-y-3 animation-fade-in relative z-50">
                                                 {voice.comments.map(comment => (
-                                                    <div key={comment.id} className="text-sm border-b border-neutral-200 pb-2 last:border-0 last:pb-0">
+                                                    <div key={comment.id} className="text-sm border-b border-neutral-200 dark:border-neutral-800 pb-2 last:border-0 last:pb-0">
                                                         <div className="flex justify-between items-baseline mb-1">
-                                                            <span className="font-bold text-neutral-900">{comment.user}</span>
-                                                            <span className="text-xs text-neutral-400">{new Date(comment.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})}</span>
+                                                            <span className="font-bold text-neutral-900 dark:text-neutral-200">{comment.user}</span>
+                                                            <span className="text-xs text-neutral-400 dark:text-neutral-500">{new Date(comment.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})}</span>
                                                         </div>
-                                                        <p className="text-neutral-700 font-serif">{comment.content}</p>
+                                                        <p className="text-neutral-700 dark:text-neutral-300 font-serif">{comment.content}</p>
                                                     </div>
                                                 ))}
                                                 
@@ -699,7 +699,7 @@ export default function VoiceView() {
                                                         <input 
                                                             type="text" 
                                                             placeholder="Yorumunu yaz..."
-                                                            className="flex-1 px-3 py-2 bg-white border border-neutral-300 text-sm focus:outline-none focus:border-black font-serif"
+                                                            className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-[#C8102E] font-serif dark:text-white transition-colors"
                                                             value={newComment}
                                                             onChange={(e) => setNewComment(e.target.value)}
                                                             autoFocus
@@ -707,7 +707,7 @@ export default function VoiceView() {
                                                         <button 
                                                             type="submit"
                                                             disabled={!newComment.trim() || isCommenting}
-                                                            className="p-2 bg-black text-white hover:bg-neutral-800 disabled:opacity-50"
+                                                            className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
                                                         >
                                                             {isCommenting ? '...' : <Send size={14} />}
                                                         </button>
@@ -728,25 +728,25 @@ export default function VoiceView() {
         <div className="space-y-8">
             <div className="sticky top-24 space-y-8">
                {/* Trending Topics - Moved from Community Search */}
-               <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                    <h3 className="text-xl font-bold border-b-2 border-black pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2">
+               <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
                         <TrendingUp size={24} className="text-[#C8102E]" />
                         Kampüste Gündem
                     </h3>
                     <div className="space-y-3">
                         {allTags.length > 0 ? (
                             allTags.slice(0, 5).map((topic, index) => (
-                                <div key={topic.tag} onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-100 last:border-0 ${activeTagFilter === topic.tag ? 'bg-red-50' : 'hover:bg-neutral-50'}`}>
+                                <div key={topic.tag} onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xl font-serif font-black text-neutral-300 w-6">{index + 1}</span>
+                                        <span className="text-xl font-serif font-black text-neutral-300 dark:text-neutral-700 w-6">{index + 1}</span>
                                         <div className="flex flex-col">
-                                            <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-[#C8102E]' : 'text-neutral-900 group-hover:text-[#C8102E]'}`}>
+                                            <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-[#C8102E]' : 'text-neutral-900 dark:text-white group-hover:text-[#C8102E]'}`}>
                                                 {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
                                             </span>
-                                            <span className="text-xs text-neutral-500 font-medium">{topic.count} gönderi</span>
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
                                         </div>
                                     </div>
-                                    <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-[#C8102E]' : 'text-black opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
+                                    <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-[#C8102E]' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
                                 </div>
                             ))
                         ) : (
@@ -757,12 +757,12 @@ export default function VoiceView() {
                     </div>
                 </div>
 
-                <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                    <h3 className="text-xl font-bold border-b-2 border-black pb-2 mb-4 font-serif uppercase tracking-tight text-center">
+                <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                         Haftanın Anketi
                     </h3>
                     
-                     <div className="mb-4 bg-black p-2 border border-black rounded-sm text-center">
+                     <div className="mb-4 bg-black dark:bg-black p-2 border border-black dark:border-white rounded-sm text-center">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-white flex items-center justify-center gap-1">
                              <span className="w-2 h-2 rounded-full bg-[#C8102E] animate-pulse"></span>
                              Yapay Zeka Seçimi
@@ -789,51 +789,51 @@ export default function VoiceView() {
                                             onClick={() => handlePollVote(idx)}
                                             className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden ${
                                                 isSelected 
-                                                    ? 'border-black bg-neutral-50' 
-                                                    : 'border-neutral-200 hover:border-black'
+                                                    ? 'border-black dark:border-white bg-neutral-50 dark:bg-neutral-800' 
+                                                    : 'border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white'
                                             }`}
                                         >
                                             {/* Progress Bar Background */}
                                             {showResults && (
                                                 <div 
-                                                    className="absolute top-0 left-0 h-full bg-neutral-100 transition-all duration-500 ease-out"
+                                                    className="absolute top-0 left-0 h-full bg-neutral-100 dark:bg-neutral-800 transition-all duration-500 ease-out"
                                                     style={{ width: `${percentage}%` }}
                                                 />
                                             )}
                                             
-                                            <div className="relative p-3 flex justify-between items-center z-10">
-                                                <span className={isSelected ? 'text-black' : 'text-neutral-800'}>
+                                            <div className="relative p-3 flex justify-between items-center z-10 font-bold">
+                                                <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
                                                     {option}
                                                 </span>
-                                                {showResults && <span className="text-sm font-black">{percentage}%</span>}
+                                                {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
                                             </div>
                                         </button>
                                     );
                                 })}
                             </div>
-                            {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 font-medium">{totalVotes} oy kullanıldı</div>}
+                            {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>}
                         </>
                     )}
                 </div>
 
-                <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                    <h3 className="text-xl font-bold border-b-2 border-black pb-2 mb-4 font-serif uppercase tracking-tight text-center">
+                <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                         Kampüs Nabzı
                     </h3>
                     <div className="grid grid-cols-2 gap-4 text-center">
-                        <div className="p-3 bg-neutral-50 rounded border border-neutral-200">
+                        <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
                              <span className="block text-3xl font-black font-serif text-[#C8102E] animate-pulse">
                                 {activeUsers}
                              </span>
-                             <span className="text-xs font-bold uppercase text-neutral-500">
+                             <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
                                 Aktif Öğrenci
                              </span>
                         </div>
-                        <div className="p-3 bg-neutral-50 rounded border border-neutral-200">
-                             <span className="block text-3xl font-black font-serif text-black">
+                        <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
+                             <span className="block text-3xl font-black font-serif text-black dark:text-white">
                                 {issueNumber}
                              </span>
-                             <span className="text-xs font-bold uppercase text-neutral-500">
+                             <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
                                 Gündem Sayısı
                              </span>
                         </div>

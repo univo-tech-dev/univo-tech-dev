@@ -19,7 +19,7 @@ export default function DashboardOverview() {
 
   // State for activity feed
   const [activityFeed, setActivityFeed] = useState<any[]>([]);
-  const [displayLimit, setDisplayLimit] = useState(10);
+  const [displayLimit, setDisplayLimit] = useState(5);
   const [hasCommunity, setHasCommunity] = useState(false);
   const [noCommunity, setNoCommunity] = useState(false);
 
@@ -171,74 +171,86 @@ export default function DashboardOverview() {
             <StatCard label="Etkileşim" value={stats.feedbackCount > 5 ? "Yüksek" : stats.feedbackCount > 0 ? "Orta" : "Düşük"} icon={<TrendingUp size={24} />} />
         </div>
 
-        <div className="bg-white border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-bold uppercase tracking-wider mb-4 border-b border-neutral-200 pb-2">Son Aktiviteler</h3>
+         <div className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-white p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+            <h3 className="text-xl font-black uppercase tracking-tight mb-8 border-b-2 border-neutral-100 dark:border-neutral-800 pb-2 dark:text-white">Son Aktiviteler</h3>
             {activityFeed.length > 0 ? (
-                <>
-                    <div className="space-y-4">
+                <div className="relative">
+                    {/* Timeline Line */}
+                    <div className="absolute left-[19px] top-2 bottom-8 w-0.5 bg-neutral-100 dark:bg-neutral-800"></div>
+
+                    <div className="space-y-8">
                         {activityFeed.slice(0, displayLimit).map((activity) => (
                             <ActivityItem key={activity.id} item={activity} />
                         ))}
                     </div>
                     
                     {displayLimit < activityFeed.length && (
-                        <div className="mt-6 text-center">
+                        <div className="mt-12 text-center relative z-10">
                             <button 
                                 onClick={() => setDisplayLimit(curr => curr + 10)}
-                                className="text-xs font-bold uppercase text-neutral-500 hover:text-black hover:underline transition-all"
+                                className="px-6 py-2 bg-neutral-100 dark:bg-neutral-800 text-xs font-black uppercase text-neutral-600 dark:text-neutral-400 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all border-2 border-transparent hover:border-black dark:hover:border-white"
                             >
-                                Daha Fazla Yükle
+                                DAHA FAZLA YÜKLE
                             </button>
                         </div>
                     )}
-                </>
+                </div>
             ) : (
-                <p className="text-neutral-500 italic">Henüz yeni bir aktivite yok.</p>
+                <p className="text-neutral-500 dark:text-neutral-400 italic text-center py-4">Henüz yeni bir aktivite yok.</p>
             )}
         </div>
     </div>
   );
 }
 
-function ActivityItem({ item }: { item: any }) {
-    if (item.type === 'feedback') {
-        return (
-            <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded border border-neutral-100">
-                 <div className="w-2 h-2 rounded-full bg-yellow-400 shrink-0"></div>
-                 <p className="text-sm text-neutral-700">
-                    <span className="font-bold">{item.user}</span>, 
-                    <span className="font-bold"> {item.event}</span> etkinliğine 
-                    <span className="font-bold"> {item.rating} puan</span> verdi.
-                 </p>
-                 <span className="text-xs text-neutral-400 ml-auto whitespace-nowrap">{item.date.toLocaleDateString('tr-TR')}</span>
-            </div>
-        );
-    }
-    
-    if (item.type === 'follower') {
-        return (
-            <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded border border-neutral-100">
-                 <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
-                 <p className="text-sm text-neutral-700">
-                    <span className="font-bold">{item.user}</span> topluluğa katıldı.
-                 </p>
-                 <span className="text-xs text-neutral-400 ml-auto whitespace-nowrap">{item.date.toLocaleDateString('tr-TR')}</span>
-            </div>
-        );
-    }
+ function ActivityItem({ item }: { item: any }) {
+    const getIcon = () => {
+        if (item.type === 'feedback') return <div className="w-10 h-10 rounded-full bg-yellow-400/10 text-yellow-500 flex items-center justify-center border-2 border-yellow-400/20"><Star size={18} fill="currentColor" /></div>;
+        if (item.type === 'follower') return <div className="w-10 h-10 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center border-2 border-blue-500/20"><Users size={18} fill="currentColor" /></div>;
+        if (item.type === 'event_complete') return <div className="w-10 h-10 rounded-full bg-green-500/10 text-green-500 flex items-center justify-center border-2 border-green-500/20"><Calendar size={18} fill="currentColor" /></div>;
+        return null;
+    };
 
-    if (item.type === 'event_complete') {
-        return (
-            <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded border border-neutral-100">
-                 <div className="w-2 h-2 rounded-full bg-green-500 shrink-0"></div>
-                 <p className="text-sm text-neutral-700">
-                    <span className="font-bold">{item.title}</span> etkinliği başarıyla tamamlandı.
-                 </p>
-                 <span className="text-xs text-neutral-400 ml-auto whitespace-nowrap">{item.date.toLocaleDateString('tr-TR')}</span>
+    return (
+        <div className="flex gap-6 relative group">
+            <div className="shrink-0 relative z-10 transition-transform group-hover:scale-110 duration-300">
+                {getIcon()}
             </div>
-        );
-    }
-    return null;
+            <div className="flex-1 pt-1 pb-4">
+                <div className="flex justify-between items-start mb-1">
+                    <p className="text-sm font-medium text-neutral-900 dark:text-white leading-relaxed">
+                        {item.type === 'feedback' && (
+                            <>
+                                <span className="font-black hover:text-[#C8102E] cursor-pointer transition-colors">{item.user}</span>, 
+                                <span className="font-bold italic"> {item.event}</span> etkinliğine 
+                                <span className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 bg-yellow-400/10 text-yellow-600 dark:text-yellow-400 rounded text-[10px] font-black uppercase border border-yellow-400/20">
+                                    <Star size={10} fill="currentColor"/> {item.rating} Puan
+                                </span> verdi.
+                            </>
+                        )}
+                        {item.type === 'follower' && (
+                            <>
+                                <span className="font-black hover:text-[#C8102E] cursor-pointer transition-colors">{item.user}</span> topluluğa katıldı.
+                            </>
+                        )}
+                        {item.type === 'event_complete' && (
+                            <>
+                                <span className="font-black">{item.title}</span> etkinliği başarıyla tamamlandı.
+                            </>
+                        )}
+                    </p>
+                    <span className="text-[10px] font-black uppercase text-neutral-400 dark:text-neutral-500 tracking-widest whitespace-nowrap ml-4">
+                        {item.date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                    </span>
+                </div>
+                {item.type === 'feedback' && item.comment && (
+                   <div className="mt-2 text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-800/50 p-3 border-l-2 border-yellow-400 rounded-r transition-colors italic">
+                      "{item.comment}"
+                   </div>
+                )}
+            </div>
+        </div>
+    );
 }
 
 function StatCard({ label, value, icon, sub, change }: any) {

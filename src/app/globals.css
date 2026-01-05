@@ -6,6 +6,12 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background: #0a0a0a;
+  color: #ededed;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -13,6 +19,10 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: #171717;
   line-height: 1.2;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ffffff;
 }
 
 h1 {

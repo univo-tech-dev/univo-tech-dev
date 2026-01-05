@@ -10,6 +10,7 @@ import { Search as SearchIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useSearchParams, usePathname } from 'next/navigation';
+import DarkModeToggle from './DarkModeToggle';
 
 function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -60,12 +61,12 @@ function HeaderContent() {
   const getLinkClass = (id: string) => {
     const isActive = currentView === id;
     return `flex items-center gap-2 font-medium transition-colors ${
-      isActive ? 'text-[#C8102E]' : 'text-neutral-600 hover:text-[#C8102E]'
+      isActive ? 'text-[#C8102E]' : 'text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E]'
     }`;
   };
 
   return (
-    <header className="sticky top-0 z-[9999] bg-white border-b border-neutral-200 shadow-sm">
+    <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 shadow-sm transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
 
@@ -79,7 +80,7 @@ function HeaderContent() {
                     className="object-cover"
                 />
             </div>
-            <h1 className="text-2xl font-bold text-foreground font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
+            <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
               Univo
             </h1>
           </Link>
@@ -105,7 +106,7 @@ function HeaderContent() {
                     className={`flex items-center gap-2 font-medium transition-colors ${
                         pathname?.startsWith('/dashboard') 
                         ? 'text-[#C8102E]' 
-                        : 'text-neutral-600 hover:text-[#C8102E]'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E]'
                     }`}
                 >
                     <LayoutDashboard size={20} />
@@ -118,11 +119,13 @@ function HeaderContent() {
             
             <button 
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2 text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors"
+                className="p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
                 aria-label="Search"
             >
                 <SearchIcon size={20} />
             </button>
+
+            <DarkModeToggle />
             
             {/* Mobile Menu Button */}
             <button
@@ -130,14 +133,14 @@ function HeaderContent() {
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
             >
-                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {isMenuOpen ? <X size={24} className="text-neutral-600 dark:text-neutral-400" /> : <Menu size={24} className="text-neutral-600 dark:text-neutral-400" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-neutral-200">
+          <div className="md:hidden py-4 border-t border-neutral-200 dark:border-neutral-800">
             <nav className="flex flex-col gap-4">
               {navItems.map((item) => (
                 <Link
@@ -150,7 +153,7 @@ function HeaderContent() {
                   <span>{item.label}</span>
                 </Link>
               ))}
-              <div className="pt-2 border-t border-neutral-200">
+              <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
                 <AuthButton />
               </div>
             </nav>

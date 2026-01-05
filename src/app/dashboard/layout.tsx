@@ -40,11 +40,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading || authLoading) return <div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>;
 
   return (
-    <div className="min-h-screen bg-neutral-100 flex">
+    <div className="min-h-screen bg-neutral-100 dark:bg-[#0a0a0a] flex transition-colors">
       {/* Sidebar */}
-      <aside className="w-64 bg-white text-black border-r border-neutral-200 fixed top-16 bottom-0 flex flex-col overflow-y-auto z-40">
-        <div className="p-6 border-b border-neutral-200">
-           <h1 className="text-xl font-bold font-serif tracking-wide text-black uppercase flex items-center gap-2">
+      <aside className="w-64 bg-white dark:bg-neutral-900 text-black dark:text-white border-r border-neutral-200 dark:border-neutral-800 fixed top-16 bottom-0 flex flex-col overflow-y-auto z-40 transition-colors">
+        <div className="p-6 border-b border-neutral-200 dark:border-neutral-800">
+           <h1 className="text-xl font-bold font-serif tracking-wide text-black dark:text-white uppercase flex items-center gap-2">
               YÖNETİM
            </h1>
            {community && (
@@ -61,10 +61,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <NavLink href="/dashboard/settings" icon={<Settings size={20} />} label="Ayarlar" active={pathname === '/dashboard/settings'} />
         </nav>
 
-        <div className="p-4 border-t border-neutral-200">
+        <div className="p-4 border-t border-neutral-200 dark:border-neutral-800">
             <button 
                 onClick={() => signOut()} 
-                className="w-full flex items-center gap-3 px-4 py-3 text-neutral-600 hover:text-white hover:bg-[#C8102E] rounded-lg transition-all text-sm font-bold uppercase tracking-wide group"
+                className="w-full flex items-center gap-3 px-4 py-3 text-neutral-600 dark:text-neutral-400 hover:text-white hover:bg-[#C8102E] rounded-lg transition-all text-sm font-bold uppercase tracking-wide group"
             >
                 <LogOut size={20} className="group-hover:text-white" />
                 Çıkış Yap
@@ -87,7 +87,7 @@ function NavLink({ href, icon, label, active }: { href: string; icon: React.Reac
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-bold uppercase tracking-wide group ${
                 active 
                 ? 'bg-[#C8102E] text-white shadow-md' 
-                : 'text-neutral-600 hover:text-white hover:bg-[#C8102E]'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-white hover:bg-[#C8102E]'
             }`}
         >
             <span className={active ? 'text-white' : 'group-hover:text-white'}>{icon}</span>
