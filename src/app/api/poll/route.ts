@@ -32,7 +32,7 @@ export async function GET() {
         return NextResponse.json(getRandomFallback());
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
     const prompt = `
       Sen ODTÜ (Orta Doğu Teknik Üniversitesi) kampüs gazetesinin yapay zeka editörüsün.
