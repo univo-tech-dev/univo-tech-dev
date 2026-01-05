@@ -60,7 +60,7 @@ export default function AuthButton() {
         <img 
           src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || 'User')}&background=C8102E&color=fff&length=1`} 
           alt={profile?.full_name || 'User'} 
-          className="w-8 h-8 rounded-full object-cover border border-neutral-200"
+          className="w-8 h-8 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
         />
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 hidden md:block">
           {profile?.full_name || 'User'}

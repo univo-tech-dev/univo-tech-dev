@@ -77,11 +77,7 @@ function HeaderContent() {
                     src="/logo_black.png" 
                     alt="Univo Logo" 
                     fill 
-                    className="object-cover transition-all duration-300 dark:invert dark:brightness-0 dark:sepia-0 dark:saturate-100 dark:hue-rotate-0"
-                    style={{
-                        maskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
-                        WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 100%)'
-                    }}
+                    className="object-cover transition-all duration-300 dark:brightness-0 dark:invert"
                 />
             </div>
             <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">

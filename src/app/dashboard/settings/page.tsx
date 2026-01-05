@@ -71,8 +71,8 @@ export default function SettingsPage() {
                 
                 <div className="grid gap-8">
                     {/* Manual Creation */}
-                    <div className="bg-white p-8 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                    <div className="bg-white dark:bg-neutral-900 p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)]">
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 dark:text-white">
                              🚀 {isAdmin ? 'Yeni Topluluk Oluştur' : 'Erişim Kısıtlı'}
                         </h3>
                         {isAdmin ? (
@@ -98,7 +98,7 @@ export default function SettingsPage() {
 
                     {/* Demo Button */}
                     {isAdmin && (
-                        <div className="bg-neutral-50 p-6 border-2 border-dashed border-neutral-300 rounded-lg text-center opacity-75 hover:opacity-100 transition-opacity">
+                        <div className="bg-neutral-50 dark:bg-neutral-900 p-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg text-center opacity-75 hover:opacity-100 transition-opacity">
                              <h4 className="font-bold text-neutral-500 mb-2">Hızlı Başlangıç (Geliştirici)</h4>
                              <p className="text-xs text-neutral-400 mb-4">Örnek verilerle otomatik kurulum yap.</p>
                              <InitializeDemoButton userId={user?.id || ''} onComplete={(data) => setCommunity(data)} />
@@ -111,26 +111,26 @@ export default function SettingsPage() {
 
     return (
         <div className="max-w-2xl mx-auto">
-            <h1 className="text-3xl font-black font-serif mb-8">Topluluk Ayarları</h1>
+            <h1 className="text-3xl font-black font-serif mb-8 dark:text-white">Topluluk Ayarları</h1>
             
-            <div className="bg-white p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
                 <form className="space-y-6" onSubmit={handleUpdate}>
                     <div>
-                        <label className="block font-bold text-sm mb-2">Topluluk Adı</label>
+                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Topluluk Adı</label>
                         <input 
                             name="name"
                             type="text" 
                             defaultValue={community?.name}
-                            className="w-full border-2 border-neutral-300 p-3 font-serif focus:border-black outline-none transition-colors"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
                         />
                     </div>
 
                     <div>
-                        <label className="block font-bold text-sm mb-2">Kategori</label>
+                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Kategori</label>
                         <select 
                             name="category"
                             defaultValue={community?.category || 'Sanat'}
-                            className="w-full border-2 border-neutral-300 p-3 font-serif focus:border-black outline-none transition-colors appearance-none bg-white"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white outline-none transition-colors appearance-none bg-white dark:bg-neutral-800 dark:text-white"
                         >
                             <option value="Sanat">Sanat</option>
                             <option value="Spor">Spor</option>
@@ -141,22 +141,22 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                        <label className="block font-bold text-sm mb-2">Açıklama</label>
+                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Açıklama</label>
                         <textarea 
                             name="description"
                             rows={4}
                             defaultValue={community?.description}
-                            className="w-full border-2 border-neutral-300 p-3 font-serif focus:border-black outline-none transition-colors"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
                         />
                     </div>
 
                     <div>
-                        <label className="block font-bold text-sm mb-2">Logo URL</label>
+                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Logo URL</label>
                         <input 
                             name="logo_url"
                             type="text" 
                             defaultValue={community?.logo_url}
-                            className="w-full border-2 border-neutral-300 p-3 font-serif focus:border-black outline-none transition-colors"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
                         />
                     </div>
 

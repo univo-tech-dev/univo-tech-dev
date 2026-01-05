@@ -49,14 +49,14 @@ export default function EventsPage() {
             </div>
 
             {events.length === 0 ? (
-                <div className="bg-white border-2 border-dashed border-neutral-300 p-12 text-center">
-                    <Calendar size={48} className="mx-auto text-neutral-300 mb-4" />
-                    <p className="text-neutral-500 font-bold mb-4">Henüz bir etkinlik oluşturmadınız.</p>
+                <div className="bg-white dark:bg-neutral-900 border-2 border-dashed border-neutral-300 dark:border-neutral-700 p-12 text-center transition-colors">
+                    <Calendar size={48} className="mx-auto text-neutral-300 dark:text-neutral-600 mb-4" />
+                    <p className="text-neutral-500 dark:text-neutral-400 font-bold mb-4">Henüz bir etkinlik oluşturmadınız.</p>
                 </div>
             ) : (
-                <div className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
                     <table className="w-full text-left">
-                        <thead className="bg-neutral-100 border-b-2 border-black">
+                        <thead className="bg-neutral-100 dark:bg-neutral-800 border-b-2 border-black dark:border-neutral-700">
                             <tr>
                                 <th className="p-4 font-bold uppercase text-xs tracking-wider">Etkinlik Adı</th>
                                 <th className="p-4 font-bold uppercase text-xs tracking-wider">Tarih</th>

@@ -139,8 +139,8 @@ function AnalyticsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Event Attendance Chart */}
             <div>
-                <h3 className="text-xl font-bold font-serif mb-4">Etkinlik Katılımı</h3>
-                <div className="bg-white p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl h-[400px]">
+                <h3 className="text-xl font-bold font-serif mb-4 dark:text-white">Etkinlik Katılımı</h3>
+                <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] rounded-xl h-[400px] transition-colors">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredAttendance}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -175,8 +175,8 @@ function AnalyticsContent() {
 
             {/* Follower Growth Chart */}
             <div>
-                <h3 className="text-xl font-bold font-serif mb-4">Takipçi Gelişimi</h3>
-                <div className="bg-white p-6 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-xl h-[400px]">
+                <h3 className="text-xl font-bold font-serif mb-4 dark:text-white">Takipçi Gelişimi</h3>
+                <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] rounded-xl h-[400px] transition-colors">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredFollowers}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -218,7 +218,7 @@ function AnalyticsContent() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {feedbackList.length > 0 ? feedbackList.map((item) => (
-                    <div key={item.id} className="bg-white p-6 border border-neutral-200 rounded-xl shadow-sm hover:border-black transition-all">
+                    <div key={item.id} className="bg-white dark:bg-neutral-900 p-6 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm hover:border-black dark:hover:border-neutral-600 transition-all">
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center overflow-hidden border border-neutral-200">
@@ -229,7 +229,7 @@ function AnalyticsContent() {
                                     )}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-sm text-neutral-900">{item.profiles?.full_name || 'Anonim'}</h4>
+                                    <h4 className="font-bold text-sm text-neutral-900 dark:text-white">{item.profiles?.full_name || 'Anonim'}</h4>
                                     <span className="text-xs text-neutral-500 block">{item.events?.title}</span>
                                 </div>
                             </div>
@@ -239,7 +239,7 @@ function AnalyticsContent() {
                                 ))}
                             </div>
                         </div>
-                        <p className="text-neutral-700 text-sm leading-relaxed mb-3">
+                        <p className="text-neutral-700 dark:text-neutral-300 text-sm leading-relaxed mb-3">
                             "{item.comment}"
                         </p>
                         <span className="text-xs text-neutral-400 font-medium">
@@ -247,7 +247,7 @@ function AnalyticsContent() {
                         </span>
                     </div>
                 )) : (
-                    <div className="col-span-full text-center py-12 bg-neutral-50 rounded-lg border-2 border-dashed border-neutral-200">
+                    <div className="col-span-full text-center py-12 bg-neutral-50 dark:bg-neutral-800 rounded-lg border-2 border-dashed border-neutral-200 dark:border-neutral-700">
                         <MessageSquare size={48} className="mx-auto text-neutral-300 mb-4" />
                         <p className="text-neutral-500 font-bold">Henüz değerlendirme yapılmamış.</p>
                     </div>
