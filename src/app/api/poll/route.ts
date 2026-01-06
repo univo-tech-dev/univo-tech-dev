@@ -51,6 +51,19 @@ export async function GET() {
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
+  // Helper Helper: Deterministic Fallback based on Week ID
+  const getDeterministicFallback = (weekId: string) => {
+      // Simple hash of weekId string
+      let hash = 0;
+      for (let i = 0; i < weekId.length; i++) {
+        hash = weekId.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      // Ensure positive index
+      const index = Math.abs(hash) % FALLBACK_POLLS.length;
+      console.log(`Using Deterministic Fallback for ${weekId} -> Index ${index}`);
+      return FALLBACK_POLLS[index];
+  };
+
   try {
     const currentWeekId = getWeekId();
 
@@ -61,8 +74,14 @@ export async function GET() {
         .eq('week_id', currentWeekId)
         .single();
 
+    // CRITICAL FIX: If table doesn't exist (code 42P01), force deterministic fallback
+    if (dbError && dbError.code === '42P01') { 
+        console.warn('weekly_polls table missing. Returning deterministic specific poll for this week.');
+        return NextResponse.json(getDeterministicFallback(currentWeekId));
+    }
+
     if (dbError && dbError.code !== 'PGRST116') { // PGRST116 is "Row not found", other errors are actual problems
-        console.error('Poll DB Error (Check if table weekly_polls exists):', dbError);
+        console.error('Poll DB Error:', dbError);
     }
 
     if (existingPoll && !dbError) {
@@ -75,7 +94,7 @@ export async function GET() {
 
     // 3. Not Found -> Generate New with Gemini
     if (!process.env.GEMINI_API_KEY) {
-        return NextResponse.json(getRandomFallback());
+        return NextResponse.json(getDeterministicFallback(currentWeekId));
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -111,26 +130,31 @@ export async function GET() {
     const pollData = JSON.parse(cleanedText);
 
     // 4. Save to DB for this week
-    // Note: If multiple requests hit at the exact same time, we might get a race condition/unique constraint error.
-    // In that case, we can just return the generated one, or fetch again.
     const { error: insertError } = await supabase
         .from('weekly_polls')
         .insert({
             week_id: currentWeekId,
             question: pollData.question,
-            options: pollData.options // Supabase handles JSON array automatically if column is jsonb/json
+            options: pollData.options 
         });
 
     if (insertError) {
-        console.error('Failed to cache weekly poll:', insertError);
-        // It might be a duplicate key error if another request beat us to it.
-        // We can just proceed to return the data we generated.
+        console.error('Failed to cache weekly poll (might be duplicate or missing table):', insertError);
+        // If insert fails (table missing), we return the GENERATED data this time, 
+        // BUT next time it will regenerate again. 
+        // To be safer for "missing table" consistency, we can actually return deterministic here too if needed,
+        // but let's assume if generating works we use it. 
+        // Actually, if table missing, insertError code is 42P01.
+        if (insertError.code === '42P01') {
+             return NextResponse.json(getDeterministicFallback(currentWeekId));
+        }
     }
 
     return NextResponse.json(pollData);
 
   } catch (error) {
     console.error('Poll Logic Error:', error);
-    return NextResponse.json(getRandomFallback());
+    // Even in total failure, use specific fallback for week
+    return NextResponse.json(getDeterministicFallback(getWeekId()));
   }
 }
