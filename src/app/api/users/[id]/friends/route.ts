@@ -86,10 +86,26 @@ export async function GET(
        return NextResponse.json({ error: 'Failed to fetch friend profiles' }, { status: 500 });
     }
 
+    // DEBUG: Check if we have friendships but no profiles
+    if (friendships.length > 0 && (!profiles || profiles.length === 0)) {
+        return NextResponse.json({ 
+            friends: [{
+                id: 'debug-error',
+                full_name: `HATA: ${friendships.length} bağlantı var, profil yok`,
+                department: 'Lütfen bunu geliştiriciye bildirin',
+                friendsSince: new Date().toISOString()
+            }], 
+            count: friendships.length 
+        });
+    }
+
     // Combine data
     const friends = friendships.map((f: any) => {
       const isRequester = f.requester_id === userId;
-      const friendId = isRequester ? f.receiver_id : f.requester_id;
+      // Case-insensitive comparison just in case
+      // Match ID logic: if I am requester, friend is receiver.
+      const friendId = f.requester_id === userId ? f.receiver_id : f.requester_id;
+      
       const profile = profiles?.find((p: any) => p.id === friendId);
       
       if (!profile) return null;
@@ -100,6 +116,19 @@ export async function GET(
         friendsSince: f.created_at
       };
     }).filter(Boolean);
+
+    // DEBUG: if filtering removed everyone
+    if (friendships.length > 0 && friends.length === 0) {
+         return NextResponse.json({ 
+            friends: [{
+                id: 'debug-mapping-error',
+                full_name: `HATA: Eşleşme Sorunu (${friendships.length} ham veri)`,
+                department: `ID Örnek: ${friendIds[0]}`,
+                friendsSince: new Date().toISOString()
+            }], 
+            count: friendships.length 
+        });
+    }
 
     return NextResponse.json({ 
       friends,

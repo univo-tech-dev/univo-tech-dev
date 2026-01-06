@@ -59,8 +59,18 @@ ON CONFLICT (requester_id, receiver_id) DO NOTHING;
 -- ============================================
 
 -- Rename privacy columns
-ALTER TABLE profiles 
-RENAME COLUMN show_followers TO show_friends;
+-- Rename privacy columns safely
+DO $$
+BEGIN
+  IF EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'show_followers') THEN
+    ALTER TABLE profiles RENAME COLUMN show_followers TO show_friends;
+  ELSE
+    -- If show_followers doesn't exist, check if show_friends exists, if not add it
+    IF NOT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_name = 'profiles' AND column_name = 'show_friends') THEN
+      ALTER TABLE profiles ADD COLUMN show_friends BOOLEAN DEFAULT true;
+    END IF;
+  END IF;
+END $$;
 
 ALTER TABLE profiles 
 DROP COLUMN IF EXISTS show_following;
