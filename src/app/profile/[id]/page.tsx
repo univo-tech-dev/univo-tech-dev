@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
 import BadgeDisplay from '@/components/profile/BadgeDisplay';
 import ActivityTimeline, { ActivityItem } from '@/components/profile/ActivityTimeline';
+import UserFollowButton from '@/components/UserFollowButton';
 
 interface Profile {
   id: string;
@@ -168,15 +169,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         `)
         .eq('user_id', resolvedId);
 
-      // Fetch Follow Counts
-      // Notes: supabase-js doesn't support 'count' in single select easily without return type issues in strict mode sometimes, but let's try standard way
+      // Fetch Follow Counts from user_follows table
       const { count: followers } = await supabase
-        .from('followers')
+        .from('user_follows')
         .select('*', { count: 'exact', head: true })
         .eq('following_id', resolvedId);
       
       const { count: following } = await supabase
-        .from('followers')
+        .from('user_follows')
         .select('*', { count: 'exact', head: true })
         .eq('follower_id', resolvedId);
 
@@ -406,6 +406,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                 </a>
                             )}
                         </div>
+                    )}
+
+                    {/* Follow Button - Only for other users' profiles */}
+                    {!isOwnProfile && (
+                        <UserFollowButton 
+                            targetUserId={targetId}
+                            onFollowChange={(isFollowing, newCount) => {
+                                setFollowersCount(newCount);
+                            }}
+                        />
                     )}
 
                     {isOwnProfile && (

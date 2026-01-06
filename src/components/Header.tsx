@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useSearchParams, usePathname } from 'next/navigation';
 import DarkModeToggle from './DarkModeToggle';
+import NotificationCenter from './NotificationCenter';
 
 function HeaderContent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -144,6 +145,11 @@ function HeaderContent() {
               isMenuOpen ? 'md:block' : 'hidden md:block'
             }`}>
                 <DarkModeToggle />
+            </div>
+
+            {/* Notification Center (Desktop) */}
+            <div className="hidden md:block pl-2">
+                <NotificationCenter />
             </div>
 
             {/* Auth Button (Desktop) */}
