@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 export async function GET(
   request: Request,
@@ -17,6 +18,7 @@ export async function GET(
     let currentUserId: string | null = null;
     let supabase;
     
+    // Initialize Supabase Client (Standard)
     if (authHeader) {
       const token = authHeader.replace('Bearer ', '');
       supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -49,9 +51,7 @@ export async function GET(
       .eq('status', 'accepted')
       .eq('requester_id', userId);
 
-    if (sentError) {
-      console.error('Sent friends fetch error:', sentError);
-    }
+    if (sentError) console.error('Sent friends fetch error:', sentError);
 
     // Fetch confirmed friendships where user is receiver
     const { data: receivedFriendships, error: receivedError } = await supabase
@@ -60,9 +60,7 @@ export async function GET(
       .eq('status', 'accepted')
       .eq('receiver_id', userId);
 
-    if (receivedError) {
-      console.error('Received friends fetch error:', receivedError);
-    }
+    if (receivedError) console.error('Received friends fetch error:', receivedError);
 
     const friendships = [...(sentFriendships || []), ...(receivedFriendships || [])];
 
@@ -70,38 +68,19 @@ export async function GET(
       return NextResponse.json({ friends: [], count: 0 });
     }
 
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id: userId } = await params;
-    // ... (auth logic stays same) ...
-    // BUT we will create a separate admin client for profile fetching if needed
-
-    // ... (existing friendship fetch code) ...
-    
-    // We need to keep the existing code but modify the profile fetch part.
-    // Since I cannot change the whole file easily with replace_file_content if I don't see it all,
-    // I will focus on the profile fetching block.
-    
-    // START OF REPLACEMENT
-    
     // Extract friend IDs
-    const friendIds = friendships.map(f => 
+    const friendIds = friendships.map((f: any) => 
       f.requester_id === userId ? f.receiver_id : f.requester_id
-    ).filter(Boolean); // Ensure no nulls
+    ).filter(Boolean);
 
     if (friendIds.length === 0) {
        return NextResponse.json({ friends: [], count: 0 });
     }
 
     // Attempt to use Service Role Key for profiles to bypass RLS
-    // If not available, use the existing 'supabase' client
     let profileClient = supabase;
     if (supabaseServiceKey) {
+        // Use service key if available for profile fetching (Bypasses RLS)
         profileClient = createClient(supabaseUrl, supabaseServiceKey);
     }
 
@@ -119,24 +98,9 @@ export async function GET(
        }, { status: 500 });
     }
 
-    // DEBUG: Check if we have friendships but no profiles
-    if (friendships.length > 0 && (!profiles || profiles.length === 0)) {
-        return NextResponse.json({ 
-            friends: [{
-                id: 'debug-error',
-                full_name: `HATA: ${friendships.length} bağlantı var, profil yok`,
-                department: 'Lütfen bunu geliştiriciye bildirin',
-                friendsSince: new Date().toISOString()
-            }], 
-            count: friendships.length 
-        });
-    }
-
     // Combine data
     const friends = friendships.map((f: any) => {
-      const isRequester = f.requester_id === userId;
-      // Case-insensitive comparison just in case
-      // Match ID logic: if I am requester, friend is receiver.
+      // Logic: if I am requester, friend is receiver.
       const friendId = f.requester_id === userId ? f.receiver_id : f.requester_id;
       
       const profile = profiles?.find((p: any) => p.id === friendId);
@@ -149,19 +113,6 @@ export async function GET(
         friendsSince: f.created_at
       };
     }).filter(Boolean);
-
-    // DEBUG: if filtering removed everyone
-    if (friendships.length > 0 && friends.length === 0) {
-         return NextResponse.json({ 
-            friends: [{
-                id: 'debug-mapping-error',
-                full_name: `HATA: Eşleşme Sorunu (${friendships.length} ham veri)`,
-                department: `ID Örnek: ${friendIds[0]}`,
-                friendsSince: new Date().toISOString()
-            }], 
-            count: friendships.length 
-        });
-    }
 
     return NextResponse.json({ 
       friends,
