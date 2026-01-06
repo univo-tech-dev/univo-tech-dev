@@ -347,7 +347,6 @@ export default function OfficialView() {
               <Briefcase size={16} />
               Belge Arşivi
           </a>
-          <span>{formattedDate.toUpperCase()}</span>
         </div>
       </div>
 
