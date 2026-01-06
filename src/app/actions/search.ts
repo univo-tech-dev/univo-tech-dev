@@ -15,11 +15,12 @@ export interface SearchResults {
   events: any[];
   voices: any[];
   announcements: any[];
+  users: any[];
 }
 
 export async function searchContent(query: string): Promise<SearchResults> {
   if (!query || query.length < 2) {
-      return { events: [], voices: [], announcements: [] };
+      return { events: [], voices: [], announcements: [], users: [] };
   }
 
   const searchQuery = `%${query}%`;
@@ -40,27 +41,27 @@ export async function searchContent(query: string): Promise<SearchResults> {
       .ilike('content', searchQuery)
       .limit(5);
 
-  // 3. Announcements (From Official Agenda which are Events of category 'announcement' or separate table?
-  // Let's check schema. Looking at previous context, we might not have a separate 'announcements' table.
-  // Announcements are likely events with category 'academic' or similar, OR we check the 'announcements' table if it exists.
-  // I'll check if 'announcements' table exists. If not, I'll search events with category 'announcement' or just skip.
-  // Let's assume simpler: Search 'official_announcements' if it exists or fallback.
-  // Wait, the "Official View" uses data. Let's assume we search 'events' as the main source for now.
-  // But wait! The UI has a section for "Resmi Gündem".
-  
-  // Let's just return events and voices for now and maybe filtered events as announcements.
-  
-  const [eventsResult, voicesResult] = await Promise.all([
+  // 3. Users
+  const usersPromise = supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url, department, class_year')
+      .ilike('full_name', searchQuery)
+      .limit(5);
+
+  const [eventsResult, voicesResult, usersResult] = await Promise.all([
       eventsPromise,
-      voicesPromise
+      voicesPromise,
+      usersPromise
   ]);
 
   if (eventsResult.error) console.error('Search Events Error:', eventsResult.error);
   if (voicesResult.error) console.error('Search Voices Error:', voicesResult.error);
+  if (usersResult.error) console.error('Search Users Error:', usersResult.error);
 
   return {
       events: eventsResult.data || [],
       voices: voicesResult.data || [],
-      announcements: [] // Placeholder until we confirm structure
+      announcements: [],
+      users: usersResult.data || []
   };
 }

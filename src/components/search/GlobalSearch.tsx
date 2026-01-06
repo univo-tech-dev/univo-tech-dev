@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Search, X, Calendar, MessageSquare, Building2, Loader2, ChevronRight } from 'lucide-react';
+import { Search, X, Calendar, MessageSquare, Building2, Loader2, ChevronRight, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { searchContent, SearchResults } from '@/app/actions/search';
 
@@ -101,7 +101,7 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
                     <Search size={48} className="mx-auto mb-4 opacity-20" />
                     <p className="text-sm">Aramaya başlamak için yazın.</p>
                 </div>
-            ) : results && (results.events.length === 0 && results.voices.length === 0 && results.announcements.length === 0) ? (
+            ) : results && (results.events.length === 0 && results.voices.length === 0 && results.announcements.length === 0 && results.users.length === 0) ? (
                 <div className="py-12 text-center text-neutral-500">
                     <p>"{query}" için sonuç bulunamadı.</p>
                 </div>
@@ -154,6 +154,35 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
                                         </p>
                                     </div>
                                     <ChevronRight size={16} className="text-neutral-300 group-hover:text-blue-500" />
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Users Section */}
+                    {results.users.length > 0 && (
+                        <div className="space-y-2">
+                             <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-widest px-2">Kişiler</h3>
+                             {results.users.map((user: any) => (
+                                <button 
+                                    key={user.id}
+                                    onClick={() => handleSelect(`/profile/${user.id}`)}
+                                    className="w-full flex items-center gap-4 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-sm transition-all text-left group"
+                                >
+                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100 flex items-center justify-center border border-neutral-200 dark:border-neutral-700">
+                                        {user.avatar_url ? (
+                                            <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <User size={20} className="text-neutral-400" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-bold text-neutral-900 dark:text-white truncate">{user.full_name}</h4>
+                                        <p className="text-xs text-neutral-500 truncate">
+                                            {user.department || user.class_year || 'Öğrenci'}
+                                        </p>
+                                    </div>
+                                    <ChevronRight size={16} className="text-neutral-300 group-hover:text-purple-500" />
                                 </button>
                             ))}
                         </div>
