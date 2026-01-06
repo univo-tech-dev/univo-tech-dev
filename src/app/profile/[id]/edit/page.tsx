@@ -19,6 +19,7 @@ interface PrivacySettings {
   show_email: boolean;
   show_interests: boolean;
   show_activities: boolean;
+  show_friends: boolean;
 }
 
 interface Profile {
@@ -59,7 +60,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
     bio: '',
     interests: [],
     social_links: { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
-    privacy_settings: { show_email: false, show_interests: true, show_activities: true }
+    privacy_settings: { show_email: false, show_interests: true, show_activities: true, show_friends: true }
   });
 
   useEffect(() => {
@@ -90,7 +91,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
           bio: data.bio || '',
           interests: data.interests || [],
           social_links: data.social_links || { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
-          privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true }
+          privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true, show_friends: true }
         });
       }
     } catch (error) {
@@ -379,6 +380,22 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                             type="checkbox" 
                             checked={formData.privacy_settings?.show_activities} 
                             onChange={() => handlePrivacyToggle('show_activities')}
+                            className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
+                        />
+                    </label>
+
+                    <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                        <div className="flex items-center gap-3">
+                            {formData.privacy_settings?.show_friends ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
+                            <div>
+                                <span className="font-medium text-neutral-900 dark:text-white block">Arkadaşlarımı Göster</span>
+                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Arkadaş listeniz profilde görünür.</span>
+                            </div>
+                        </div>
+                        <input 
+                            type="checkbox" 
+                            checked={formData.privacy_settings?.show_friends} 
+                            onChange={() => handlePrivacyToggle('show_friends')}
                             className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
                         />
                     </label>
