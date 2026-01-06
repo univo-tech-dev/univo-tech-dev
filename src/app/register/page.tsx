@@ -64,7 +64,7 @@ export default function RegisterPage() {
           .from('profiles')
           .update({
             full_name: formData.fullName,
-            department: formData.classYear === 'Hazırlık' ? null : (formData.department || null),
+            department: formData.department || null,
             student_id: formData.studentId || null,
             class_year: formData.classYear || null,
           })
@@ -160,28 +160,26 @@ export default function RegisterPage() {
               </select>
             </div>
 
-            {formData.classYear !== 'Hazırlık' && (
-              <div>
-                <label htmlFor="department" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Bölüm *
-                </label>
-                <select
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  required
-                  className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white transition-colors"
-                >
-                  <option value="">Bölüm Seçin</option>
-                  {METU_DEPARTMENTS.map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            <div>
+              <label htmlFor="department" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                Bölüm *
+              </label>
+              <select
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                required
+                className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white transition-colors"
+              >
+                <option value="">Bölüm Seçin</option>
+                {METU_DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div>
               <label htmlFor="studentId" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
