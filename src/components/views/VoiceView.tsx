@@ -845,20 +845,8 @@ export default function VoiceView() {
                                                                         <Trash2 size={14} />
                                                                         Sil
                                                                     </button>
-                                                                </>
-                                                            ) : (
-                                                                /* Non-Owner Options */
-                                                                <button 
-                                                                    onClick={() => {
-                                                                        handleFollow(voice.user_id);
-                                                                        setActiveMenu(null);
-                                                                    }}
-                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
-                                                                >
-                                                                    <UserPlus size={14} />
-                                                                    Takip Et
-                                                                </button>
-                                                            )}
+                                                                    </>
+                                                            ) : null}
                                                         </div>
                                                     </>
                                                 )}
