@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -80,8 +80,10 @@ export default function VoiceView() {
   const [isCommenting, setIsCommenting] = useState(false);
   
   // Edit & Delete State
+  // Edit & Delete State
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   // Hashtag Autocomplete System
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -777,21 +779,48 @@ export default function VoiceView() {
                                                 <span>{voice.comments.length > 0 ? `${voice.comments.length} Yorum` : 'Yorum Yap'}</span>
                                             </button>
 
-                                            {/* Owner Actions */}
+                                            {/* Owner Actions (Dropdown) */}
                                             {user && voice.user_id === user.id && (
-                                                <div className="ml-auto flex items-center gap-3">
+                                                <div className="ml-auto relative">
                                                     <button 
-                                                        onClick={() => startEdit(voice)}
-                                                        className="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 text-xs font-bold uppercase transition-colors"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setActiveMenu(activeMenu === voice.id ? null : voice.id);
+                                                        }}
+                                                        className="p-2 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                                     >
-                                                        Düzenle
+                                                        <MoreVertical size={16} />
                                                     </button>
-                                                    <button 
-                                                        onClick={() => handleDelete(voice.id)}
-                                                        className="text-neutral-400 hover:text-red-600 dark:hover:text-red-400 text-xs font-bold uppercase transition-colors"
-                                                    >
-                                                        Sil
-                                                    </button>
+                                                    
+                                                    {activeMenu === voice.id && (
+                                                        <>
+                                                            {/* Backdrop to close */}
+                                                            <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
+                                                            
+                                                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-32 overflow-hidden py-1">
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        startEdit(voice);
+                                                                        setActiveMenu(null);
+                                                                    }}
+                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
+                                                                >
+                                                                    <Edit2 size={14} />
+                                                                    Düzenle
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        handleDelete(voice.id);
+                                                                        setActiveMenu(null);
+                                                                    }}
+                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                    Sil
+                                                                </button>
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </div>
                                             )}
 
