@@ -125,20 +125,6 @@ function HeaderContent() {
                 <SearchIcon size={20} />
             </button>
 
-            {/* Dashboard Link (Desktop) */}
-            {user && (
-                <Link
-                    href="/dashboard"
-                    className={`hidden md:flex items-center justify-center p-2.5 rounded-full transition-colors ${
-                        pathname?.startsWith('/dashboard') 
-                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                    }`}
-                    title="Kontrol Paneli"
-                >
-                    <LayoutDashboard size={20} />
-                </Link>
-            )}
 
             {/* Dark Mode */}
             <div className={`border-l border-neutral-200 dark:border-neutral-800 pl-2 ml-1 transition-opacity duration-200 ${
