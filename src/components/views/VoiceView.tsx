@@ -212,8 +212,18 @@ export default function VoiceView() {
     }
   };
 
-  const handleReaction = async (voiceId: string, type: 'like' | 'neutral' | 'dislike') => {
+  const handleReaction = async (voiceId: string, targetType: 'like' | 'dislike') => {
     if (!user) return toast.error('Giriş yapmalısınız.');
+
+    // Find the voice and current reaction
+    const voice = voices.find(v => v.id === voiceId);
+    if (!voice) return;
+
+    const currentReactionObj = voice.reactions.find(r => r.user_id === user.id);
+    const currentType = currentReactionObj?.reaction_type || 'neutral';
+
+    // Toggle logic: If clicking same type, remove it (neutral)
+    const newType = currentType === targetType ? 'neutral' : targetType;
 
     // Optimistic update
     const oldVoices = [...voices];
@@ -221,14 +231,13 @@ export default function VoiceView() {
       if (v.id === voiceId) {
         // Remove existing reaction by me if any
         const otherReactions = v.reactions.filter(r => r.user_id !== user.id);
-        // Add new reaction
+        
+        // Return new state
         return {
           ...v,
-          reactions: [...otherReactions, { user_id: user.id, reaction_type: type }],
-          counts: {
-              ...v.counts,
-              likes: type === 'like' ? v.counts.likes + 1 : v.counts.likes, // Simplistic count update logic
-          }
+          reactions: newType === 'neutral' 
+            ? otherReactions 
+            : [...otherReactions, { user_id: user.id, reaction_type: newType, id: 'temp', created_at: new Date().toISOString() }]
         };
       }
       return v;
@@ -244,14 +253,46 @@ export default function VoiceView() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ type })
+        body: JSON.stringify({ type: newType })
       });
-      fetchVoices(); // Correct state from server
+      // We can optionally not fetchVoices() here if we trust our math, 
+      // but keeping it ensures consistency.
+      fetchVoices(); 
     } catch (e) {
       setVoices(oldVoices); // Revert
       console.error(e);
+      toast.error('İşlem başarısız');
     }
   };
+
+// ... (skip lines until render) ...
+
+                                            <div className="flex items-center gap-6">
+                                                {/* Votes - Group removed to fix hover leak */}
+                                                <div className="flex items-center gap-1">
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
+                                                        className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
+                                                        title="Yükselt"
+                                                    >
+                                                        <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
+                                                    </button>
+                                                    
+                                                    <span className={`text-sm font-bold w-6 text-center ${
+                                                        netVote > 0 ? 'text-green-600' : 
+                                                        netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'
+                                                    }`}>
+                                                        {netVote}
+                                                    </span>
+                                                    
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
+                                                        className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
+                                                        title="Düşür"
+                                                    >
+                                                        <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
+                                                    </button>
+                                                </div>
 
   const handleCommentSubmit = async (e: React.FormEvent, voiceId: string) => {
       e.preventDefault();
@@ -887,10 +928,11 @@ export default function VoiceView() {
                                         <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
                                             <div className="flex items-center gap-6">
                                                 {/* Votes */}
-                                                <div className="flex items-center gap-1 group">
+                                                {/* Votes - Group removed to fix hover leak */}
+                                                <div className="flex items-center gap-1">
                                                     <button 
                                                         onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
-                                                        className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 group-hover:bg-green-50 dark:group-hover:bg-green-900/20 group-hover:text-green-500'}`}
+                                                        className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
                                                         title="Yükselt"
                                                     >
                                                         <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
@@ -905,7 +947,7 @@ export default function VoiceView() {
                                                     
                                                     <button 
                                                         onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
-                                                        className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 group-hover:text-red-500'}`}
+                                                        className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
                                                         title="Düşür"
                                                     >
                                                         <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
