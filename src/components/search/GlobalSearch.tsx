@@ -83,7 +83,7 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
                     <X size={18} />
                 </button>
             )}
-            <button onClick={onClose} className="px-2 py-1 text-xs font-medium text-neutral-500 border border-neutral-200 dark:border-neutral-700 rounded hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+            <button onClick={onClose} className="hidden md:block px-2 py-1 text-xs font-medium text-neutral-500 border border-neutral-200 dark:border-neutral-700 rounded hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
                 ESC
             </button>
         </div>
@@ -164,11 +164,11 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
 
         {/* Footer */}
         <div className="bg-neutral-50 dark:bg-neutral-900 px-4 py-2 border-t border-neutral-100 dark:border-neutral-800 flex justify-between items-center text-xs text-neutral-500 transition-colors">
-            <div className="flex gap-4">
+            <div className="hidden md:flex gap-4">
                 <span className="flex items-center gap-1"><kbd className="font-mono bg-white dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-200 dark:border-neutral-700">↑↓</kbd> Gezin</span>
                 <span className="flex items-center gap-1"><kbd className="font-mono bg-white dark:bg-neutral-800 px-1.5 py-0.5 rounded border border-neutral-200 dark:border-neutral-700">↵</kbd> Seç</span>
             </div>
-            <span>Univo Global Search</span>
+            <span className="md:ml-0 ml-auto">Univo Global Search</span>
         </div>
       </div>
     </div>
