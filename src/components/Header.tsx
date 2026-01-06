@@ -116,15 +116,20 @@ function HeaderContent() {
           {/* Right: Tools (Search, Auth, DarkMode, Menu) */}
           <div className="flex items-center gap-2 md:gap-3 shrink-0">
              
-            {/* Search */}
-            <button 
-                onClick={() => setIsSearchOpen(true)}
-                className="hidden md:block p-2.5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none"
-                aria-label="Search"
-            >
-                <SearchIcon size={20} />
-            </button>
-
+            {/* Dashboard Link (Desktop) */}
+            {user && (
+                <Link
+                    href="/dashboard"
+                    className={`hidden md:flex items-center justify-center p-2.5 rounded-full transition-colors ${
+                        pathname?.startsWith('/dashboard') 
+                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                    }`}
+                    title="Kontrol Paneli"
+                >
+                    <LayoutDashboard size={20} />
+                </Link>
+            )}
 
             {/* Dark Mode */}
             <div className={`border-l border-neutral-200 dark:border-neutral-800 pl-2 ml-1 transition-opacity duration-200 ${
@@ -133,8 +138,17 @@ function HeaderContent() {
                 <DarkModeToggle />
             </div>
 
+            {/* Search (Desktop) - Next to Notifications */}
+            <button 
+                onClick={() => setIsSearchOpen(true)}
+                className="hidden md:block p-2 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
+                aria-label="Search"
+            >
+                <SearchIcon size={20} />
+            </button>
+
             {/* Notification Center (Desktop) */}
-            <div className="hidden md:block pl-2">
+            <div className="hidden md:block">
                 <NotificationCenter />
             </div>
 
