@@ -140,7 +140,9 @@ function HeaderContent() {
             )}
 
             {/* Dark Mode */}
-            <div className="hidden md:block border-l border-neutral-200 dark:border-neutral-800 pl-2 ml-1">
+            <div className={`border-l border-neutral-200 dark:border-neutral-800 pl-2 ml-1 transition-opacity duration-200 ${
+              isMenuOpen ? 'md:block' : 'hidden md:block'
+            }`}>
                 <DarkModeToggle />
             </div>
 
@@ -194,8 +196,9 @@ function HeaderContent() {
                     <span>Arama Yap</span>
                   </button>
 
+                  <div className="border-t-2 border-black dark:border-white my-4"></div>
+                  
                   <div className="space-y-2">
-                      <h3 className="text-xs font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-2 font-serif">Menü</h3>
                       {navItems.map((item, index) => {
                         const isActive = currentView === item.id;
                         return (
@@ -230,16 +233,6 @@ function HeaderContent() {
                                 <span>Kontrol Paneli</span>
                             </Link>
                         )}
-                  </div>
-
-                  <div className="pt-4 space-y-4">
-                    <div 
-                      className="flex items-center gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-900 animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
-                      style={{ animationDelay: '350ms' }}
-                    >
-                      <span className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Tema</span>
-                      <DarkModeToggle />
-                    </div>
                   </div>
 
                   <div 
