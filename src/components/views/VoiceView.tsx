@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -742,100 +742,144 @@ export default function VoiceView() {
                                                 </p>
                                             </div>
                                         )}
-                                        </div>
                                         
                                         {/* Actions */}
-                                        <div className="flex items-center justify-between md:justify-start md:gap-6 gap-2 pt-2 border-t border-neutral-50 dark:border-neutral-900 border-dashed">
-                                            <div className="flex items-center gap-1 bg-neutral-50 dark:bg-neutral-800/50 rounded-full px-2 py-1">
+                                        {/* Actions Bar */}
+                                        <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
+                                            <div className="flex items-center gap-6">
+                                                {/* Votes */}
+                                                <div className="flex items-center gap-1 group">
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
+                                                        className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 group-hover:bg-green-50 dark:group-hover:bg-green-900/20 group-hover:text-green-500'}`}
+                                                        title="Yükselt"
+                                                    >
+                                                        <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
+                                                    </button>
+                                                    
+                                                    <span className={`text-sm font-bold w-6 text-center ${
+                                                        netVote > 0 ? 'text-green-600' : 
+                                                        netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'
+                                                    }`}>
+                                                        {netVote}
+                                                    </span>
+                                                    
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
+                                                        className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 group-hover:bg-red-50 dark:group-hover:bg-red-900/20 group-hover:text-red-500'}`}
+                                                        title="Düşür"
+                                                    >
+                                                        <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
+                                                    </button>
+                                                </div>
+
+                                                {/* Comment */}
                                                 <button 
-                                                    onClick={() => handleReaction(voice.id, 'like')}
-                                                    className={`p-1.5 rounded-full hover:bg-white dark:hover:bg-neutral-800 transition-all ${myReaction === 'like' ? 'text-green-600 scale-110' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-500'}`}
-                                                    title="Yükselt"
+                                                    onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
+                                                    className={`flex items-center gap-2 group transition-colors ${activeCommentBox === voice.id ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500 hover:text-blue-500'}`}
                                                 >
-                                                    <ArrowBigUp size={24} className={myReaction === 'like' ? 'fill-current' : ''} />
+                                                    <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20">
+                                                        <MessageSquare size={18} />
+                                                    </div>
+                                                    <span className="text-sm font-medium">{voice.comments.length > 0 ? voice.comments.length : ''}</span>
                                                 </button>
-                                                
-                                                <span className={`text-sm font-bold w-6 text-center ${
-                                                    netVote > 0 ? 'text-green-600' : 
-                                                    netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'
-                                                }`}>
-                                                    {netVote}
-                                                </span>
-                                                
+
+                                                {/* Share */}
                                                 <button 
-                                                    onClick={() => handleReaction(voice.id, 'dislike')}
-                                                    className={`p-1.5 rounded-full hover:bg-white dark:hover:bg-neutral-800 transition-all ${myReaction === 'dislike' ? 'text-red-600 scale-110' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-500'}`}
-                                                    title="Düşür"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
+                                                        toast.success('Link kopyalandı!');
+                                                    }}
+                                                    className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors"
                                                 >
-                                                    <ArrowBigDown size={24} className={myReaction === 'dislike' ? 'fill-current' : ''} />
+                                                    <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20">
+                                                        <Share2 size={18} />
+                                                    </div>
                                                 </button>
                                             </div>
 
-                                            <button 
-                                                onClick={() => setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id)}
-                                                className={`flex items-center gap-2 text-sm font-bold transition-colors ${activeCommentBox === voice.id ? 'text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'}`}
-                                            >
-                                                <MessageSquare size={16} />
-                                                <span>{voice.comments.length > 0 ? `${voice.comments.length} Yorum` : 'Yorum Yap'}</span>
-                                            </button>
-
-                                            {/* Owner Actions (Dropdown) */}
-                                            {user && voice.user_id === user.id && (
-                                                <div className="ml-auto relative">
-                                                    <button 
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setActiveMenu(activeMenu === voice.id ? null : voice.id);
-                                                        }}
-                                                        className="p-2 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                                    >
-                                                        <MoreVertical size={16} />
-                                                    </button>
-                                                    
-                                                    {activeMenu === voice.id && (
-                                                        <>
-                                                            {/* Backdrop to close */}
-                                                            <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
+                                            {/* More Options (3-Dot) */}
+                                            <div className="relative">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setActiveMenu(activeMenu === voice.id ? null : voice.id);
+                                                    }}
+                                                    className="p-2 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                                >
+                                                    <MoreVertical size={18} />
+                                                </button>
+                                                
+                                                {activeMenu === voice.id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
+                                                        <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
                                                             
-                                                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-32 overflow-hidden py-1">
+                                                            {/* Owner Options */}
+                                                            {user && voice.user_id === user.id ? (
+                                                                <>
+                                                                    <button 
+                                                                        onClick={() => {
+                                                                            startEdit(voice);
+                                                                            setActiveMenu(null);
+                                                                        }}
+                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
+                                                                    >
+                                                                        <Edit2 size={14} />
+                                                                        Düzenle
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => {
+                                                                            handleDelete(voice.id);
+                                                                            setActiveMenu(null);
+                                                                        }}
+                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                        Sil
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                /* Non-Owner Options */
                                                                 <button 
                                                                     onClick={() => {
-                                                                        startEdit(voice);
+                                                                        toast.info('Takip özelliği yakında!');
                                                                         setActiveMenu(null);
                                                                     }}
                                                                     className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
                                                                 >
-                                                                    <Edit2 size={14} />
-                                                                    Düzenle
+                                                                    <UserPlus size={14} />
+                                                                    Takip Et
                                                                 </button>
-                                                                <button 
-                                                                    onClick={() => {
-                                                                        handleDelete(voice.id);
-                                                                        setActiveMenu(null);
-                                                                    }}
-                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
-                                                                >
-                                                                    <Trash2 size={14} />
-                                                                    Sil
-                                                                </button>
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                        {/* Comments */}
-                                        {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
-                                            <div className="mt-4 bg-neutral-50 dark:bg-neutral-900 border-l-2 border-neutral-300 dark:border-neutral-700 p-4 space-y-3 animation-fade-in relative z-50">
-                                                {voice.comments.map(comment => (
-                                                    <div key={comment.id} className="text-sm border-b border-neutral-200 dark:border-neutral-800 pb-2 last:border-0 last:pb-0">
-                                                        <div className="flex justify-between items-baseline mb-1">
-                                                            <span className="font-bold text-neutral-900 dark:text-neutral-200">{comment.user}</span>
-                                                            <span className="text-xs text-neutral-400 dark:text-neutral-500">{new Date(comment.created_at).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})}</span>
+                                                            )}
                                                         </div>
-                                                        <p className="text-neutral-700 dark:text-neutral-300 font-serif">{comment.content}</p>
-                                                    </div>
-                                                ))}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Comments Area - Full Width */}
+                                        {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
+                                            <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
+                                                {/* Comment List */}
+                                                <div className="space-y-4 mb-4">
+                                                    {voice.comments.map(comment => (
+                                                        <div key={comment.id} className="flex gap-3">
+                                                            {/* Avatar Placeholder for Commenter */}
+                                                            <div className="w-8 h-8 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center text-xs font-bold text-neutral-500 dark:text-neutral-400">
+                                                                {comment.user.charAt(0)}
+                                                            </div>
+                                                            <div className="flex-1 bg-neutral-50 dark:bg-neutral-900 rounded-2xl rounded-tl-none p-3">
+                                                                <div className="flex justify-between items-baseline mb-1">
+                                                                    <span className="font-bold text-sm text-neutral-900 dark:text-neutral-200">{comment.user}</span>
+                                                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{formatRelativeTime(comment.created_at)}</span>
+                                                                </div>
+                                                                <p className="text-sm text-neutral-700 dark:text-neutral-300">{comment.content}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                                 
                                                 {activeCommentBox === voice.id && (
                                                     <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
