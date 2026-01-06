@@ -328,6 +328,17 @@ export default function OfficialView() {
   return (
     <div className="container mx-auto px-4 py-8 relative">
       {/* Newspaper Header */}
+      <div className="border-b-2 border-black dark:border-neutral-700 pb-2 mb-2 flex justify-between items-end transition-colors">
+         <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
+            ANKARA, {formattedDate.toUpperCase()}
+         </div>
+         <div className="flex items-center gap-4">
+            <div className="text-right">
+                <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">HAVA DURUMU</div>
+                <div className="font-bold text-sm dark:text-white">6°C, Parçalı Bulutlu</div>
+            </div>
+         </div>
+      </div>
       <div className="border-b-4 border-black dark:border-neutral-700 pb-4 mb-8 text-center transition-colors">
         <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white">Resmi Gündem</h2>
         <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-neutral-700 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
@@ -336,7 +347,6 @@ export default function OfficialView() {
               <Briefcase size={16} />
               Belge Arşivi
           </a>
-          <span>{formattedDate.toUpperCase()}</span>
         </div>
       </div>
 

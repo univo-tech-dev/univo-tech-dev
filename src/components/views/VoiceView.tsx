@@ -947,56 +947,56 @@ export default function VoiceView() {
         <div className="space-y-8">
             <div className="sticky top-24 space-y-8 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
                {/* Trending Topics - Moved from Community Search */}
-               <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
-                    <h3 className="text-base font-bold border-b-2 border-black dark:border-white pb-1.5 mb-3 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
-                        <TrendingUp size={18} className="text-[#C8102E]" />
+               <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
+                        <TrendingUp size={24} className="text-[#C8102E]" />
                         Kampüste Gündem
                     </h3>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         {allTags.length > 0 ? (
                             allTags.slice(0, 5).map((topic, index) => (
-                                <div key={topic.tag} onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} className={`flex items-center justify-between group cursor-pointer p-1.5 -mx-1.5 rounded-lg transition-colors border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-base font-serif font-black text-neutral-300 dark:text-neutral-700 w-5">{index + 1}</span>
+                                <div key={topic.tag} onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xl font-serif font-black text-neutral-300 dark:text-neutral-700 w-6">{index + 1}</span>
                                         <div className="flex flex-col">
-                                            <span className={`font-bold text-sm transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-[#C8102E]' : 'text-neutral-900 dark:text-white group-hover:text-[#C8102E]'}`}>
+                                            <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-[#C8102E]' : 'text-neutral-900 dark:text-white group-hover:text-[#C8102E]'}`}>
                                                 {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
                                             </span>
-                                            <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
                                         </div>
                                     </div>
-                                    <ArrowRight size={14} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-[#C8102E]' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
+                                    <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-[#C8102E]' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center py-4 text-neutral-400 text-xs italic">
+                            <div className="text-center py-6 text-neutral-400 text-sm italic">
                                 Henüz gündem oluşmadı.
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
-                    <h3 className="text-base font-bold border-b-2 border-black dark:border-white pb-1.5 mb-3 font-serif uppercase tracking-tight text-center dark:text-white">
+                <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                         Haftanın Anketi
                     </h3>
                     
-                     <div className="mb-3 bg-black dark:bg-black p-1.5 border border-black dark:border-white rounded-sm text-center">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-white flex items-center justify-center gap-1">
-                             <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse"></span>
+                     <div className="mb-4 bg-black dark:bg-black p-2 border border-black dark:border-white rounded-sm text-center">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white flex items-center justify-center gap-1">
+                             <span className="w-2 h-2 rounded-full bg-[#C8102E] animate-pulse"></span>
                              Yapay Zeka Seçimi
                         </span>
                      </div>
 
                     {pollLoading ? (
-                        <div className="text-center py-6 text-neutral-400 animate-pulse text-sm">Yapay zeka anket hazırlıyor...</div>
+                        <div className="text-center py-8 text-neutral-400 animate-pulse">Yapay zeka anket hazırlıyor...</div>
                     ) : (
                         <>
-                            <h4 className="font-bold text-sm mb-4 font-serif text-center leading-tight dark:text-white">
+                            <h4 className="font-bold text-lg mb-6 font-serif text-center leading-tight dark:text-white">
                                 "{activePoll?.question}"
                             </h4>
                             
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 {activePoll?.options.map((option, idx) => {
                                     const percentage = totalVotes === 0 ? 0 : Math.round((pollResults[idx] / totalVotes) * 100);
                                     const isSelected = userVote === idx;
@@ -1020,39 +1020,39 @@ export default function VoiceView() {
                                                 />
                                             )}
                                             
-                                            <div className="relative p-2 flex justify-between items-center z-10 font-bold text-sm">
+                                            <div className="relative p-3 flex justify-between items-center z-10 font-bold">
                                                 <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
                                                     {option}
                                                 </span>
-                                                {showResults && <span className="text-xs font-black dark:text-white">{percentage}%</span>}
+                                                {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
                                             </div>
                                         </button>
                                     );
                                 })}
                             </div>
-                            {userVote !== null && <div className="text-center mt-2 text-[10px] text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>}
+                            {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>}
                         </>
                     )}
                 </div>
 
-                <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
-                    <h3 className="text-base font-bold border-b-2 border-black dark:border-white pb-1.5 mb-3 font-serif uppercase tracking-tight text-center dark:text-white">
+                <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                         Kampüs Nabzı
                     </h3>
-                    <div className="grid grid-cols-2 gap-3 text-center">
-                        <div className="p-2.5 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
-                             <span className="block text-2xl font-black font-serif text-[#C8102E] animate-pulse">
+                    <div className="grid grid-cols-2 gap-4 text-center">
+                        <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
+                             <span className="block text-3xl font-black font-serif text-[#C8102E] animate-pulse">
                                 {activeUsers}
                              </span>
-                             <span className="text-[10px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                             <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
                                 Aktif Öğrenci
                              </span>
                         </div>
-                        <div className="p-2.5 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
-                             <span className="block text-2xl font-black font-serif text-black dark:text-white">
+                        <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
+                             <span className="block text-3xl font-black font-serif text-black dark:text-white">
                                 {issueNumber}
                              </span>
-                             <span className="text-[10px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                             <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
                                 Gündem Sayısı
                              </span>
                         </div>
