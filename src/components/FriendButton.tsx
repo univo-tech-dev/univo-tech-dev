@@ -8,11 +8,13 @@ import { supabase } from '@/lib/supabase';
 interface FriendButtonProps {
   targetUserId: string;
   onFriendshipChange?: (status: 'none' | 'pending' | 'accepted') => void;
+  variant?: 'default' | 'menu-item';
 }
 
 export default function FriendButton({ 
   targetUserId, 
-  onFriendshipChange 
+  onFriendshipChange,
+  variant = 'default'
 }: FriendButtonProps) {
   const { user } = useAuth();
   const [status, setStatus] = useState<'none' | 'pending' | 'accepted'>('none');
@@ -50,7 +52,8 @@ export default function FriendButton({
     }
   };
 
-  const sendRequest = async () => {
+  const sendRequest = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (!user) return;
     setIsLoading(true);
     
@@ -77,7 +80,8 @@ export default function FriendButton({
     }
   };
 
-  const cancelRequest = async () => {
+  const cancelRequest = async (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (!user) return;
     setIsLoading(true);
 
@@ -104,7 +108,8 @@ export default function FriendButton({
     }
   };
 
-  const respondToRequest = async (action: 'accept' | 'reject') => {
+  const respondToRequest = async (action: 'accept' | 'reject', e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (!user || !friendshipId) return;
     setIsLoading(true);
 
@@ -138,25 +143,41 @@ export default function FriendButton({
     }
   };
 
+  // Styles based on variant
+  const getButtonStyles = (type: 'action' | 'pending' | 'friend') => {
+    if (variant === 'menu-item') {
+      return "w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors";
+    }
+    
+    // Default styles
+    switch (type) {
+      case 'action': // Add/Accept
+        return "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-[#C8102E] text-white hover:bg-[#A00D25] transition-colors shadow-sm";
+      case 'pending':
+        return "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-red-50 hover:text-red-600 transition-colors";
+      case 'friend': 
+        return "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-all group";
+    }
+  };
+
   // Don't show button if not logged in or viewing own profile
   if (!user || user.id === targetUserId) {
     return null;
   }
 
   if (isLoading) {
-    return (
-      <div className="w-32 h-10 bg-neutral-100 dark:bg-neutral-800 rounded-lg animate-pulse"></div>
-    );
+    if (variant === 'menu-item') return <div className="px-4 py-2 text-sm text-neutral-400">Yükleniyor...</div>;
+    return <div className="w-32 h-10 bg-neutral-100 dark:bg-neutral-800 rounded-lg animate-pulse"></div>;
   }
 
   if (status === 'accepted') {
     return (
       <button
-        onClick={cancelRequest} // Using cancelRequest for unfriend as api handles both
-        className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800 hover:bg-red-100 hover:text-red-700 hover:border-red-200 transition-all group"
+        onClick={cancelRequest}
+        className={getButtonStyles('friend')}
       >
-        <UserCheck size={18} className="group-hover:hidden" />
-        <UserX size={18} className="hidden group-hover:block" />
+        <UserCheck size={variant === 'menu-item' ? 14 : 18} className="group-hover:hidden" />
+        <UserX size={variant === 'menu-item' ? 14 : 18} className="hidden group-hover:block" />
         <span className="group-hover:hidden">Arkadaşsınız</span>
         <span className="hidden group-hover:inline">Arkadaşlıktan Çıkar</span>
       </button>
@@ -168,25 +189,37 @@ export default function FriendButton({
       return (
         <button
           onClick={cancelRequest} 
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+          className={getButtonStyles('pending')}
         >
-          <Clock size={18} />
+          <Clock size={variant === 'menu-item' ? 14 : 18} />
           İstek Gönderildi
         </button>
       );
     } else {
-      // Received request
+      // Received request - For menu item, maybe just show "Accept" or simplified view
+      if (variant === 'menu-item') {
+         return (
+             <button
+                onClick={(e) => respondToRequest('accept', e)}
+                className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-[#C8102E] flex items-center gap-2 transition-colors"
+             >
+                <UserPlus size={14} />
+                İsteği Kabul Et
+             </button>
+         );
+      }
+
       return (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => respondToRequest('accept')}
+            onClick={(e) => respondToRequest('accept', e)}
             className="flex items-center gap-1 px-3 py-2 rounded-lg font-bold text-sm bg-[#C8102E] text-white hover:bg-[#A00D25] transition-colors"
           >
             <Check size={16} />
             Kabul Et
           </button>
           <button
-            onClick={() => respondToRequest('reject')}
+            onClick={(e) => respondToRequest('reject', e)}
             className="flex items-center gap-1 px-3 py-2 rounded-lg font-bold text-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors"
           >
             <X size={16} />
@@ -201,9 +234,11 @@ export default function FriendButton({
   return (
     <button
       onClick={sendRequest}
-      className="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-[#C8102E] text-white hover:bg-[#A00D25] transition-colors shadow-sm"
+      className={variant === 'menu-item' ? 
+        "w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2 transition-colors" : 
+        getButtonStyles('action')}
     >
-      <UserPlus size={18} />
+      <UserPlus size={variant === 'menu-item' ? 14 : 18} />
       Arkadaş Ekle
     </button>
   );

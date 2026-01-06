@@ -7,6 +7,7 @@ import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBi
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import FriendButton from '../FriendButton';
 
 // Interfaces
 interface Voice {
@@ -617,7 +618,7 @@ export default function VoiceView() {
                     </h3>
                     <span className="text-[10px] font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-sm flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse"></span>
-                        AI
+                        Yapay Zeka
                     </span>
                  </div>
 
@@ -845,8 +846,13 @@ export default function VoiceView() {
                                                                         <Trash2 size={14} />
                                                                         Sil
                                                                     </button>
-                                                                    </>
-                                                            ) : null}
+                                                                </>
+                                                            ) : (
+                                                                <FriendButton 
+                                                                    targetUserId={voice.user_id} 
+                                                                    variant="menu-item"
+                                                                />
+                                                            )}
                                                         </div>
                                                     </>
                                                 )}
