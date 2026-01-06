@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Save, User, BookOpen, Heart, Quote, Globe, Lock, Eye, EyeOff, Linkedin, Github, Twitter, Instagram } from 'lucide-react';
 import { toast } from 'sonner';
+import { METU_DEPARTMENTS } from '@/lib/constants';
 
 interface SocialLinks {
   linkedin?: string;
@@ -219,14 +220,17 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                 
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Bölüm</label>
-                  <input
-                    type="text"
+                  <select
                     name="department"
                     value={formData.department}
                     onChange={handleChange}
-                    placeholder="Örn: Bilgisayar Mühendisliği"
                     className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded-md focus:ring-2 focus:ring-[#C8102E] focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white"
-                  />
+                  >
+                    <option value="">Seçiniz</option>
+                    {METU_DEPARTMENTS.map(dept => (
+                      <option key={dept} value={dept}>{dept}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
