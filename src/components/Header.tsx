@@ -80,7 +80,7 @@ function HeaderContent() {
                     className="object-cover transition-all duration-300 dark:invert mix-blend-multiply dark:mix-blend-screen"
                 />
             </div>
-            <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
+            <h1 className="hidden md:block text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
               Univo
             </h1>
           </Link>
@@ -187,10 +187,10 @@ function HeaderContent() {
                         setIsMenuOpen(false);
                         setIsSearchOpen(true);
                     }}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all group animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
+                    className="flex items-center gap-4 p-4 rounded-xl text-neutral-600 dark:text-neutral-400 font-serif font-bold text-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all group animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards w-full text-left"
                     style={{ animationDelay: '0ms' }}
                   >
-                    <SearchIcon size={20} className="group-hover:scale-110 transition-transform" />
+                    <SearchIcon size={24} className="group-hover:scale-110 transition-transform" />
                     <span>Arama Yap</span>
                   </button>
 
