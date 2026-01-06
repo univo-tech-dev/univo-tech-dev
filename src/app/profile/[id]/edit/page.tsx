@@ -168,7 +168,11 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
     }
   };
 
-  if (loading) return <div className="p-8 text-center">Yükleniyor...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-[#0a0a0a]">
+        <div className="text-center text-neutral-600 dark:text-neutral-400">Yükleniyor...</div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] py-12 px-4 transition-colors">
