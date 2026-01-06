@@ -50,11 +50,12 @@ export async function POST(
       });
 
     if (error) {
-      console.error('Follow error:', error);
+      console.error('Follow error details:', error);
       if (error.code === '23505') { // Unique violation
          return NextResponse.json({ message: 'Already following' }, { status: 200 });
       }
-      return NextResponse.json({ error: 'Could not follow user' }, { status: 500 });
+      // Return actual error message for debugging
+      return NextResponse.json({ error: error.message || 'Could not follow user' }, { status: 500 });
     }
 
     return NextResponse.json({ message: 'Followed successfully' });
