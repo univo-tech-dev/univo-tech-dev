@@ -511,7 +511,7 @@ export default function OfficialView() {
                         <p className="text-neutral-400 dark:text-neutral-500 font-bold uppercase">Bu listede içerik bulunmuyor.</p>
                     </div>
                 ) : (
-                    displayedItems.map((item, index) => {
+                    displayedItems.map((item: any, index: number) => {
                         // Reuse existing item logic
                         const isExpanded = expandedId === item.id;
                         const isRead = readIds.includes(String(item.id));
