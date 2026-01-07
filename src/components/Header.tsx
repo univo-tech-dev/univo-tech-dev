@@ -76,7 +76,7 @@ function HeaderContent() {
   };
 
   return (
-    <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-black dark:border-white transition-colors duration-300">
+    <header className="sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 transition-colors duration-300">
       <div className="w-full px-4 md:container md:mx-auto">
         <div className="flex items-center justify-between h-16 max-w-full relative">
 

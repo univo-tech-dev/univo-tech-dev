@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-[#0a0a0a] mt-20 pb-12 transition-colors">
+    <footer className="bg-white dark:bg-neutral-900 mt-20 pb-12 transition-colors">
       {/* Double Line Separator */}
       <div className="w-full border-t-4 border-black dark:border-white mb-1"></div>
       <div className="w-full border-t-2 border-black dark:border-white mb-12"></div>
