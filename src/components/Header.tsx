@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, MessageCircle, Users, Building2, LayoutDashboard, User, Settings, LogOut } from 'lucide-react';
+import { Menu, X, MessageCircle, Users, Building2, LayoutDashboard, User, Settings, LogOut, Globe, Radio } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import AuthButton from './AuthButton';
 import GlobalSearch from './search/GlobalSearch';
@@ -63,6 +63,12 @@ function HeaderContent() {
 
   const navItems = [
     {
+      id: 'global-chat',
+      label: 'Global Konuşma',
+      href: '#',
+      icon: Globe
+    },
+    {
       id: 'voice',
       label: 'Kampüsün Sesi',
       href: '/?view=voice',
@@ -79,6 +85,12 @@ function HeaderContent() {
       label: 'Resmi Gündem',
       href: '/?view=official',
       icon: Building2
+    },
+    {
+      id: 'global-news',
+      label: 'Global Haber',
+      href: '#',
+      icon: Radio
     }
   ];
 
@@ -207,7 +219,7 @@ function HeaderContent() {
       {/* Mobile Bottom Navigation - Universal Design */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-neutral-200 dark:border-neutral-800 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex items-center h-16 w-full max-w-md mx-auto px-2">
-          <ul className="grid grid-cols-4 w-full h-full">
+          <ul className="grid grid-flow-col auto-cols-fr w-full h-full">
             {navItems.map((item) => {
               const isActive = currentView === item.id;
               return (
