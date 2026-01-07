@@ -438,7 +438,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             </div>
 
             {isOwnProfile && (
-                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border-2 border-primary dark:border-primary p-6 transition-colors">
+                <div 
+                    className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm p-6 transition-colors"
+                    style={{ border: '2px solid var(--primary-color, #C8102E)' }}
+                >
                     <h3 className="text-lg font-bold font-serif mb-2 text-neutral-800 dark:text-neutral-200">
                         Topluluk Sahibi misiniz?
                     </h3>
@@ -450,7 +453,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             // For now, just mailto. Can be replaced with a modal/form later
                             window.location.href = 'mailto:admin@univo.app?subject=Topluluk Yönetim Paneli Başvurusu&body=Merhaba,%0D%0A%0D%0ATopluluk adı:%0D%0ATopluluk açıklaması:%0D%0AÜniversite:%0D%0AIletişim bilgileri:%0D%0A';
                         }}
-                        className="w-full py-2.5 bg-primary hover:bg-primary-hover text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                        className="w-full py-2.5 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm hover:opacity-90"
+                        style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                     >
                         <Building2 size={16} />
                         Başvuru Yap
