@@ -1,11 +1,3 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
-import { Eye, EyeOff, GraduationCap, ArrowRight } from 'lucide-react';
-import MetuLoginModal from '@/components/auth/MetuLoginModal';
 
 'use client';
 
