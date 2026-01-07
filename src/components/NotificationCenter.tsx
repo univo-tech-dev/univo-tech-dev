@@ -199,7 +199,7 @@ export default function NotificationCenter() {
       >
         <Bell size={20} className="text-neutral-700 dark:text-neutral-300" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-[#C8102E] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -213,7 +213,8 @@ export default function NotificationCenter() {
               <button
                 onClick={markAllAsRead}
                 disabled={isLoading}
-                className="text-xs font-bold text-[#C8102E] hover:underline disabled:opacity-50"
+                className="text-xs font-bold hover:underline disabled:opacity-50"
+                style={{ color: 'var(--primary-color, #C8102E)' }}
               >
                 Tümünü Okundu İşaretle
               </button>
@@ -251,7 +252,8 @@ export default function NotificationCenter() {
                         <div className="flex gap-2 mt-2 mb-1">
                           <button
                             onClick={() => handleFriendRequest(notification.actor!.id, 'accept', notification.id)}
-                            className="bg-[#C8102E] text-white text-xs font-bold px-3 py-1.5 rounded-md hover:bg-[#A00D25] transition-colors"
+                            className="text-white text-xs font-bold px-3 py-1.5 rounded-md hover:opacity-90 transition-colors"
+                            style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                           >
                             Kabul Et
                           </button>

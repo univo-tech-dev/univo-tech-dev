@@ -247,7 +247,7 @@ export default function RegisterPage() {
           <div className="mt-6 text-center">
             <p className="text-neutral-600 dark:text-neutral-400">
               Zaten hesabınız var mı?{' '}
-              <Link href="/login" style={{ color: '#C8102E' }} className="font-semibold hover:underline">
+              <Link href="/login" style={{ color: 'var(--primary-color, #C8102E)' }} className="font-semibold hover:underline">
                 Giriş Yapın
               </Link>
             </p>

@@ -112,7 +112,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              style={{ backgroundColor: loading ? '#A00D25' : '#C8102E' }}
+              style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
               className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
@@ -123,7 +123,7 @@ export default function LoginPage() {
           <div className="mt-6 text-center">
             <p className="text-neutral-600">
               Hesabınız yok mu?{' '}
-              <Link href="/register" style={{ color: '#C8102E' }} className="font-semibold hover:underline">
+              <Link href="/register" style={{ color: 'var(--primary-color, #C8102E)' }} className="font-semibold hover:underline">
                 Kayıt Olun
               </Link>
             </p>
