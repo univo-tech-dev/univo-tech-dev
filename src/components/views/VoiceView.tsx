@@ -958,7 +958,7 @@ export default function VoiceView() {
                 <div className="space-y-8">
                     <div className="sticky top-24 flex flex-row overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-4 -mx-4 lg:block lg:space-y-8 lg:overflow-visible lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pr-2 lg:px-0 lg:mx-0 lg:pb-0" style={{ scrollbarWidth: 'thin' }}>
                         {/* Weekly Poll */}
-                        <div className="min-w-[90vw] md:min-w-[45vw] lg:min-w-0 snap-center border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                        <div className="w-[calc(100vw-2rem)] shrink-0 flex-none md:w-[45vw] lg:w-auto lg:shrink lg:flex-auto snap-center border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
                             <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
                                 <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
                                     Haftanın Anketi
@@ -1015,7 +1015,7 @@ export default function VoiceView() {
                         </div>
 
                         {/* Trending Topics */}
-                        <div className="min-w-[90vw] md:min-w-[45vw] lg:min-w-0 snap-center border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                        <div className="w-[calc(100vw-2rem)] shrink-0 flex-none md:w-[45vw] lg:w-auto lg:shrink lg:flex-auto snap-center border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
                             <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
                                 <TrendingUp size={24} className="text-[#C8102E]" />
                                 Kampüste Gündem
@@ -1045,7 +1045,7 @@ export default function VoiceView() {
                         </div>
 
 
-                        <div className="min-w-[90vw] md:min-w-[45vw] lg:min-w-0 snap-center border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                        <div className="w-[calc(100vw-2rem)] shrink-0 flex-none md:w-[45vw] lg:w-auto lg:shrink lg:flex-auto snap-center border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
                             <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                                 Kampüs Nabzı
                             </h3>
