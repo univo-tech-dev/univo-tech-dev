@@ -9,7 +9,7 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.dark body {
+html.dark body {
   background: #0a0a0a;
   color: #ededed;
 }
@@ -21,7 +21,7 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
   color: #ffffff;
 }
 
@@ -29,7 +29,7 @@ hr {
     border-color: #e5e5e5;
 }
 
-.dark hr {
+html.dark hr {
     border-color: #262626;
 }
 
@@ -52,7 +52,7 @@ p {
   color: #404040;
 }
 
-.dark p {
+html.dark p {
     color: #d4d4d4;
 }
 
