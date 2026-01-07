@@ -45,7 +45,7 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
         <Link
           href="/register"
           onClick={onNavigate}
-          className="px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity text-white bg-[var(--primary-color,#C8102E)]"
+          className="px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity !text-white bg-[var(--primary-color,#C8102E)]"
         >
           Kayıt Ol
         </Link>
