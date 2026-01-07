@@ -152,11 +152,11 @@ export default function FriendListModal({ userId, isOpen, onClose, isOwnProfile 
                   onClick={onClose}
                   className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden shrink-0">
+                  <div className={`w-12 h-12 rounded-full overflow-hidden shrink-0 ${friend.avatar_url ? 'bg-neutral-200 dark:bg-neutral-700' : 'bg-primary text-white'}`}>
                     {friend.avatar_url ? (
                         <img src={friend.avatar_url} alt={friend.full_name} className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center font-bold text-neutral-500">
+                        <div className="w-full h-full flex items-center justify-center font-bold text-lg">
                             {friend.full_name?.charAt(0)}
                         </div>
                     )}

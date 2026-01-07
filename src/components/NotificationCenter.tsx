@@ -236,7 +236,7 @@ export default function NotificationCenter() {
                   <div className="flex gap-3">
                     {notification.actor && (
                       <Link href={`/profile/${notification.actor.id}`}>
-                        <div className="w-10 h-10 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">
                           {notification.actor.full_name?.charAt(0) || '?'}
                         </div>
                       </Link>
