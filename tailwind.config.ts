@@ -10,9 +10,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: 'rgb(200, 16, 46)', // METU Red
-        'primary-dark': 'rgb(160, 13, 37)',
-        'primary-light': 'rgb(230, 57, 70)',
+        primary: {
+            DEFAULT: 'rgb(var(--primary-rgb) / <alpha-value>)',
+            hover: 'rgb(var(--primary-hover-rgb) / <alpha-value>)',
+            light: 'rgb(var(--primary-light-rgb) / <alpha-value>)',
+            dark: 'rgb(var(--primary-dark-rgb) / <alpha-value>)',
+        }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

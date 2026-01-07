@@ -158,7 +158,8 @@ export default function VoiceView() {
                             e.stopPropagation();
                             setActiveTagFilter(part);
                         }}
-                        className="text-[#C8102E] font-bold hover:underline cursor-pointer bg-transparent border-0 p-0 inline align-baseline"
+                        className="font-bold hover:underline cursor-pointer bg-transparent border-0 p-0 inline align-baseline hover:opacity-80 transition-colors"
+                        style={{ color: 'var(--primary-color, #C8102E)' }}
                     >
                         {part}
                     </button>
@@ -395,6 +396,8 @@ export default function VoiceView() {
 
             if (!res.ok) throw new Error('Delete failed');
             toast.success('Gönderi silindi.');
+            // Refresh to update allTags (trending topics)
+            fetchVoices();
         } catch (e) {
             console.error(e);
             toast.error('Silme işlemi başarısız.');
@@ -608,10 +611,10 @@ export default function VoiceView() {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            {/* Newspaper Header */}
-            <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors">
+            {/* Newspaper Header - Sticky on mobile */}
+            <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
                 <h2 className="text-3xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white">Kampüsün Sesi</h2>
-                <div className="flex justify-between items-center text-xs md:text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+                <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
                     <span>SAYI: {issueNumber}</span>
                     <span>SERBEST KÜRSÜ</span>
                     <span>{formattedDate.toUpperCase()}</span>
@@ -619,7 +622,7 @@ export default function VoiceView() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Main Column: Forum / Letters */}
+                {/* Main Column: Forum / Letters - Shows last on mobile, first on desktop */}
                 <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
                     {/* Weekly Poll - Moved above feed */}
 
@@ -632,7 +635,7 @@ export default function VoiceView() {
                         {activeTagFilter && (
                             <button
                                 onClick={() => setActiveTagFilter(null)}
-                                className="text-xs font-black uppercase bg-neutral-900 text-white dark:bg-white dark:text-black px-3 py-1.5 rounded-full flex items-center gap-2 transition-all hover:bg-[#C8102E] hover:text-white dark:hover:bg-[#C8102E] dark:hover:text-white shadow-sm"
+                                className="text-xs font-black uppercase bg-neutral-900 text-white dark:bg-white dark:text-black px-3 py-1.5 rounded-full flex items-center gap-2 transition-all hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white shadow-sm"
                             >
                                 <span>{activeTagFilter}</span>
                                 <X size={12} strokeWidth={3} />
@@ -656,7 +659,8 @@ export default function VoiceView() {
                                     ref={textareaRef}
                                     rows={3}
                                     maxLength={280}
-                                    className="w-full p-3 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-black dark:focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                    className="w-full p-3 border-2 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neutral-400 dark:hover:border-neutral-600 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                    style={{ '--tw-ring-color': 'var(--primary-color, #C8102E)' } as React.CSSProperties}
                                     placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
                                     value={newStatus}
                                     onChange={handleTextChange}
@@ -734,15 +738,18 @@ export default function VoiceView() {
                                 return (
                                     <article key={voice.id} className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}>
                                         {voice.is_editors_choice && (
-                                            <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-500 text-yellow-900 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
-                                                <Award size={12} />
+                                            <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-600 text-yellow-900 dark:text-yellow-100 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+                                                <Award size={12} className="text-yellow-900 dark:text-yellow-100" />
                                                 Editörün Seçimi
                                             </div>
                                         )}
 
                                         <div className="flex gap-4 items-start">
                                             {/* Avatar */}
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'bg-black dark:bg-white text-white dark:text-black'}`}>
+                                            <div
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
+                                                style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
+                                            >
                                                 {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
                                             </div>
 
@@ -954,17 +961,20 @@ export default function VoiceView() {
                     </div>
                 </div>
 
-                {/* Sidebar: Polls & Stats */}
-                <div className="space-y-8">
-                    <div className="sticky top-24 flex flex-row overflow-x-auto snap-x snap-mandatory gap-4 pb-4 px-4 -mx-4 lg:block lg:space-y-8 lg:overflow-visible lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pr-2 lg:px-0 lg:mx-0 lg:pb-0" style={{ scrollbarWidth: 'thin' }}>
+                {/* Sidebar: Polls & Stats - Shows first on mobile, last on desktop */}
+                <div className="order-first lg:order-last -mx-4 px-4 lg:mx-0 lg:px-0">
+                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-4 lg:pb-0 lg:flex-col lg:overflow-x-visible lg:gap-8 lg:pr-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'thin' }}>
                         {/* Weekly Poll */}
-                        <div className="w-[calc(100vw-2rem)] shrink-0 flex-none md:w-[45vw] lg:w-auto lg:shrink lg:flex-auto snap-center border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                        <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 min-w-[280px] lg:min-w-0 snap-center">
                             <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
                                 <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
                                     Haftanın Anketi
                                 </h3>
                                 <span className="text-[10px] font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-sm flex items-center gap-1">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse"></span>
+                                    <span
+                                        className="w-2 h-2 rounded-full animate-pulse"
+                                        style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                    ></span>
                                     Yapay Zeka
                                 </span>
                             </div>
@@ -1015,9 +1025,9 @@ export default function VoiceView() {
                         </div>
 
                         {/* Trending Topics */}
-                        <div className="w-[calc(100vw-2rem)] shrink-0 flex-none md:w-[45vw] lg:w-auto lg:shrink lg:flex-auto snap-center border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                        <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 min-w-[280px] lg:min-w-0 snap-center">
                             <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
-                                <TrendingUp size={24} className="text-[#C8102E]" />
+                                <TrendingUp size={24} style={{ color: 'var(--primary-color, #C8102E)' }} />
                                 Kampüste Gündem
                             </h3>
                             <div className="space-y-3">
@@ -1027,13 +1037,13 @@ export default function VoiceView() {
                                             <div className="flex items-center gap-3">
                                                 <span className="text-xl font-serif font-black text-neutral-300 dark:text-neutral-700 w-6">{index + 1}</span>
                                                 <div className="flex flex-col">
-                                                    <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-[#C8102E]' : 'text-neutral-900 dark:text-white group-hover:text-[#C8102E]'}`}>
+                                                    <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
                                                         {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
                                                     </span>
                                                     <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
                                                 </div>
                                             </div>
-                                            <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-[#C8102E]' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
+                                            <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-primary' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
                                         </div>
                                     ))
                                 ) : (
@@ -1045,13 +1055,22 @@ export default function VoiceView() {
                         </div>
 
 
-                        <div className="w-[calc(100vw-2rem)] shrink-0 flex-none md:w-[45vw] lg:w-auto lg:shrink lg:flex-auto snap-center border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                        <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 min-w-[280px] lg:min-w-0 snap-center">
                             <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                                 Kampüs Nabzı
                             </h3>
                             <div className="grid grid-cols-2 gap-4 text-center">
-                                <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
-                                    <span className="block text-3xl font-black font-serif text-[#C8102E] animate-pulse">
+                                <div
+                                    className="p-3 dark:bg-neutral-800 rounded"
+                                    style={{
+                                        backgroundColor: 'rgba(var(--primary-rgb), 0.05)',
+                                        border: '1px solid var(--primary-color, #C8102E)'
+                                    }}
+                                >
+                                    <span
+                                        className="block text-3xl font-black font-serif animate-pulse"
+                                        style={{ color: 'var(--primary-color, #C8102E)' }}
+                                    >
                                         {activeUsers}
                                     </span>
                                     <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">

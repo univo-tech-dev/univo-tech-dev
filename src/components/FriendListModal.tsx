@@ -132,7 +132,7 @@ export default function FriendListModal({ userId, isOpen, onClose, isOwnProfile 
         <div className="flex-1 overflow-y-auto p-2">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="w-8 h-8 border-4 border-neutral-200 border-t-[#C8102E] rounded-full animate-spin mx-auto mb-2"></div>
+              <div className="w-8 h-8 border-4 border-neutral-200 rounded-full animate-spin mx-auto mb-2" style={{ borderTopColor: 'var(--primary-color, #C8102E)' }}></div>
               <p className="text-sm text-neutral-500">Yükleniyor...</p>
             </div>
           ) : error ? (
@@ -152,11 +152,14 @@ export default function FriendListModal({ userId, isOpen, onClose, isOwnProfile 
                   onClick={onClose}
                   className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors group"
                 >
-                  <div className="w-12 h-12 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden shrink-0">
+                  <div 
+                    className={`w-12 h-12 rounded-full overflow-hidden shrink-0 ${friend.avatar_url ? 'bg-neutral-200 dark:bg-neutral-700' : 'bg-primary text-white'}`}
+                    style={!friend.avatar_url ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
+                  >
                     {friend.avatar_url ? (
                         <img src={friend.avatar_url} alt={friend.full_name} className="w-full h-full object-cover" />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center font-bold text-neutral-500">
+                        <div className="w-full h-full flex items-center justify-center font-bold text-lg">
                             {friend.full_name?.charAt(0)}
                         </div>
                     )}

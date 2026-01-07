@@ -23,14 +23,28 @@ const ALLOWED_DASHBOARD_USERS = [
 function HeaderContent() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCommunityAdmin, setIsCommunityAdmin] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { user, profile, signOut } = useAuth();
   const router = useRouter();
   const currentView = searchParams?.get('view') || 'community';
 
+
+
   // ... (existing code)
 
+  // Scroll detection for mobile header hide
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtTop(window.scrollY < 10);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Check initial position
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
 
   useEffect(() => {
@@ -70,12 +84,12 @@ function HeaderContent() {
 
   const getLinkClass = (id: string) => {
     const isActive = currentView === id;
-    return `flex items-center gap-2 font-medium transition-colors ${isActive ? 'text-[#C8102E]' : 'text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E]'
+    return `flex items-center gap-2 font-medium transition-colors ${isActive ? 'text-primary' : 'text-neutral-600 dark:text-neutral-400 hover:text-primary'
       }`;
   };
 
   return (
-    <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-black dark:border-white transition-colors duration-300">
+    <header className={`sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
       <div className="w-full px-4 md:container md:mx-auto">
         <div className="flex items-center justify-between h-16 max-w-full relative">
 
@@ -89,7 +103,7 @@ function HeaderContent() {
                 className="object-cover transition-all duration-300 dark:invert mix-blend-multiply dark:mix-blend-screen"
               />
             </div>
-            <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
+            <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-primary transition-colors -ml-1">
               Univo
             </h1>
           </Link>
@@ -103,16 +117,21 @@ function HeaderContent() {
                   <li key={item.id}>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full transition-all duration-300 relative group overflow-hidden ${isActive
-                        ? 'text-black dark:text-white font-bold bg-white dark:bg-black shadow-sm'
-                        : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      className={`flex items-center gap-2 px-3.5 py-2 transition-all duration-200 relative group ${isActive
+                        ? 'text-[var(--primary-color)] font-bold'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-[var(--primary-color)] font-medium'
                         }`}
                     >
-                      <item.icon size={18} className={`relative z-10 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                      <span className="text-sm font-medium relative z-10">{item.label}</span>
-                      {!isActive && (
-                        <span className="absolute inset-0 bg-neutral-200 dark:bg-neutral-700 opacity-0 group-hover:opacity-100 transition-opacity rounded-full z-0"></span>
+                      <item.icon size={18} className={`relative z-10 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                      <span className="text-sm relative z-10">{item.label}</span>
+
+                      {/* Active Underline */}
+                      {isActive && (
+                        <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--primary-color)] rounded-full animate-in fade-in zoom-in duration-200"></span>
                       )}
+
+                      {/* Hover Underline */}
+                      <span className={`absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--primary-color)] rounded-full transition-all duration-200 ${isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-50 group-hover:scale-x-75'}`}></span>
                     </Link>
                   </li>
                 );
@@ -160,6 +179,9 @@ function HeaderContent() {
 
             {/* Mobile Header Actions (Search & Auth) */}
             <div className="flex md:hidden items-center gap-2">
+              {/* Mobile Notification Center */}
+              <NotificationCenter />
+
               <button
                 onClick={() => setIsSearchOpen(true)}
                 className="p-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all"
@@ -168,7 +190,6 @@ function HeaderContent() {
               </button>
               <AuthButton />
             </div>
-
           </div>
         </div>
       </div>

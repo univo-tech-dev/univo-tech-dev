@@ -1,5 +1,6 @@
-import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2 } from 'lucide-react';
+import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap } from 'lucide-react';
 import * as React from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -61,8 +62,11 @@ export default function OfficialView() {
     const [loginError, setLoginError] = React.useState('');
 
     // Tab State
-    const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history'>('agenda');
+    const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history' | 'starred' | 'odtuclass'>('agenda');
     const [followedSources, setFollowedSources] = React.useState<string[]>([]);
+    const [starredIds, setStarredIds] = React.useState<string[]>([]);
+    const [blockedSources, setBlockedSources] = React.useState<string[]>([]);
+    const [subscribedSources, setSubscribedSources] = React.useState<string[]>([]);
 
     // Check Session & Auto-Connect
     React.useEffect(() => {
@@ -72,9 +76,16 @@ export default function OfficialView() {
                 const cached = localStorage.getItem('univo_cached_emails');
                 const savedUser = localStorage.getItem('univo_email_user');
                 const savedFollows = localStorage.getItem('univo_followed_sources');
+                const savedStars = localStorage.getItem('univo_starred_ids');
+                const savedBlocked = localStorage.getItem('univo_blocked_sources');
+                const savedSubscribed = localStorage.getItem('univo_subscribed_sources');
 
                 if (cached) setEmails(JSON.parse(cached));
                 if (savedFollows) setFollowedSources(JSON.parse(savedFollows));
+                if (savedStars) setStarredIds(JSON.parse(savedStars));
+                if (savedBlocked) setBlockedSources(JSON.parse(savedBlocked));
+                if (savedSubscribed) setSubscribedSources(JSON.parse(savedSubscribed));
+
                 if (savedUser) {
                     setLoginForm(prev => ({ ...prev, username: savedUser }));
                     setIsEmailConnected(true); // Optimistically show connected if user exists
@@ -93,7 +104,7 @@ export default function OfficialView() {
                         source: 'ODTÜ E-Posta',
                         date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }),
                         summary: `Gönderen: ${msg.from}`,
-                        link: `https://mail.metu.edu.tr`
+                        link: `https://metumail.metu.edu.tr/`
                     }));
 
                     setEmails(mappedEmails);
@@ -215,19 +226,45 @@ export default function OfficialView() {
         await supabase.from('announcement_reads').delete().match({ user_id: user.id, announcement_id: idStr });
     };
 
-    const handleFollow = async (topic: string, e?: React.MouseEvent) => {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        setFollowedSources(prev => {
-            const isFollowing = prev.includes(topic);
-            const newFollows = isFollowing ? prev.filter(s => s !== topic) : [...prev, topic];
-            localStorage.setItem('univo_followed_sources', JSON.stringify(newFollows));
-            if (!isFollowing) toast.success(`"${topic}" favorilere eklendi.`);
-            return newFollows;
+    const handleStar = async (id: string, e?: React.MouseEvent) => {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        const idStr = String(id);
+        setStarredIds(prev => {
+            const isStarred = prev.includes(idStr);
+            const newStars = isStarred ? prev.filter(i => i !== idStr) : [...prev, idStr];
+            localStorage.setItem('univo_starred_ids', JSON.stringify(newStars));
+            if (!isStarred) toast.success('Yıldızlılara eklendi.');
+            return newStars;
         });
+    };
+
+    const handleBlockSource = (source: string) => {
+        if (!confirm(`"${source}" kaynağından gelen gönderileri gizlemek istediğinize emin misiniz?`)) return;
+        setBlockedSources(prev => {
+            const newBlocked = [...prev, source];
+            localStorage.setItem('univo_blocked_sources', JSON.stringify(newBlocked));
+            toast.info(`"${source}" engellendi.`);
+            return newBlocked;
+        });
+    };
+
+    const handleSubscribeSource = (source: string) => {
+        setSubscribedSources(prev => {
+            const isSubscribed = prev.includes(source);
+            const newSubs = isSubscribed ? prev.filter(s => s !== source) : [...prev, source];
+            localStorage.setItem('univo_subscribed_sources', JSON.stringify(newSubs));
+            if (!isSubscribed) toast.success(`"${source}" kaynağına abone olundu. Yeni içeriklerde bilgilendirileceksiniz.`);
+            return newSubs;
+        });
+    };
+
+    const handleClearHistory = async () => {
+        if (!confirm('Tüm geçmişi silmek istediğinize emin misiniz?')) return;
+        if (user) {
+            await supabase.from('announcement_reads').delete().eq('user_id', user.id);
+        }
+        setReadIds([]);
+        toast.success('Geçmiş temizlendi.');
     };
 
     // Helper to parse date string for sorting
@@ -309,94 +346,161 @@ export default function OfficialView() {
         return scoreB - scoreA;
     });
 
+    // ODTUClass Data (Real or Mock)
+    const realCourses = user?.user_metadata?.odtu_courses;
+    const odtuClassData = (realCourses && realCourses.length > 0) ? realCourses.map((c: any) => ({
+        id: `oc-${c.url}`,
+        title: c.name,
+        source: 'ODTÜClass',
+        type: 'grade', // Use 'grade' type styling (Violet) for courses
+        course: c.name.split(' ')[0], // Heuristic for short code
+        date: 'Güz 2025',
+        summary: 'Ders sayfasına gitmek için tıklayınız.',
+        link: c.url
+    })) : [
+        {
+            id: 'oc1',
+            title: 'PHYS105 - Midterm 2 Sonuçları',
+            source: 'ODTÜClass',
+            type: 'grade',
+            course: 'PHYS105',
+            date: 'Bugün, 14:30',
+            summary: '2. Ara sınav sonuçları açıklanmıştır. Kağıtlarınızı 8 Ocak Çarşamba 13:30-15:30 arasında P-102 ofisinde görebilirsiniz.',
+            link: 'https://odtuclass2025f.metu.edu.tr/my/'
+        },
+        {
+            id: 'oc2',
+            title: 'MATH119 - Yeni Ödev Eklendi',
+            source: 'ODTÜClass',
+            type: 'assignment',
+            course: 'MATH119',
+            date: 'Dün',
+            summary: 'WebWork Assignment 5 sisteme yüklenmiştir. Son teslim tarihi: 12 Ocak 23:59.',
+            link: 'https://odtuclass2025f.metu.edu.tr/my/'
+        },
+        {
+            id: 'oc3',
+            title: 'CENG140 - Lab 3 Duyurusu',
+            source: 'ODTÜClass',
+            type: 'announcement',
+            course: 'CENG140',
+            date: '3 gün önce',
+            summary: 'Bu haftaki laboratuvar dersi online yapılacaktır. Zoom linki ders sayfasında paylaşılmıştır.',
+            link: 'https://odtuclass2025f.metu.edu.tr/my/'
+        }
+    ];
+
     // Filtered Lists
     // GÜNDEM: Unread Items AND NOT Emails (Announcements Only) AND Last 7 Days
-    const agendaItems = allNews.filter(n => {
-        const isUnread = !readIds.includes(String(n.id));
-        const notEmail = n.type !== 'email';
-        const isRecent = parseDate(n.date) > (Date.now() - 7 * 24 * 60 * 60 * 1000);
-        return isUnread && notEmail && isRecent;
+    const filteredNews = allNews.filter(item => {
+        // 1. Blocked sources filter
+        if (blockedSources.includes(item.source)) return false;
+
+        if (activeTab === 'agenda') return (item.type === 'announcement' || item.type === 'event');
+        if (activeTab === 'emails') return item.type === 'email';
+        if (activeTab === 'odtuclass') return false; // Handled separately
+        if (activeTab === 'starred') return starredIds.includes(String(item.id));
+        if (activeTab === 'history') return readIds.includes(String(item.id));
+        return true;
     });
 
-    const emailItems = allNews.filter(n => n.type === 'email');
-    const historyItems = allNews.filter(n => readIds.includes(String(n.id)));
-
-    let displayedItems = agendaItems;
-    if (activeTab === 'emails') displayedItems = emailItems;
-    if (activeTab === 'history') displayedItems = historyItems;
+    const displayedItems = activeTab === 'odtuclass' ? odtuClassData : filteredNews.filter(item => {
+        if (activeTab === 'agenda' || activeTab === 'emails') {
+            return !readIds.includes(String(item.id));
+        }
+        return true;
+    });
 
     return (
         <div className="container mx-auto px-4 py-8 relative">
-            {/* Newspaper Header */}
-            <div className="border-b-2 border-black dark:border-neutral-700 pb-2 mb-2 flex justify-between items-end transition-colors">
-                <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
-                    ANKARA, {formattedDate.toUpperCase()}
-                </div>
-                <div className="flex items-center gap-4">
-                    <div className="text-right">
-                        <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">HAVA DURUMU</div>
-                        <div className="font-bold text-sm dark:text-white">6°C, Parçalı Bulutlu</div>
-                    </div>
-                </div>
-            </div>
-            <div className="border-b-4 border-black dark:border-neutral-700 pb-4 mb-8 text-center transition-colors">
+            {/* Newspaper Header - Sticky on mobile */}
+            <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
                 <h2 className="text-3xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white">Resmi Gündem</h2>
-                <div className="flex justify-between items-center text-xs md:text-sm font-medium border-t border-black dark:border-neutral-700 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+                <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
                     <span>SAYI: {issueNumber}</span>
-                    <a href="/official/archive" className="flex items-center gap-1 hover:text-[#C8102E] transition-colors font-bold uppercase hover:underline decoration-2 underline-offset-4 cursor-pointer dark:text-neutral-300 dark:hover:text-[#C8102E]">
-                        <Briefcase size={16} />
+                    <Link
+                        href="/official/archive"
+                        className="flex items-center gap-1 hover:underline decoration-2 underline-offset-4 cursor-pointer font-bold uppercase dark:text-neutral-300"
+                        style={{ color: 'var(--primary-color, #C8102E)' }}
+                    >
+                        <Briefcase size={14} />
                         Belge Arşivi
-                    </a>
+                    </Link>
+                    <span>{formattedDate.toUpperCase()}</span>
                 </div>
             </div>
+
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Column */}
                 <div className="lg:col-span-2 space-y-8">
 
+                    {/* Pinned Announcement */}
+                    {news[0] && (
+                        <div className="border-4 border-black dark:border-white p-6 bg-yellow-50 dark:bg-yellow-900/20 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] relative">
+                            <div className="absolute -top-3 left-6 bg-red-600 text-white px-3 py-1 text-xs font-black uppercase tracking-wider -rotate-1 shadow-sm">
+                                Önemli Duyuru
+                            </div>
+                            <h3 className="text-xl font-bold mb-2 flex items-center gap-2 dark:text-white mt-2">
+                                <Megaphone size={20} className="text-red-600" />
+                                {news[0].title}
+                            </h3>
+                            <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
+                                {news[0].summary}
+                            </p>
+                            <div className="flex justify-between items-center text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                                <span>{news[0].source} · {news[0].date}</span>
+                                <a href={news[0].link} className="flex items-center gap-1 hover:underline decoration-2 underline-offset-2 text-black dark:text-white">
+                                    Detaylar <ArrowRight size={12} />
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Tab Navigation */}
-                    <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-6 relative">
+                    <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-4 md:gap-8 relative overflow-x-auto no-scrollbar scroll-smooth">
                         {[
-                            { id: 'agenda', label: 'GÜNDEM', count: agendaItems.length },
-                            { id: 'emails', label: 'E-POSTALAR', count: emailItems.length },
-                            { id: 'history', label: 'GEÇMİŞ', count: historyItems.length }
+                            { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="mb-0.5" /> },
+                            { id: 'emails', label: 'E-POSTALAR', count: emails.filter(n => !readIds.includes(String(n.id))).length, icon: <Mail size={14} className="mb-0.5" /> },
+                            { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.length, icon: <GraduationCap size={14} className="mb-0.5" /> },
+                            { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="mb-0.5" /> },
+                            { id: 'history', label: '', icon: <Trash2 size={16} />, count: readIds.length }
                         ].map(tab => (
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`pb-3 font-black text-sm tracking-wider uppercase transition-colors relative flex items-center gap-2 ${activeTab === tab.id
+                                className={`pb-3 font-black text-sm tracking-wider uppercase transition-colors relative flex items-center gap-2 shrink-0 ${activeTab === tab.id
                                         ? 'text-black dark:text-white'
                                         : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'
                                     }`}
+                                title={tab.id === 'history' ? 'Çöp Kutusu' : tab.label}
                             >
+                                {tab.icon && tab.icon}
                                 {tab.label}
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors ${activeTab === tab.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors ${activeTab === tab.id
+                                        ? 'bg-black text-white dark:bg-white dark:text-black'
+                                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
                                     }`}>
                                     {tab.count}
                                 </span>
                                 {activeTab === tab.id && (
-                                    <div className="absolute bottom-[-2px] left-0 right-0 h-[3px] bg-black dark:bg-white" />
+                                    <div className="absolute bottom-[-2px] left-0 right-0 h-0.5 bg-black dark:bg-white animate-in fade-in slide-in-from-left-2 duration-300" />
                                 )}
                             </button>
                         ))}
+
+                        {activeTab === 'history' && readIds.length > 0 && (
+                            <button
+                                onClick={handleClearHistory}
+                                className="ml-auto pb-3 text-[10px] font-black uppercase text-red-600 hover:text-red-700 transition-colors flex items-center gap-1 shrink-0"
+                            >
+                                <X size={12} /> Tümünü Sil
+                            </button>
+                        )}
                     </div>
 
                     {/* Featured Post (Only show on Agenda for impact, or always? Let's hide on Archive) */}
-                    {activeTab !== 'history' && news.length > 0 && (
-                        <article className="bg-neutral-50 dark:bg-neutral-900 p-6 border border-neutral-200 dark:border-neutral-800 rounded-sm mb-6 transition-colors">
-                            <span className="inline-block bg-[#C8102E] text-white text-xs px-2 py-1 font-bold mb-3">ÖNEMLİ DUYURU</span>
-                            <h4 className="text-2xl font-bold font-serif mb-3 leading-tight hover:underline cursor-pointer dark:text-white">
-                                {news[0].title}
-                            </h4>
-                            <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4">
-                                {news[0].summary}
-                            </p>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="font-semibold text-neutral-900 dark:text-neutral-100">{news[0].source}</span>
-                                <span className="text-neutral-500 dark:text-neutral-400">{news[0].date}</span>
-                            </div>
-                        </article>
-                    )}
+
 
                     {/* News List */}
                     <div className="grid gap-6">
@@ -405,7 +509,7 @@ export default function OfficialView() {
                                 <p className="text-neutral-400 dark:text-neutral-500 font-bold uppercase">Bu listede içerik bulunmuyor.</p>
                             </div>
                         ) : (
-                            displayedItems.map((item, index) => {
+                            displayedItems.map((item: any, index: number) => {
                                 // Reuse existing item logic
                                 const isExpanded = expandedId === item.id;
                                 const isRead = readIds.includes(String(item.id));
@@ -416,46 +520,60 @@ export default function OfficialView() {
                                         key={index}
                                         onClick={() => setExpandedId(isExpanded ? null : item.id)}
                                         className={`flex gap-4 items-start p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group
-                                ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white/5' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800 border-[#C8102E]'}
-                                ${isRead && activeTab !== 'history' ? 'hidden' : ''} 
-                                ${isRead ? 'opacity-75 grayscale border-neutral-300 dark:border-neutral-700' : ''}
+                                ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white/5' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}
+                                ${isRead && (activeTab !== 'history' && activeTab !== 'starred') ? 'hidden' : ''} 
+                                ${isRead ? 'opacity-75 grayscale' : ''}
                             `}
+                                        style={{
+                                            borderLeftColor: isRead
+                                                ? 'transparent'
+                                                : (item.type === 'event'
+                                                    ? '#2563eb' // Blue-600
+                                                    : item.type === 'email'
+                                                        ? '#d97706' // Amber-600
+                                                        : (item.type === 'grade' || item.type === 'assignment')
+                                                            ? '#7c3aed' // Violet
+                                                            : '#059669' // Emerald-600
+                                                )
+                                        }}
                                     >
-                                        {/* Expand Icon Indicator & Actions */}
-                                        <div className="absolute right-4 top-4 flex items-center gap-3 z-20">
-                                            {/* Action Buttons Group */}
-                                            {user && activeTab !== 'history' && (
-                                                <div className="flex items-center gap-1 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-sm transition-opacity">
-                                                    <button
-                                                        onClick={(e) => handleMarkRead(String(item.id), e)}
-                                                        title={isRead ? "Okundu" : "Okundu olarak işaretle"}
-                                                        className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isRead ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-neutral-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 dark:bg-neutral-800'}`}
-                                                    >
-                                                        <CheckCircle size={20} className={isRead ? 'fill-green-100 dark:fill-green-900/50' : ''} />
-                                                    </button>
-                                                    <div className="w-px h-5 bg-neutral-200 mx-1"></div>
-                                                    <button
-                                                        onClick={(e) => handleFollow(item.source, e)}
-                                                        title={isFollowing ? "Favorilerden Çıkar" : "Favorilere Ekle"}
-                                                        className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isFollowing ? 'text-[#C8102E] bg-red-50 dark:bg-red-900/30' : 'text-neutral-400 hover:text-[#C8102E] hover:bg-red-50 dark:hover:bg-red-900/30 dark:bg-neutral-800'}`}
-                                                    >
-                                                        <Bookmark size={20} className={isFollowing ? 'fill-[#C8102E]' : ''} />
-                                                    </button>
+                                        {/* Star Indicator - Ribbon Style */}
+                                        {starredIds.includes(String(item.id)) && (
+                                            <div className="absolute -left-1 top-4 z-20 shadow-sm">
+                                                <div className="bg-yellow-400 text-white p-1 rounded-r-md shadow-md animate-in slide-in-from-left-2">
+                                                    <Star size={12} className="fill-white" />
                                                 </div>
-                                            )}
+                                                <div className="absolute top-full left-0 w-1 h-1 bg-yellow-600 rounded-bl-full brightness-75"></div>
+                                            </div>
+                                        )}
 
-                                            {user && activeTab === 'history' && (
+                                        {/* Source Controls - Absolute positioned near expand button */}
+                                        {(activeTab !== 'history') && (
+                                            <div className="absolute right-12 top-4 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                                 <button
-                                                    onClick={(e) => handleUndoRead(String(item.id), e)}
-                                                    title="Geri Al (Tekrar Gündeme Taşı)"
-                                                    className="flex items-center gap-2 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-sm text-[10px] font-black uppercase text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all hover:scale-105 active:scale-95"
+                                                    onClick={(e) => { e.stopPropagation(); handleSubscribeSource(item.source); }}
+                                                    className={`flex items-center gap-1 px-2 py-1 rounded shadow-sm text-[9px] font-bold uppercase transition-all hover:scale-105 active:scale-95 border border-transparent
+                                            ${subscribedSources.includes(item.source)
+                                                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800'
+                                                            : 'bg-white dark:bg-neutral-800 text-emerald-600 border-neutral-200 dark:border-neutral-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'}`}
+                                                    title={subscribedSources.includes(item.source) ? "Abonelikten Çık" : "Kaynağa Abone Ol"}
                                                 >
-                                                    <RotateCcw size={14} />
-                                                    Geri Al
+                                                    {subscribedSources.includes(item.source) ? <CheckCircle size={10} className="fill-current" /> : <Megaphone size={10} />}
+                                                    {subscribedSources.includes(item.source) ? 'Abone' : 'Abone Ol'}
                                                 </button>
-                                            )}
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleBlockSource(item.source); }}
+                                                    className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded shadow-sm text-[9px] font-bold uppercase transition-all hover:scale-105 active:scale-95 border border-neutral-200 dark:border-neutral-700 hover:border-red-200 dark:hover:border-red-800"
+                                                    title="Kaynağı Engelle"
+                                                >
+                                                    <X size={10} /> Engelle
+                                                </button>
+                                            </div>
+                                        )}
 
-                                            <div className="text-neutral-300 group-hover:text-[#C8102E] transition-colors font-bold ml-1 text-2xl leading-none select-none">
+                                        {/* Expand Icon Indicator */}
+                                        <div className="absolute right-4 top-4 flex items-center gap-3 z-10 text-neutral-300 dark:text-neutral-600 group-hover:text-black dark:group-hover:text-white transition-colors">
+                                            <div className="font-bold ml-1 text-2xl leading-none select-none">
                                                 {isExpanded ? '−' : '+'}
                                             </div>
                                         </div>
@@ -463,18 +581,27 @@ export default function OfficialView() {
                                         <div className="flex-1 pr-32">
                                             <div className="flex items-center gap-2 mb-1">
                                                 {item.type === 'event' ? (
-                                                    <Calendar size={16} className="text-[#C8102E]" />
+                                                    <Calendar size={16} className="text-blue-600" />
                                                 ) : item.type === 'email' ? (
-                                                    <Mail size={16} className="text-yellow-600" />
+                                                    <Mail size={16} className="text-amber-600" />
+                                                ) : (item.type === 'grade' || item.type === 'assignment') ? (
+                                                    <GraduationCap size={16} className="text-violet-600" />
                                                 ) : (
-                                                    <Megaphone size={16} className="text-[#C8102E]" />
+                                                    <Megaphone size={16} className="text-emerald-600" />
                                                 )}
-                                                <span className={`text-xs font-bold uppercase ${item.type === 'email' ? 'text-yellow-600' : 'text-[#C8102E]'}`}>
-                                                    {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : 'Duyuru'}
+                                                <span className={`text-xs font-bold uppercase ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
+                                                    {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
                                                 </span>
+                                                <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
+
+                                                {subscribedSources.includes(item.source) && (
+                                                    <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-700 dark:text-emerald-400 rounded uppercase">
+                                                        Abone
+                                                    </div>
+                                                )}
                                             </div>
 
-                                            <h4 className={`text-lg font-bold font-serif mb-2 transition-colors ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : 'text-[#C8102E]') : 'text-black dark:text-white'}`}>
+                                            <h4 className={`text-lg font-bold font-serif mb-2 transition-colors ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
                                                 {item.title}
                                             </h4>
 
@@ -483,21 +610,68 @@ export default function OfficialView() {
                                                 <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
                                                     {item.summary || 'Detaylar için bağlantıya tıklayınız.'}
                                                 </p>
-                                                <a
-                                                    href={item.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className={`mt-3 inline-flex items-center gap-2 px-4 py-2 border-2 text-xs font-black uppercase tracking-wider transition-all group/btn shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] hover:translate-x-[2px] hover:translate-y-[2px]
-                                            ${item.type === 'email'
-                                                            ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-700 text-amber-800 dark:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30'
-                                                            : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'
-                                                        }
-                                        `}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    Kaynağa Git
-                                                    <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
-                                                </a>
+
+                                                {/* Responsive Actions Area - Dynamic Colors */}
+                                                <div className="flex flex-wrap items-center gap-2 pt-2 mb-4">
+                                                    {/* Dynamic Theme Class Generator */}
+                                                    {(() => {
+                                                        // Always use colorful active classes, regardless of isRead
+                                                        // Violet for ODTUClass, Blue for Events, Amber for Email, Emerald for Announcement
+                                                        const activeColorClass = item.type === 'email'
+                                                            ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-600 !text-amber-800 dark:!text-amber-400'
+                                                            : item.type === 'event'
+                                                                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-600 !text-blue-800 dark:!text-blue-400'
+                                                                : (item.type === 'grade' || item.type === 'assignment')
+                                                                    ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-600 !text-violet-800 dark:!text-violet-400'
+                                                                    : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-600 !text-emerald-800 dark:!text-emerald-400';
+
+                                                        // Use hoverClass for better interactivity
+                                                        const hoverClass = item.type === 'email' ? 'hover:bg-amber-100 dark:hover:bg-amber-900/40' : item.type === 'event' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/40' : (item.type === 'grade' || item.type === 'assignment') ? 'hover:bg-violet-100 dark:hover:bg-violet-900/40' : 'hover:bg-emerald-100 dark:hover:bg-emerald-900/40';
+                                                        const shadowClass = 'shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]';
+
+                                                        return (
+                                                            <>
+                                                                <button
+                                                                    onClick={(e) => handleMarkRead(String(item.id), e)}
+                                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
+                                                                >
+                                                                    {isRead ? <CheckCircle size={12} /> : <div className="w-3 h-3 rounded-full border-2 border-current" />}
+                                                                    {isRead ? 'Okundu' : 'Okundu İşaretle'}
+                                                                </button>
+
+                                                                <button
+                                                                    onClick={(e) => handleStar(String(item.id), e)}
+                                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${starredIds.includes(String(item.id)) ? activeColorClass : activeColorClass} ${hoverClass}`}
+                                                                >
+                                                                    <Star size={12} className={starredIds.includes(String(item.id)) ? 'fill-current' : ''} />
+                                                                    {starredIds.includes(String(item.id)) ? 'Yıldızlı' : 'Yıldızla'}
+                                                                </button>
+
+                                                                <a
+                                                                    href={item.link}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    onClick={(e) => e.stopPropagation()}
+                                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
+                                                                >
+                                                                    <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
+                                                                    Kaynağa Git
+                                                                </a>
+                                                            </>
+                                                        );
+                                                    })()}
+
+                                                    {activeTab === 'history' && (
+                                                        <button
+                                                            onClick={(e) => handleUndoRead(String(item.id), e)}
+                                                            className="ml-auto flex items-center gap-1.5 px-3 py-1.5 border-2 border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-wider bg-white dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all shadow-sm"
+                                                        >
+                                                            <RotateCcw size={12} />
+                                                            Geri Al
+                                                        </button>
+                                                    )}
+                                                </div>
+
                                             </div>
 
                                             <span className="text-xs text-neutral-500 block mt-2">{item.source} · {item.date}</span>
@@ -511,90 +685,83 @@ export default function OfficialView() {
 
                 {/* Sidebar / Teknokent */}
                 <div className="space-y-6">
-                    {/* Email Integration Card */}
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-6 relative overflow-hidden transition-colors">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-neutral-900 dark:text-white">
-                            <Mail size={20} className="text-neutral-900 dark:text-white" />
-                            E-Posta Entegrasyonu
-                        </h3>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                            ODTÜ e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.
-                        </p>
-                        {isEmailConnected ? (
-                            <div className="bg-neutral-50 dark:bg-neutral-800 border-2 border-black dark:border-white p-4 relative transition-colors">
-                                <div className="flex items-center gap-2 font-black uppercase text-sm mb-1 dark:text-white">
-                                    <CheckCircle size={18} className="text-black dark:text-white fill-white dark:fill-black" />
-                                    BAĞLANTI AKTİF
+                    {/* Email Integration Card - Hide if already verified via ODTÜ Proxy */}
+                    {!user?.user_metadata?.is_metu_verified && (
+                        <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors relative overflow-hidden">
+                            <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b-2 border-black dark:border-white pb-2 text-neutral-900 dark:text-white uppercase font-serif tracking-tight">
+                                <Mail size={20} className="text-neutral-900 dark:text-white" />
+                                E-Posta Entegrasyonu
+                            </h3>
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                                ODTÜ e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.
+                            </p>
+                            {isEmailConnected ? (
+                                <div className="bg-neutral-50 dark:bg-neutral-800 border-2 border-black dark:border-white p-4 relative transition-colors">
+                                    <div className="flex items-center gap-2 font-black uppercase text-sm mb-1 dark:text-white">
+                                        <CheckCircle size={18} className="text-black dark:text-white fill-white dark:fill-black" />
+                                        BAĞLANTI AKTİF
+                                    </div>
+                                    <div className="text-xs font-mono text-neutral-600 dark:text-neutral-400 mb-3 pl-6">
+                                        {loginForm.username}@metu.edu.tr
+                                    </div>
+                                    <div className="pl-6 flex gap-2">
+                                        <button
+                                            onClick={() => setShowLoginModal(true)}
+                                            className="text-[10px] font-bold uppercase underline decoration-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black px-1 transition-colors dark:text-white"
+                                        >
+                                            YENİLE / GÜNCELLE
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setIsEmailConnected(false);
+                                                setEmails([]);
+                                                localStorage.removeItem('univo_cached_emails');
+                                                localStorage.removeItem('univo_email_user');
+                                            }}
+                                            className="text-[10px] font-bold uppercase text-red-600 hover:bg-red-600 hover:text-white px-1 transition-all"
+                                        >
+                                            BAĞLANTIYI KES
+                                        </button>
+                                    </div>
+                                    {/* Status bar */}
+                                    {loadingEmails && <span className="text-xs ml-6 text-neutral-500 dark:text-neutral-400 animate-pulse block mt-1">E-postalar güncelleniyor...</span>}
                                 </div>
-                                <div className="text-xs font-mono text-neutral-600 dark:text-neutral-400 mb-3 pl-6">
-                                    {loginForm.username}@metu.edu.tr
-                                </div>
-                                <div className="pl-6 flex gap-2">
-                                    <button
-                                        onClick={() => setShowLoginModal(true)}
-                                        className="text-[10px] font-bold uppercase underline decoration-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black px-1 transition-colors dark:text-white"
-                                    >
-                                        YENİLE / GÜNCELLE
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setIsEmailConnected(false);
-                                            setEmails([]);
-                                            localStorage.removeItem('univo_cached_emails');
-                                            localStorage.removeItem('univo_email_user');
-                                        }}
-                                        className="text-[10px] font-bold uppercase text-red-600 hover:bg-red-600 hover:text-white px-1 transition-all"
-                                    >
-                                        BAĞLANTIYI KES
-                                    </button>
-                                </div>
-                                {/* Status bar */}
-                                {loadingEmails && <span className="text-xs ml-6 text-neutral-500 dark:text-neutral-400 animate-pulse block mt-1">E-postalar güncelleniyor...</span>}
-                            </div>
-                        ) : (
-                            <button
-                                onClick={() => setShowLoginModal(true)}
-                                className="w-full py-2.5 bg-neutral-900 dark:bg-neutral-800 text-white dark:text-neutral-200 font-bold text-sm uppercase rounded hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors shadow-sm"
-                            >
-                                ODTÜ Hesabını Bağla
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-6 relative overflow-hidden group hover:border-[#C8102E]/30 transition-all">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-[#C8102E]/5 to-[#C8102E]/10 dark:from-[#C8102E]/10 dark:to-[#C8102E]/20 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
-
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 relative z-10 text-neutral-900 dark:text-white">
-                            <Briefcase size={20} className="text-[#C8102E]" />
-                            Teknokent Fırsatları
-                        </h3>
-                        {/* Static sidebar jobs */}
-                        <div className="space-y-4 relative z-10">
-                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md transition-all cursor-pointer border border-neutral-100 dark:border-neutral-800 group/item">
-                                <h5 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 group-hover/item:text-[#C8102E] transition-colors">{news[1].title}</h5>
-                                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2 line-clamp-2">{news[1].summary}</p>
-                                <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 font-medium">
-                                    <span>{news[1].source}</span>
-                                    <span>{news[1].date}</span>
-                                </div>
-                            </div>
-
-                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md transition-all cursor-pointer border border-neutral-100 dark:border-neutral-800 group/item">
-                                <h5 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 group-hover/item:text-[#C8102E] transition-colors">Stajyer (Marketing)</h5>
-                                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">GameDev Stüdyomuz için sosyal medya yönetebilecek stajyerler...</p>
-                                <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 font-medium">
-                                    <span>Pixel Games</span>
-                                    <span>Bugün</span>
-                                </div>
-                            </div>
+                            ) : (
+                                <button
+                                    onClick={() => setShowLoginModal(true)}
+                                    className="w-full py-2.5 bg-neutral-900 dark:bg-neutral-800 text-white dark:text-neutral-200 font-bold text-sm uppercase rounded hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors shadow-sm"
+                                >
+                                    ODTÜ Hesabını Bağla
+                                </button>
+                            )}
                         </div>
-                        <button className="w-full mt-4 py-2.5 bg-[#C8102E] text-white font-bold text-sm uppercase rounded hover:bg-[#a60d26] transition-colors relative z-10 shadow-sm">
-                            Tüm İlanları Gör
-                        </button>
-                    </div>
+                    )}
 
-                    <div className="p-4 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm rounded-lg transition-colors">
-                        <h4 className="font-bold text-lg mb-4 text-center font-serif text-neutral-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 pb-2">Günün Menüsü</h4>
+                    {/* Teknokent Job */}
+                    {news[1] && (
+                        <article className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] relative transition-colors group cursor-pointer hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
+                            <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b-2 border-black dark:border-white pb-2 text-neutral-900 dark:text-white uppercase font-serif tracking-tight">
+                                <Briefcase size={20} className="text-neutral-900 dark:text-white" />
+                                Kariyer & Staj
+                            </h3>
+
+                            <h4 className="font-bold text-lg mb-2 group-hover:underline decoration-2 underline-offset-2 dark:text-white">{news[1].title}</h4>
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                                {news[1].summary}
+                            </p>
+                            <div className="flex justify-between items-center text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                                <span>{news[1].source}</span>
+                                <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-black dark:text-white">
+                                    Başvur <ArrowRight size={12} />
+                                </span>
+                            </div>
+                        </article>
+                    )}
+
+                    <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors rounded-sm">
+                        <h4 className="font-bold text-xl mb-4 flex items-center gap-2 font-serif uppercase tracking-tight text-neutral-900 dark:text-white border-b-2 border-black dark:border-white pb-2">
+                            Günün Menüsü
+                        </h4>
 
                         {loadingMenu ? (
                             <div className="text-center text-sm text-neutral-500 py-4">Menü Yükleniyor...</div>
@@ -602,8 +769,8 @@ export default function OfficialView() {
                             <div className="space-y-6">
                                 {menu.breakfast?.length > 0 && (
                                     <div>
-                                        <h5 className="font-bold text-neutral-500 dark:text-neutral-400 text-sm uppercase mb-2 flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
+                                        <h5 className="font-bold text-neutral-900 dark:text-white text-sm uppercase mb-2 flex items-center gap-2">
+                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                             Kahvaltı
                                         </h5>
                                         <div className="text-sm text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800 p-3 rounded border border-neutral-100 dark:border-neutral-700 transition-colors">
@@ -614,8 +781,8 @@ export default function OfficialView() {
 
                                 {(menu.lunch?.length > 0) && (
                                     <div>
-                                        <h5 className="font-bold text-[#C8102E] text-sm uppercase mb-3 flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E]"></span>
+                                        <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2 text-neutral-900 dark:text-white">
+                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                             Öğle Yemeği
                                         </h5>
                                         <div className="grid grid-cols-2 gap-3">
@@ -637,8 +804,8 @@ export default function OfficialView() {
 
                                 {menu.dinner?.length > 0 && (
                                     <div>
-                                        <h5 className="font-bold text-[#C8102E] text-sm uppercase mb-3 flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E]"></span>
+                                        <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2 text-neutral-900 dark:text-white">
+                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                             Akşam Yemeği
                                         </h5>
                                         <div className="grid grid-cols-2 gap-3">
@@ -670,7 +837,7 @@ export default function OfficialView() {
             {/* LOGIN MODAL */}
             {showLoginModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-white/10 backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)] w-full max-w-md p-8 relative animate-in fade-in zoom-in duration-200">
+                    <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] w-full max-w-md p-8 relative animate-in fade-in zoom-in duration-200">
                         <button
                             onClick={() => setShowLoginModal(false)}
                             className="absolute right-4 top-4 text-black dark:text-white hover:rotate-90 transition-transform"
@@ -732,7 +899,7 @@ export default function OfficialView() {
                             <button
                                 type="submit"
                                 disabled={loadingEmails}
-                                className="w-full py-4 bg-[#C8102E] text-white font-black text-sm uppercase hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full py-4 bg-primary text-white font-black text-sm uppercase hover:bg-black dark:hover:bg-white dark:hover:text-black transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loadingEmails ? (
                                     <>

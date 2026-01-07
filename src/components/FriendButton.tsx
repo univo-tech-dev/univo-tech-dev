@@ -152,16 +152,16 @@ export default function FriendButton({
     if (variant === 'profile') {
         const base = "w-full py-2.5 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm mb-4";
         switch (type) {
-            case 'action': return `${base} bg-[#C8102E] text-white hover:bg-[#A00D25]`;
+            case 'action': return `${base} text-white hover:opacity-90`;
             case 'pending': return `${base} bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-200`;
-            case 'friend': return `${base} bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-[#C8102E] hover:text-[#C8102E] hover:bg-[#C8102E]/5 dark:hover:bg-[#C8102E]/10`;
+            case 'friend': return `${base} bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-current hover:opacity-80`;
         }
     }
     
     // Default styles
     switch (type) {
       case 'action': // Add/Accept
-        return "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-[#C8102E] text-white hover:bg-[#A00D25] transition-colors shadow-sm";
+        return "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm text-white hover:opacity-90 transition-colors shadow-sm";
       case 'pending':
         return "flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-red-50 hover:text-red-600 transition-colors";
       case 'friend': 
@@ -210,7 +210,8 @@ export default function FriendButton({
          return (
              <button
                 onClick={(e) => respondToRequest('accept', e)}
-                className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-[#C8102E] flex items-center gap-2 transition-colors"
+                className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors"
+                style={{ color: 'var(--primary-color, #C8102E)' }}
              >
                 <UserPlus size={14} />
                 İsteği Kabul Et
@@ -222,7 +223,8 @@ export default function FriendButton({
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => respondToRequest('accept', e)}
-            className="flex items-center gap-1 px-3 py-2 rounded-lg font-bold text-sm bg-[#C8102E] text-white hover:bg-[#A00D25] transition-colors"
+            className="flex items-center gap-1 px-3 py-2 rounded-lg font-bold text-sm text-white hover:opacity-90 transition-colors"
+            style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
           >
             <Check size={16} />
             Kabul Et
@@ -246,6 +248,7 @@ export default function FriendButton({
       className={variant === 'menu-item' ? 
         "w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2 transition-colors" : 
         getButtonStyles('action')}
+      style={variant !== 'menu-item' ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
     >
       <UserPlus size={variant === 'menu-item' ? 14 : 18} />
       Arkadaş Ekle

@@ -93,7 +93,7 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
             
             {loading ? (
                 <div className="py-12 flex flex-col items-center justify-center text-neutral-400 gap-3">
-                    <Loader2 size={32} className="animate-spin text-[#C8102E]" />
+                    <Loader2 size={32} className="animate-spin text-primary" />
                     <span className="text-sm font-medium">Aranıyor...</span>
                 </div>
             ) : !query ? (
@@ -115,9 +115,9 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
                                 <button 
                                     key={event.id}
                                     onClick={() => handleSelect(`/events/${event.id}`)}
-                                    className="w-full flex items-center gap-4 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-[#C8102E] dark:hover:border-[#C8102E] hover:shadow-sm transition-all text-left group"
+                                    className="w-full flex items-center gap-4 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-primary dark:hover:border-primary hover:shadow-sm transition-all text-left group"
                                 >
-                                    <div className="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-[#C8102E] group-hover:scale-110 transition-transform">
+                                    <div className="w-10 h-10 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                                         <Calendar size={20} />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -128,7 +128,7 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
                                             <span>{event.location}</span>
                                         </p>
                                     </div>
-                                    <ChevronRight size={16} className="text-neutral-300 group-hover:text-[#C8102E]" />
+                                    <ChevronRight size={16} className="text-neutral-300 group-hover:text-primary" />
                                 </button>
                             ))}
                         </div>
@@ -169,11 +169,14 @@ export default function GlobalSearch({ isOpen, onClose }: { isOpen: boolean; onC
                                     onClick={() => handleSelect(`/profile/${user.id}`)}
                                     className="w-full flex items-center gap-4 p-3 bg-white dark:bg-neutral-900 rounded-lg border border-neutral-200 dark:border-neutral-800 hover:border-purple-500 dark:hover:border-purple-500 hover:shadow-sm transition-all text-left group"
                                 >
-                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-100 flex items-center justify-center border border-neutral-200 dark:border-neutral-700">
+                                    <div 
+                                        className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center border border-neutral-200 dark:border-neutral-700 ${user.avatar_url ? 'bg-neutral-100' : 'bg-primary text-white'}`}
+                                        style={!user.avatar_url ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
+                                    >
                                         {user.avatar_url ? (
                                             <img src={user.avatar_url} alt={user.full_name} className="w-full h-full object-cover" />
                                         ) : (
-                                            <User size={20} className="text-neutral-400" />
+                                            <span className="font-bold text-sm">{(user.full_name || 'U').charAt(0)}</span>
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">

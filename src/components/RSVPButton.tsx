@@ -183,8 +183,12 @@ export default function RSVPButton({
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h3 className="font-bold font-serif text-lg mb-1">Bu etkinliğe katılacak mısınız?</h3>
-          <p className="text-sm text-neutral-600 font-medium">
-            Şu an <span className="text-black font-bold text-base">{attendeeCount}</span> kişi katılıyor
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
+            {attendeeCount > 0 ? (
+              <>Şu an <span className="font-bold text-base" style={{ color: 'var(--primary-color, #C8102E)' }}>{attendeeCount}</span> kişi katılıyor</>
+            ) : (
+              'Şu an katılan yok'
+            )}
           </p>
         </div>
       </div>
@@ -193,11 +197,11 @@ export default function RSVPButton({
          {/* Success/Status Message Area */}
          {status === 'going' ? (
            <div className="flex flex-col gap-4 animate-fade-in">
-              <div className="p-4 bg-green-100 border-2 border-green-800 flex items-center gap-3 shadow-[4px_4px_0px_0px_rgba(22,101,52,1)]">
+              <div className="p-4 bg-green-100 dark:bg-green-900/30 border-2 border-green-800 dark:border-green-500 flex items-center gap-3 shadow-[4px_4px_0px_0px_rgba(22,101,52,1)] dark:shadow-[4px_4px_0px_0px_rgba(34,197,94,0.3)]">
                 <span className="text-2xl">🎉</span>
                 <div>
-                  <p className="font-black text-green-900 uppercase tracking-wide text-sm">Kaydınız Alındı</p>
-                  <p className="text-xs text-green-800 font-medium mt-0.5">Etkinlik gününü not etmeyi unutmayın!</p>
+                  <p className="font-black text-green-900 dark:text-green-100 uppercase tracking-wide text-sm">Kaydınız Alındı</p>
+                  <p className="text-xs text-green-800 dark:text-green-300 font-medium mt-0.5">Etkinlik gününü not etmeyi unutmayın!</p>
                 </div>
               </div>
               
@@ -206,14 +210,14 @@ export default function RSVPButton({
                     href={getGoogleCalendarUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center bg-white border-2 border-black py-2 font-bold text-sm uppercase hover:bg-neutral-100 transition-colors"
+                    className="flex-1 text-center bg-white dark:bg-neutral-900 border-2 border-primary text-primary py-2 font-bold text-sm uppercase hover:bg-primary hover:text-white transition-colors"
                   >
                     Google Takvime Ekle
                   </a>
                   <button
                     onClick={() => handleRSVP('not_going')}
                     disabled={loading}
-                    className="px-4 py-2 text-sm font-bold text-red-600 underline decoration-2 hover:text-red-800"
+                    className="px-4 py-2 text-sm font-bold text-neutral-400 hover:text-primary transition-colors"
                   >
                     İptal Et
                   </button>
@@ -225,12 +229,8 @@ export default function RSVPButton({
              <button
                onClick={() => handleRSVP('going')}
                disabled={loading}
-               style={{
-                 backgroundColor: confirming ? '#C8102E' : 'black',
-                 color: 'white',
-               }}
-               className={`w-full py-4 font-black uppercase tracking-wider text-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all disabled:opacity-50 ${
-                 confirming ? 'animate-pulse' : 'hover:bg-neutral-800'
+               className={`w-full py-4 font-black uppercase tracking-wider text-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all disabled:opacity-50 text-white ${
+                 confirming ? 'bg-[#ea2626] animate-pulse' : 'bg-primary hover:bg-neutral-800'
                }`}
              >
                {loading ? 'İşleniyor...' : (confirming ? 'Onaylıyor musunuz?' : 'KATIL')}

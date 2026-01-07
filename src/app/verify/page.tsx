@@ -50,11 +50,11 @@ export default function VerifyEmailPage() {
           {/* Icon */}
           <div 
             className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
-            style={{ backgroundColor: '#C8102E20' }}
+            style={{ backgroundColor: 'rgba(var(--primary-rgb), 0.125)' }}
           >
             <svg
               className="w-10 h-10"
-              style={{ color: '#C8102E' }}
+              style={{ color: 'var(--primary-color, #C8102E)' }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -98,7 +98,7 @@ export default function VerifyEmailPage() {
             onClick={handleResendEmail}
             disabled={resending || !email}
             style={{ 
-              backgroundColor: resending ? '#A00D25' : '#C8102E',
+              backgroundColor: 'var(--primary-color, #C8102E)',
               opacity: (!email) ? 0.5 : 1
             }}
             className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 mb-4"

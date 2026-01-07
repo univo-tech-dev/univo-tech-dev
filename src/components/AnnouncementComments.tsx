@@ -63,11 +63,20 @@ export default function AnnouncementComments({ announcementId }: { announcementI
                 ) : comments.length > 0 ? (
                     comments.map((comment) => (
                         <div key={comment.id} className="flex gap-3 items-start group">
-                            <img 
-                                src={comment.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${comment.profiles?.full_name}&background=random`} 
-                                alt="avatar" 
-                                className="w-8 h-8 rounded-full border border-neutral-200 mt-1"
-                            />
+                            {comment.profiles?.avatar_url ? (
+                                <img 
+                                    src={comment.profiles.avatar_url} 
+                                    alt="avatar" 
+                                    className="w-8 h-8 rounded-full border border-neutral-200 mt-1 object-cover"
+                                />
+                            ) : (
+                                <div 
+                                    className="w-8 h-8 rounded-full border border-neutral-200 mt-1 bg-primary text-white flex items-center justify-center font-bold text-xs shrink-0"
+                                    style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                >
+                                    {(comment.profiles?.full_name || 'U').charAt(0)}
+                                </div>
+                            )}
                             <div className="flex-1">
                                 <div className="bg-neutral-50 p-3 rounded-lg rounded-tl-none border border-neutral-100 group-hover:border-neutral-300 transition-colors">
                                     <div className="flex justify-between items-start mb-1">
