@@ -41,31 +41,39 @@ export async function POST(request: Request) {
         formData.append('anchor', '');
         if (loginToken) formData.append('logintoken', loginToken as string);
 
+        // Allow axios to follow redirects (cookie jar handles state)
         const loginRes = await client.post(loginPageUrl, formData, {
-            maxRedirects: 0,
-            validateStatus: (status) => status >= 200 && status < 400,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Referer': loginPageUrl }
         });
 
-        console.log('ODTÜ Login Response Status:', loginRes.status);
-        console.log('ODTÜ Login Location Header:', loginRes.headers['location']);
+        console.log('ODTÜ Login Final Status:', loginRes.status);
+        console.log('ODTÜ Login Final URL:', loginRes.config.url);
 
-        // 303/302 means redirect (Success in Moodle context usually)
-        if (loginRes.status !== 303 && loginRes.status !== 302) {
-             // Check content for error
+        // Check if we ultimately landed on the dashboard (or my page)
+        // Moodle dashboard usually has '/my/' in the URL
+        const finalUrl = loginRes.config.url || '';
+        const isDashboard = finalUrl.includes('/my/') || loginRes.data.includes('user/profile.php') || loginRes.data.includes('Log out');
+
+        if (!isDashboard) {
+             // Try to see if it's just a landing page that requires clicking "Continue"
+             // But usually axios follows valid redirects.
+             // If we are still on login page, it failed.
              const $fail = cheerio.load(loginRes.data);
-             const errorMsg = $fail('.loginerrors').text() || 'Giriş başarısız.';
-             return NextResponse.json({ error: errorMsg }, { status: 401 });
+             const errorMsg = $fail('.loginerrors').text();
+             
+             if (errorMsg) {
+                 return NextResponse.json({ error: errorMsg }, { status: 401 });
+             } else {
+                 // Fallback: If we can't find specific error but url is login
+                 if (finalUrl.includes('login')) {
+                    return NextResponse.json({ error: 'Giriş yapılamadı. Kullanıcı adı veya şifre hatalı.' }, { status: 401 });
+                 }
+             }
         }
         
-        // Success! Follow redirect to scrape info
-        const redirectUrl = loginRes.headers['location'];
-        if (!redirectUrl || redirectUrl.includes('login')) {
-            return NextResponse.json({ error: 'Giriş doğrulanamadı.' }, { status: 401 });
-        }
-        
-        const dashboardRes = await client.get(redirectUrl);
-        const $dash = cheerio.load(dashboardRes.data);
+        // We are on the dashboard (or redirected page)
+        // Use loginRes.data directly since we followed redirects
+        const $dash = cheerio.load(loginRes.data);
         
         let fullName = $dash('.usertext').text() || $dash('.user-name').text() || $dash('#action-menu-toggle-1 span.userbutton span.usertext').text();
         if (fullName) fullName = fullName.replace('You are logged in as', '').trim();

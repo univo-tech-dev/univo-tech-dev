@@ -81,7 +81,7 @@ export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLogin
                         <X size={24} />
                     </button>
                     <div className="relative z-10 text-center">
-                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg p-2">
+                        <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg p-2 transform rotate-3">
                             <img src="/univo-logo-transparent.png?v=3" alt="Univo" className="w-full h-full object-contain" />
                         </div>
                         <h2 className="text-2xl font-black font-serif uppercase tracking-tight">ODTÜ İle Bağlan</h2>
@@ -140,7 +140,10 @@ export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLogin
 
                         {/* Terms */}
                         <label className="flex items-start gap-3 p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors select-none group">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'bg-primary border-primary' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}>
+                            <div 
+                                className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'text-white' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}
+                                style={acceptedTerms ? { backgroundColor: 'var(--primary-color)', borderColor: 'var(--primary-color)' } : {}}
+                            >
                                 {acceptedTerms && <CheckCircle size={14} className="text-white" />}
                             </div>
                             <input 
