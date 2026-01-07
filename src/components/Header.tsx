@@ -159,6 +159,11 @@ function HeaderContent() {
               <AuthButton />
             </div>
 
+            {/* Notification Center (Mobile) - Before hamburger */}
+            <div className="md:hidden">
+              <NotificationCenter />
+            </div>
+
             {/* Mobile Menu Button */}
             <button
               className="md:hidden p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors relative w-10 h-10 flex items-center justify-center overflow-hidden"
