@@ -1,4 +1,4 @@
-import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2 } from 'lucide-react';
+import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap } from 'lucide-react';
 import * as React from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
@@ -62,7 +62,7 @@ export default function OfficialView() {
   const [loginError, setLoginError] = React.useState('');
 
   // Tab State
-  const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history' | 'starred'>('agenda');
+  const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history' | 'starred' | 'odtuclass'>('agenda');
   const [followedSources, setFollowedSources] = React.useState<string[]>([]);
   const [starredIds, setStarredIds] = React.useState<string[]>([]);
   const [blockedSources, setBlockedSources] = React.useState<string[]>([]);
@@ -346,6 +346,40 @@ export default function OfficialView() {
       return scoreB - scoreA;
   });
 
+  // Mock ODTUClass Data
+  const odtuClassData = [
+    {
+        id: 'oc1',
+        title: 'PHYS105 - Midterm 2 Sonuçları',
+        source: 'ODTÜClass',
+        type: 'grade',
+        course: 'PHYS105',
+        date: 'Bugün, 14:30',
+        summary: '2. Ara sınav sonuçları açıklanmıştır. Kağıtlarınızı 8 Ocak Çarşamba 13:30-15:30 arasında P-102 ofisinde görebilirsiniz.',
+        link: 'https://odtuclass2025f.metu.edu.tr/my/'
+    },
+    {
+        id: 'oc2',
+        title: 'MATH119 - Yeni Ödev Eklendi',
+        source: 'ODTÜClass',
+        type: 'assignment',
+        course: 'MATH119',
+        date: 'Dün',
+        summary: 'WebWork Assignment 5 sisteme yüklenmiştir. Son teslim tarihi: 12 Ocak 23:59.',
+        link: 'https://odtuclass2025f.metu.edu.tr/my/'
+    },
+    {
+        id: 'oc3',
+        title: 'CENG140 - Lab 3 Duyurusu',
+        source: 'ODTÜClass',
+        type: 'announcement',
+        course: 'CENG140',
+        date: '3 gün önce',
+        summary: 'Bu haftaki laboratuvar dersi online yapılacaktır. Zoom linki ders sayfasında paylaşılmıştır.',
+        link: 'https://odtuclass2025f.metu.edu.tr/my/'
+    }
+  ];
+
   // Filtered Lists
   // GÜNDEM: Unread Items AND NOT Emails (Announcements Only) AND Last 7 Days
   const filteredNews = allNews.filter(item => {
@@ -354,12 +388,13 @@ export default function OfficialView() {
 
     if (activeTab === 'agenda') return (item.type === 'announcement' || item.type === 'event');
     if (activeTab === 'emails') return item.type === 'email';
+    if (activeTab === 'odtuclass') return false; // Handled separately
     if (activeTab === 'starred') return starredIds.includes(String(item.id));
     if (activeTab === 'history') return readIds.includes(String(item.id));
     return true;
   });
 
-  const displayedItems = filteredNews.filter(item => {
+  const displayedItems = activeTab === 'odtuclass' ? odtuClassData : filteredNews.filter(item => {
     if (activeTab === 'agenda' || activeTab === 'emails') {
         return !readIds.includes(String(item.id));
     }
@@ -395,8 +430,9 @@ export default function OfficialView() {
                 {[
                     { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length },
                     { id: 'emails', label: 'E-POSTALAR', count: emails.filter(n => !readIds.includes(String(n.id))).length },
+                    { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.length, icon: <GraduationCap size={14} className="mb-0.5"/> },
                     { id: 'starred', label: 'YILDIZLILAR', count: starredIds.length },
-                    { id: 'history', label: 'GEÇMİŞ', count: readIds.length }
+                    { id: 'history', label: '', icon: <Trash2 size={16} />, count: readIds.length }
                 ].map(tab => (
                     <button
                         key={tab.id}
@@ -406,7 +442,9 @@ export default function OfficialView() {
                             ? 'text-black dark:text-white' 
                             : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'
                         }`}
+                        title={tab.id === 'history' ? 'Çöp Kutusu' : tab.label}
                     >
+                        {tab.icon && tab.icon}
                         {tab.label}
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors ${
                             activeTab === tab.id 
@@ -477,7 +515,9 @@ export default function OfficialView() {
                                         ? '#2563eb' // Blue-600
                                         : item.type === 'email' 
                                             ? '#d97706' // Amber-600
-                                            : '#059669' // Emerald-600
+                                            : (item.type === 'grade' || item.type === 'assignment')
+                                                ? '#7c3aed' // Violet
+                                                : '#059669' // Emerald-600
                                       )
                             }}
                         >   
@@ -528,11 +568,13 @@ export default function OfficialView() {
                                         <Calendar size={16} className="text-blue-600"/>
                                     ) : item.type === 'email' ? (
                                         <Mail size={16} className="text-amber-600"/>
+                                    ) : (item.type === 'grade' || item.type === 'assignment') ? (
+                                        <GraduationCap size={16} className="text-violet-600"/>
                                     ) : (
                                         <Megaphone size={16} className="text-emerald-600"/>
                                     )}
-                                    <span className={`text-xs font-bold uppercase ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : 'text-emerald-600'}`}>
-                                        {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : 'Duyuru'}
+                                    <span className={`text-xs font-bold uppercase ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
+                                        {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
                                     </span>
                                     <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
                                     
@@ -557,21 +599,24 @@ export default function OfficialView() {
                                     <div className="flex flex-wrap items-center gap-2 pt-2 mb-4">
                                         {/* Dynamic Theme Class Generator */}
                                         {(() => {
+                                            // Always use colorful active classes, regardless of isRead
+                                            // Violet for ODTUClass, Blue for Events, Amber for Email, Emerald for Announcement
                                             const activeColorClass = item.type === 'email' 
                                                 ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-600 text-amber-800 dark:text-amber-400' 
                                                 : item.type === 'event'
                                                     ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-600 text-blue-800 dark:text-blue-400'
-                                                    : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-600 text-emerald-800 dark:text-emerald-400';
+                                                    : (item.type === 'grade' || item.type === 'assignment')
+                                                        ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-600 text-violet-800 dark:text-violet-400' 
+                                                        : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-600 text-emerald-800 dark:text-emerald-400';
                                             
-                                            const hoverClass = 'hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white';
+                                            const hoverClass = item.type === 'email' ? 'hover:bg-amber-100' : item.type === 'event' ? 'hover:bg-blue-100' : 'hover:bg-emerald-100';
                                             const shadowClass = 'shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]';
 
                                             return (
                                             <>
                                                 <button
                                                     onClick={(e) => handleMarkRead(String(item.id), e)}
-                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass}
-                                                        ${isRead ? activeColorClass : `bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 ${hoverClass}`}`}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass}`}
                                                 >
                                                     {isRead ? <CheckCircle size={12} /> : <div className="w-3 h-3 rounded-full border-2 border-current" />}
                                                     {isRead ? 'Okundu' : 'Okundu İşaretle'}
@@ -579,10 +624,9 @@ export default function OfficialView() {
 
                                                 <button
                                                     onClick={(e) => handleStar(String(item.id), e)}
-                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass}
-                                                        ${starredIds.includes(String(item.id)) ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500 text-yellow-700 dark:text-yellow-400' : `bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 ${hoverClass}`}`}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${starredIds.includes(String(item.id)) ? activeColorClass : activeColorClass /* Keep colorful even if not starred, just differentiate maybe? No user said "sadece kaynağa git renkli bunu düzelt" implying all should be colorful */}`}
                                                 >
-                                                    <Star size={12} className={starredIds.includes(String(item.id)) ? 'fill-yellow-400 text-yellow-500' : ''} />
+                                                    <Star size={12} className={starredIds.includes(String(item.id)) ? 'fill-current' : ''} />
                                                     {starredIds.includes(String(item.id)) ? 'Yıldızlı' : 'Yıldızla'}
                                                 </button>
 
@@ -591,10 +635,7 @@ export default function OfficialView() {
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass}
-                                                        ${activeColorClass.replace('bg-', 'hover:bg-').replace('text-', 'text-') /* Use active color for text, white bg by default? No, let's just use the active color style lightly */ }
-                                                        bg-white dark:bg-neutral-900 text-black dark:text-white border-black dark:border-white`}
-                                                    style={{ borderColor: item.type === 'email' ? '#d97706' : item.type === 'event' ? '#2563eb' : '#059669', color: item.type === 'email' ? '#d97706' : item.type === 'event' ? '#2563eb' : '#059669' }}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass}`}
                                                 >
                                                     <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
                                                     Kaynağa Git
@@ -628,7 +669,7 @@ export default function OfficialView() {
         {/* Sidebar / Teknokent */}
         <div className="space-y-6">
             {/* Email Integration Card */}
-            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-6 relative overflow-hidden transition-colors">
+            <div className="bg-white dark:bg-neutral-900 border-b-4 border-black dark:border-white rounded-sm p-6 relative overflow-hidden transition-colors">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-neutral-900 dark:text-white">
                     <Mail size={20} className="text-neutral-900 dark:text-white" />
                     E-Posta Entegrasyonu
@@ -677,37 +718,30 @@ export default function OfficialView() {
                 )}
             </div>
 
-            <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm p-6 relative overflow-hidden group hover:border-primary/30 transition-all">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110" />
-                
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 relative z-10 text-neutral-900 dark:text-white">
-                    <Briefcase size={20} className="text-primary" />
-                    Teknokent Fırsatları
-                </h3>
-                {/* Static sidebar jobs */}
-                <div className="space-y-4 relative z-10">
-                    <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md transition-all cursor-pointer border border-neutral-100 dark:border-neutral-800 group/item">
-                        <h5 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 group-hover/item:text-primary transition-colors">{news[1].title}</h5>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2 line-clamp-2">{news[1].summary}</p>
-                        <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 font-medium">
-                            <span>{news[1].source}</span>
-                            <span>{news[1].date}</span>
-                        </div>
+             {/* Teknokent Job */}
+             {/* Teknokent Job */}
+            {news[1] && (
+                <article className="bg-white dark:bg-neutral-900 border-b-4 border-black dark:border-white rounded-sm p-6 relative transition-colors group cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                    <div className="absolute top-4 right-4 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-[10px] font-black px-2 py-1 uppercase rounded-sm">
+                        Teknokent Fırsatı
                     </div>
+                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-neutral-900 dark:text-white">
+                        <Briefcase size={20} className="text-neutral-900 dark:text-white" />
+                        Kariyer & Staj
+                    </h3>
                     
-                    <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg hover:bg-white dark:hover:bg-neutral-800 hover:shadow-md transition-all cursor-pointer border border-neutral-100 dark:border-neutral-800 group/item">
-                        <h5 className="font-bold text-neutral-900 dark:text-neutral-100 mb-1 group-hover/item:text-primary transition-colors">Stajyer (Marketing)</h5>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">GameDev Stüdyomuz için sosyal medya yönetebilecek stajyerler...</p>
-                        <div className="flex justify-between text-xs text-neutral-400 dark:text-neutral-500 font-medium">
-                            <span>Pixel Games</span>
-                            <span>Bugün</span>
-                        </div>
+                    <h4 className="font-bold text-lg mb-2 group-hover:underline decoration-2 underline-offset-2 dark:text-white">{news[1].title}</h4>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                        {news[1].summary}
+                    </p>
+                    <div className="flex justify-between items-center text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                        <span>{news[1].source}</span>
+                        <span className="flex items-center gap-1 group-hover:translate-x-1 transition-transform text-black dark:text-white">
+                            Başvur <ArrowRight size={12}/>
+                        </span>
                     </div>
-                </div>
-                <button className="w-full mt-4 py-2.5 bg-primary text-white font-bold text-sm uppercase rounded hover:bg-primary-hover transition-colors relative z-10 shadow-sm">
-                    Tüm İlanları Gör
-                </button>
-            </div>
+                </article>
+            )}
 
             <div className="p-4 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm rounded-lg transition-colors">
                 <h4 className="font-bold text-lg mb-4 text-center font-serif text-neutral-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 pb-2">Günün Menüsü</h4>
