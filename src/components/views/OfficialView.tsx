@@ -1,5 +1,6 @@
 import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2 } from 'lucide-react';
 import * as React from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -328,26 +329,24 @@ export default function OfficialView() {
   return (
     <div className="container mx-auto px-4 py-8 relative">
       {/* Newspaper Header */}
-      <div className="border-b-2 border-black dark:border-neutral-700 pb-2 mb-2 flex justify-between items-end transition-colors">
-         <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
-            ANKARA, {formattedDate.toUpperCase()}
-         </div>
-         <div className="flex items-center gap-4">
-            <div className="text-right">
-                <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">HAVA DURUMU</div>
-                <div className="font-bold text-sm dark:text-white">6°C, Parçalı Bulutlu</div>
-            </div>
-         </div>
-      </div>
-      <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors">
+      <div className="border-b-4 border-black dark:border-white pb-4 mb-4 text-center transition-colors">
         <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white">Resmi Gündem</h2>
         <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
           <span>SAYI: {issueNumber}</span>
-          <a href="/official/archive" className="flex items-center gap-1 hover:text-primary transition-colors font-bold uppercase hover:underline decoration-2 underline-offset-4 cursor-pointer dark:text-neutral-300 dark:hover:text-primary-light">
-              <Briefcase size={16} />
-              Belge Arşivi
-          </a>
+          <span>RESMİ BÜLTEN</span>
+          <span>{formattedDate.toUpperCase()}</span>
         </div>
+      </div>
+      
+      {/* Belge Arşivi Link */}
+      <div className="flex justify-center mb-8">
+        <Link 
+          href="/official/archive" 
+          className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white text-black dark:text-white font-bold uppercase text-sm hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+        >
+          <Briefcase size={16} />
+          Belge Arşivi
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -465,13 +464,13 @@ export default function OfficialView() {
                             <div className="flex-1 pr-32">
                                 <div className="flex items-center gap-2 mb-1">
                                     {item.type === 'event' ? (
-                                        <Calendar size={16} className="text-primary"/>
+                                        <Calendar size={16} className="text-blue-600"/>
                                     ) : item.type === 'email' ? (
-                                        <Mail size={16} className="text-yellow-600"/>
+                                        <Mail size={16} className="text-amber-600"/>
                                     ) : (
-                                        <Megaphone size={16} className="text-primary"/>
+                                        <Megaphone size={16} className="text-emerald-600"/>
                                     )}
-                                    <span className={`text-xs font-bold uppercase ${item.type === 'email' ? 'text-yellow-600' : 'text-primary'}`}>
+                                    <span className={`text-xs font-bold uppercase ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : 'text-emerald-600'}`}>
                                         {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : 'Duyuru'}
                                     </span>
                                 </div>
@@ -605,7 +604,7 @@ export default function OfficialView() {
                         {menu.breakfast?.length > 0 && (
                              <div>
                                 <h5 className="font-bold text-neutral-500 dark:text-neutral-400 text-sm uppercase mb-2 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600"></span>
+                                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                     Kahvaltı
                                 </h5>
                                 <div className="text-sm text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800 p-3 rounded border border-neutral-100 dark:border-neutral-700 transition-colors">
@@ -616,8 +615,8 @@ export default function OfficialView() {
 
                         {(menu.lunch?.length > 0) && (
                             <div>
-                                <h5 className="font-bold text-primary text-sm uppercase mb-3 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2" style={{ color: 'var(--primary-color, #C8102E)' }}>
+                                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                     Öğle Yemeği
                                 </h5>
                                 <div className="grid grid-cols-2 gap-3">
@@ -639,8 +638,8 @@ export default function OfficialView() {
 
                         {menu.dinner?.length > 0 && (
                             <div>
-                                <h5 className="font-bold text-primary text-sm uppercase mb-3 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                                <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2" style={{ color: 'var(--primary-color, #C8102E)' }}>
+                                    <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                     Akşam Yemeği
                                 </h5>
                                 <div className="grid grid-cols-2 gap-3">

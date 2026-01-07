@@ -55,7 +55,7 @@ export default function CommunityView() {
                      {/* Popular Events - Replaced TrendingWidget */}
                     <div className="border-4 border-primary dark:border-primary p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] transition-colors">
                         <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white transition-colors">
-                            <Calendar size={24} className="text-primary" />
+                            <Calendar size={24} style={{ color: 'var(--primary-color, #C8102E)' }} />
                             Popüler
                         </h3>
                         <div className="space-y-4">

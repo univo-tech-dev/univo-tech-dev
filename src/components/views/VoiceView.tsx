@@ -657,7 +657,8 @@ export default function VoiceView() {
                                     ref={textareaRef}
                                     rows={3}
                                     maxLength={280}
-                                    className="w-full p-3 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-primary dark:focus:border-primary hover:border-primary dark:hover:border-primary bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                    className="w-full p-3 border-2 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neutral-400 dark:hover:border-neutral-600 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                    style={{ '--tw-ring-color': 'var(--primary-color, #C8102E)' } as React.CSSProperties}
                                     placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
                                     value={newStatus}
                                     onChange={handleTextChange}
