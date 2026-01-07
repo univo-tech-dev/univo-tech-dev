@@ -206,14 +206,14 @@ export default function RSVPButton({
                     href={getGoogleCalendarUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center bg-white border-2 border-black py-2 font-bold text-sm uppercase hover:bg-neutral-100 transition-colors"
+                    className="flex-1 text-center bg-white dark:bg-neutral-900 border-2 border-primary text-primary py-2 font-bold text-sm uppercase hover:bg-primary hover:text-white transition-colors"
                   >
                     Google Takvime Ekle
                   </a>
                   <button
                     onClick={() => handleRSVP('not_going')}
                     disabled={loading}
-                    className="px-4 py-2 text-sm font-bold text-primary underline decoration-2 hover:text-primary-hover dark:hover:text-white"
+                    className="px-4 py-2 text-sm font-bold text-neutral-400 hover:text-primary transition-colors"
                   >
                     İptal Et
                   </button>
@@ -226,7 +226,7 @@ export default function RSVPButton({
                onClick={() => handleRSVP('going')}
                disabled={loading}
                style={{
-                 backgroundColor: confirming ? '#C8102E' : 'black',
+                 backgroundColor: confirming ? '#ea2626' : 'var(--primary-color)',
                  color: 'white',
                }}
                className={`w-full py-4 font-black uppercase tracking-wider text-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all disabled:opacity-50 ${

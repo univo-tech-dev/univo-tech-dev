@@ -63,7 +63,7 @@ export default function CommunityView() {
                                 <div key={event.id} onClick={() => router.push('/events/1')} className="group cursor-pointer">
                                     <div className="flex justify-between items-start mb-1">
                                          <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:text-primary transition-colors">{event.title}</h4>
-                                         <span className="text-xs font-bold bg-black dark:bg-white text-white dark:text-black px-2 py-1 uppercase transition-colors">{event.date}</span>
+                                         <span className="text-xs font-bold bg-primary text-white px-2 py-1 uppercase transition-colors">{event.date}</span>
                                     </div>
                                     <div className="flex justify-between items-end border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
                                         <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{event.attendees} katılımcı</p>
