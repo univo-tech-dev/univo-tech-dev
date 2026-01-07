@@ -468,19 +468,7 @@ export default function OfficialView() {
                 ].map(tab => (
                     <button
                         key={tab.id}
-                        onClick={() => {
-                            // Protected tabs require login
-                            if ((tab.id === 'emails' || tab.id === 'odtuclass') && !user) {
-                                toast.error('Bu bölümü görüntülemek için giriş yapmalısınız.', {
-                                    action: {
-                                        label: 'Giriş Yap',
-                                        onClick: () => window.location.href = '/login'
-                                    }
-                                });
-                                return;
-                            }
-                            setActiveTab(tab.id as any);
-                        }}
+                        onClick={() => setActiveTab(tab.id as any)}
                         className={`pb-3 font-black text-sm tracking-wider uppercase transition-colors relative flex items-center gap-2 shrink-0 ${
                             activeTab === tab.id 
                             ? 'text-black dark:text-white' 
