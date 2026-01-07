@@ -116,3 +116,12 @@ a:hover {
   margin: 0 auto;
   padding: 0 1rem;
 }
+
+/* Setup for no-scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
