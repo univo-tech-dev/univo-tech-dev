@@ -39,7 +39,6 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
         onClick={onNavigate}
         className="px-4 py-2 rounded-lg font-bold hover:opacity-90 transition-opacity !text-white bg-[var(--primary-color,#C8102E)] flex items-center gap-2"
       >
-        <img src="/metu.png" alt="ODTÜ" className="w-5 h-5 rounded-full object-contain bg-white" />
         <span>Üniversitenle Giriş Yap</span>
       </Link>
     );

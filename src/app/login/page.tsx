@@ -14,7 +14,7 @@ const UNIVERSITIES = [
     name: 'ODTÜ',
     fullName: 'Orta Doğu Teknik Üniversitesi',
     color: '#C8102E',
-    logo: '/universities/metu.png', // You can add this later
+    logo: '/metu.png',
     enabled: true,
     moodleUrl: 'odtuclass2025f.metu.edu.tr'
   },
@@ -141,10 +141,14 @@ export default function LoginPage() {
                                 }`}
                             >
                                 <div 
-                                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
+                                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0 overflow-hidden"
                                     style={{ backgroundColor: uni.color }}
                                 >
-                                    {uni.name.charAt(0)}
+                                    {uni.logo ? (
+                                        <img src={uni.logo} alt={uni.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        uni.name.charAt(0)
+                                    )}
                                 </div>
                                 <div className="text-left flex-1">
                                     <h3 className="font-bold text-neutral-900 dark:text-white">{uni.name}</h3>
