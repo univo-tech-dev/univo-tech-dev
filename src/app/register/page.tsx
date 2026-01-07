@@ -236,7 +236,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              style={{ backgroundColor: loading ? '#A00D25' : '#C8102E' }}
+              style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
               className="w-full text-white py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {loading ? 'Kayıt yapılıyor...' : 'Kayıt Ol'}
