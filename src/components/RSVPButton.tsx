@@ -183,8 +183,12 @@ export default function RSVPButton({
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h3 className="font-bold font-serif text-lg mb-1">Bu etkinliğe katılacak mısınız?</h3>
-          <p className="text-sm text-neutral-600 font-medium">
-            Şu an <span className="text-black font-bold text-base">{attendeeCount}</span> kişi katılıyor
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
+            {attendeeCount > 0 ? (
+              <>Şu an <span className="font-bold text-base" style={{ color: 'var(--primary-color, #C8102E)' }}>{attendeeCount}</span> kişi katılıyor</>
+            ) : (
+              'Şu an katılan yok'
+            )}
           </p>
         </div>
       </div>
