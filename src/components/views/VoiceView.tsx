@@ -656,7 +656,7 @@ export default function VoiceView() {
                                     ref={textareaRef}
                                     rows={3}
                                     maxLength={280}
-                                    className="w-full p-3 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-black dark:focus:border-primary bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                    className="w-full p-3 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-primary dark:focus:border-primary hover:border-primary dark:hover:border-primary bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
                                     placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
                                     value={newStatus}
                                     onChange={handleTextChange}
@@ -742,7 +742,7 @@ export default function VoiceView() {
 
                                         <div className="flex gap-4 items-start">
                                             {/* Avatar */}
-                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'bg-black dark:bg-white text-white dark:text-black'}`}>
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'bg-primary text-white'}`}>
                                                 {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
                                             </div>
 
@@ -1050,7 +1050,7 @@ export default function VoiceView() {
                                 Kampüs Nabzı
                             </h3>
                             <div className="grid grid-cols-2 gap-4 text-center">
-                                <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded border border-neutral-200 dark:border-neutral-700">
+                                <div className="p-3 bg-primary/5 dark:bg-neutral-800 rounded border border-primary dark:border-primary/50">
                                     <span className="block text-3xl font-black font-serif text-primary animate-pulse">
                                         {activeUsers}
                                     </span>

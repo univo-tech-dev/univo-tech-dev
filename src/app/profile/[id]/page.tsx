@@ -320,7 +320,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         {/* Left Column: Identity & Social */}
         <div className="lg:col-span-1 space-y-6">
             <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group transition-colors">
-                <div className="h-32 bg-primary/5 dark:bg-primary/10 w-full absolute top-0 left-0 bg-[radial-gradient(var(--primary-color)_1px,transparent_1px)] [background-size:16px_16px] opacity-20" />
+                <div 
+                    className="h-32 bg-primary/5 dark:bg-primary/10 w-full absolute top-0 left-0 opacity-20" 
+                    style={{ backgroundImage: 'radial-gradient(var(--primary-color) 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+                />
                 
                 <div className="pt-12 px-6 pb-6 text-center relative z-10">
                     <div className="w-28 h-28 mx-auto relative group/avatar">
@@ -437,9 +440,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             </div>
 
-            {/* Community Application Section - Only for own profile and non-admins */}
             {isOwnProfile && (
-                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border-2 border-primary/30 dark:border-primary/50 p-6 transition-colors">
+                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border-2 border-primary dark:border-primary p-6 transition-colors">
                     <h3 className="text-lg font-bold font-serif mb-2 text-neutral-800 dark:text-neutral-200">
                         Topluluk Sahibi misiniz?
                     </h3>

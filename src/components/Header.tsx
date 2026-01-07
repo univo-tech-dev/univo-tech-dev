@@ -71,7 +71,7 @@ function HeaderContent() {
 
   const getLinkClass = (id: string) => {
     const isActive = currentView === id;
-    return `flex items-center gap-2 font-medium transition-colors ${isActive ? 'text-[#C8102E]' : 'text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E]'
+    return `flex items-center gap-2 font-medium transition-colors ${isActive ? 'text-primary' : 'text-neutral-600 dark:text-neutral-400 hover:text-primary'
       }`;
   };
 
@@ -90,7 +90,7 @@ function HeaderContent() {
                 className="object-cover transition-all duration-300 dark:invert mix-blend-multiply dark:mix-blend-screen"
               />
             </div>
-            <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
+            <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-primary transition-colors -ml-1">
               Univo
             </h1>
           </Link>
