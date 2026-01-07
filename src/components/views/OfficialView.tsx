@@ -346,9 +346,9 @@ export default function OfficialView() {
       return scoreB - scoreA;
   });
 
-  // ODTUClass Data (Real or Mock)
+  // ODTUClass Data (Real or Mock) - Only show if user is logged in
   const realCourses = user?.user_metadata?.odtu_courses;
-  const odtuClassData = (realCourses && realCourses.length > 0) ? realCourses.map((c: any) => ({
+  const odtuClassData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => ({
       id: `oc-${c.url}`,
       title: c.name,
       source: 'ODTÜClass',
@@ -388,7 +388,7 @@ export default function OfficialView() {
         summary: 'Bu haftaki laboratuvar dersi online yapılacaktır. Zoom linki ders sayfasında paylaşılmıştır.',
         link: 'https://odtuclass2025f.metu.edu.tr/my/'
     }
-  ];
+  ]);
 
   // Filtered Lists
   // GÜNDEM: Unread Items AND NOT Emails (Announcements Only) AND Last 7 Days
@@ -397,7 +397,8 @@ export default function OfficialView() {
     if (blockedSources.includes(item.source)) return false;
 
     if (activeTab === 'agenda') return (item.type === 'announcement' || item.type === 'event');
-    if (activeTab === 'emails') return item.type === 'email';
+    // Emails tab: only show emails if user is logged in
+    if (activeTab === 'emails') return user && item.type === 'email';
     if (activeTab === 'odtuclass') return false; // Handled separately
     if (activeTab === 'starred') return starredIds.includes(String(item.id));
     if (activeTab === 'history') return readIds.includes(String(item.id));
