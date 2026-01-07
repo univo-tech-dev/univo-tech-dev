@@ -88,6 +88,11 @@ function HeaderContent() {
       }`;
   };
 
+  // Hide header on login/register pages
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
   return (
     <>
       <header className={`sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800 transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>

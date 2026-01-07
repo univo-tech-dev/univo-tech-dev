@@ -278,7 +278,7 @@ export default function LoginPage() {
                             type="submit"
                             disabled={isLoading}
                             className="w-full py-3.5 text-white font-bold text-sm uppercase tracking-wide rounded-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none shadow-sm flex items-center justify-center gap-2 mt-4"
-                            style={{ backgroundColor: 'var(--primary-color)' }}
+                            style={{ backgroundColor: selectedUni?.color || 'var(--primary-color)' }}
                         >
                             {isLoading ? (
                                 <>
