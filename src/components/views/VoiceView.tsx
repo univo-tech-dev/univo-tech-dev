@@ -623,62 +623,7 @@ export default function VoiceView() {
                 {/* Main Column: Forum / Letters */}
                 <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
                     {/* Weekly Poll - Moved above feed */}
-                    {/* Weekly Poll - Moved above feed */}
-                    <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
-                        <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
-                            <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
-                                Haftanın Anketi
-                            </h3>
-                            <span className="text-[10px] font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-sm flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse"></span>
-                                Yapay Zeka
-                            </span>
-                        </div>
 
-                        {pollLoading ? (
-                            <div className="text-center py-4 text-xs text-neutral-400 animate-pulse">Yapay zeka anket hazırlıyor...</div>
-                        ) : (
-                            <>
-                                <h4 className="font-bold text-sm mb-3 font-serif leading-tight dark:text-white">
-                                    "{activePoll?.question}"
-                                </h4>
-
-                                <div className="space-y-2">
-                                    {activePoll?.options.map((option, idx) => {
-                                        const percentage = totalVotes === 0 ? 0 : Math.round((pollResults[idx] / totalVotes) * 100);
-                                        const isSelected = userVote === idx;
-                                        const showResults = userVote !== null;
-
-                                        return (
-                                            <button
-                                                key={idx}
-                                                onClick={() => handlePollVote(idx)}
-                                                className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden ${isSelected
-                                                    ? 'border-black dark:border-white bg-neutral-50 dark:bg-neutral-800'
-                                                    : 'border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white'
-                                                    }`}
-                                            >
-                                                {showResults && (
-                                                    <div
-                                                        className="absolute top-0 left-0 h-full bg-neutral-100 dark:bg-neutral-800 transition-all duration-500 ease-out"
-                                                        style={{ width: `${percentage}%` }}
-                                                    />
-                                                )}
-
-                                                <div className="relative p-3 flex justify-between items-center z-10 font-bold">
-                                                    <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
-                                                        {option}
-                                                    </span>
-                                                    {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                                {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>}
-                            </>
-                        )}
-                    </div>
 
                     <div className="flex justify-between items-end border-b-2 border-black dark:border-white pb-2 mb-6">
                         <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
@@ -1013,6 +958,63 @@ export default function VoiceView() {
                 {/* Sidebar: Polls & Stats */}
                 <div className="space-y-8">
                     <div className="sticky top-24 space-y-8 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin' }}>
+                        {/* Weekly Poll */}
+                        <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                            <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
+                                <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
+                                    Haftanın Anketi
+                                </h3>
+                                <span className="text-[10px] font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-sm flex items-center gap-1">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse"></span>
+                                    Yapay Zeka
+                                </span>
+                            </div>
+
+                            {pollLoading ? (
+                                <div className="text-center py-4 text-xs text-neutral-400 animate-pulse">Yapay zeka anket hazırlıyor...</div>
+                            ) : (
+                                <>
+                                    <h4 className="font-bold text-sm mb-3 font-serif leading-tight dark:text-white">
+                                        "{activePoll?.question}"
+                                    </h4>
+
+                                    <div className="space-y-2">
+                                        {activePoll?.options.map((option, idx) => {
+                                            const percentage = totalVotes === 0 ? 0 : Math.round((pollResults[idx] / totalVotes) * 100);
+                                            const isSelected = userVote === idx;
+                                            const showResults = userVote !== null;
+
+                                            return (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => handlePollVote(idx)}
+                                                    className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden ${isSelected
+                                                        ? 'border-black dark:border-white bg-neutral-50 dark:bg-neutral-800'
+                                                        : 'border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white'
+                                                        }`}
+                                                >
+                                                    {showResults && (
+                                                        <div
+                                                            className="absolute top-0 left-0 h-full bg-neutral-100 dark:bg-neutral-800 transition-all duration-500 ease-out"
+                                                            style={{ width: `${percentage}%` }}
+                                                        />
+                                                    )}
+
+                                                    <div className="relative p-3 flex justify-between items-center z-10 font-bold">
+                                                        <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
+                                                            {option}
+                                                        </span>
+                                                        {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>}
+                                </>
+                            )}
+                        </div>
+
                         {/* Trending Topics */}
                         <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
                             <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
