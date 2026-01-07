@@ -47,6 +47,9 @@ export async function POST(request: Request) {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Referer': loginPageUrl }
         });
 
+        console.log('ODTÜ Login Response Status:', loginRes.status);
+        console.log('ODTÜ Login Location Header:', loginRes.headers['location']);
+
         // 303/302 means redirect (Success in Moodle context usually)
         if (loginRes.status !== 303 && loginRes.status !== 302) {
              // Check content for error

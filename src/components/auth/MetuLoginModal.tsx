@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, Lock, AlertCircle, CheckCircle, GraduationCap } from 'lucide-react';
+import { X, Lock, AlertCircle, CheckCircle, GraduationCap, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
@@ -14,6 +14,7 @@ interface MetuLoginModalProps {
 export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLoginModalProps) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -66,7 +67,7 @@ export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLogin
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-neutral-900 w-full max-w-md relative border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(200,16,46,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
+            <div className="bg-white dark:bg-neutral-900 w-full max-w-md relative border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]">
                 
                 {/* Header */}
                 <div className="bg-[var(--primary-color)] text-white p-6 relative overflow-hidden">
@@ -80,8 +81,8 @@ export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLogin
                         <X size={24} />
                     </button>
                     <div className="relative z-10 text-center">
-                        <div className="w-16 h-16 bg-white text-[var(--primary-color)] rounded-full flex items-center justify-center mx-auto mb-4 font-black text-2xl shadow-lg">
-                            M
+                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg p-2">
+                            <img src="/univo-logo-transparent.png?v=3" alt="Univo" className="w-full h-full object-contain" />
                         </div>
                         <h2 className="text-2xl font-black font-serif uppercase tracking-tight">ODTÜ İle Bağlan</h2>
                         <p className="text-white/90 text-sm mt-2 font-medium">
@@ -119,25 +120,32 @@ export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLogin
                             <label className="block text-xs font-black uppercase text-neutral-500 mb-1.5 ml-1">Şifre</label>
                             <div className="relative">
                                 <input 
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     required
                                     placeholder="••••••••"
-                                    className="w-full p-3 pl-10 border-2 border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono text-lg focus:border-primary focus:outline-none dark:text-white transition-colors rounded-lg"
+                                    className="w-full p-3 pl-10 pr-12 border-2 border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono text-lg focus:border-primary focus:outline-none dark:text-white transition-colors rounded-lg"
                                     value={password}
                                     onChange={e => setPassword(e.target.value)}
                                 />
                                 <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </button>
                             </div>
                         </div>
 
                         {/* Terms */}
-                        <label className="flex items-start gap-3 p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'bg-primary border-primary' : 'border-neutral-300 dark:border-neutral-600'}`}>
+                        <label className="flex items-start gap-3 p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors select-none group">
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'bg-primary border-primary' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}>
                                 {acceptedTerms && <CheckCircle size={14} className="text-white" />}
                             </div>
                             <input 
                                 type="checkbox" 
-                                className="hidden" 
+                                className="sr-only" 
                                 checked={acceptedTerms} 
                                 onChange={e => setAcceptedTerms(e.target.checked)} 
                             />
