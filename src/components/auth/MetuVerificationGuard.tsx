@@ -101,8 +101,11 @@ export default function MetuVerificationGuard({ children }: { children: React.Re
                 <MetuLoginModal 
                     isOpen={showModal} 
                     onClose={() => {}} // Cannot close without verifying
-                    onSuccess={() => {
-                        window.location.reload(); // Reload to refresh session/metadata
+                    onSuccess={async () => {
+                        setIsVerified(true);
+                        setShowModal(false);
+                        router.refresh(); 
+                        toast.success('Hesabın doğrulandı!');
                     }} 
                 />
             </div>
