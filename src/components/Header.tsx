@@ -199,7 +199,7 @@ function HeaderContent() {
       </header>
 
       {/* Mobile Bottom Navigation - Moved outside header to prevent transform issues */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-neutral-200 dark:border-neutral-800 z-[9999] px-6 py-3 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-neutral-200 dark:border-neutral-800 z-[9999] px-6 pr-8 py-3 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <ul className="flex justify-between items-center">
           {navItems.map((item) => {
             const isActive = currentView === item.id;
