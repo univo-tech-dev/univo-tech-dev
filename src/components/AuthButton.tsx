@@ -45,8 +45,7 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
         <Link
           href="/register"
           onClick={onNavigate}
-          style={{ backgroundColor: 'var(--primary-color, #C8102E)', color: '#FFFFFF' }}
-          className="px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
+          className="px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity text-white bg-[var(--primary-color,#C8102E)]"
         >
           Kayıt Ol
         </Link>
@@ -67,7 +66,7 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
             className="w-8 h-8 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs border border-transparent bg-primary" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs border border-transparent bg-[var(--primary-color,#C8102E)]">
             {(profile?.full_name || 'U').charAt(0).toUpperCase()}
           </div>
         )}
