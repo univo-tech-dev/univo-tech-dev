@@ -63,6 +63,7 @@ export default function OfficialView() {
 
   // Tab State
   const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history' | 'starred' | 'odtuclass'>('agenda');
+  const [isContentCollapsed, setIsContentCollapsed] = React.useState(false);
   const [followedSources, setFollowedSources] = React.useState<string[]>([]);
   const [starredIds, setStarredIds] = React.useState<string[]>([]);
   const [blockedSources, setBlockedSources] = React.useState<string[]>([]);
@@ -469,9 +470,16 @@ export default function OfficialView() {
                 ].map(tab => (
                     <button
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id as any)}
+                        onClick={() => {
+                            if (activeTab === tab.id) {
+                                setIsContentCollapsed(!isContentCollapsed);
+                            } else {
+                                setActiveTab(tab.id as any);
+                                setIsContentCollapsed(false);
+                            }
+                        }}
                         className={`pb-3 pt-1 px-2 font-black text-xs tracking-wider uppercase transition-colors relative flex items-center gap-1 shrink-0 ${
-                            activeTab === tab.id 
+                            activeTab === tab.id && !isContentCollapsed
                             ? 'text-black dark:text-white' 
                             : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'
                         }`}
@@ -480,16 +488,16 @@ export default function OfficialView() {
                         {tab.icon}
                         {/* Show label only for active tab on small screens, always on larger */}
                         {tab.label && (
-                            <span className={activeTab === tab.id ? 'inline' : 'hidden sm:inline'}>{tab.label}</span>
+                            <span className={activeTab === tab.id && !isContentCollapsed ? 'inline' : 'hidden sm:inline'}>{tab.label}</span>
                         )}
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors ${
-                            activeTab === tab.id 
+                            activeTab === tab.id && !isContentCollapsed
                             ? 'bg-black text-white dark:bg-white dark:text-black' 
                             : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
                         }`}>
                             {tab.count}
                         </span>
-                        {activeTab === tab.id && (
+                        {activeTab === tab.id && !isContentCollapsed && (
                             <div className="absolute bottom-[-2px] left-0 right-0 h-0.5 bg-black dark:bg-white animate-in fade-in slide-in-from-left-2 duration-300" />
                         )}
                     </button>
@@ -508,18 +516,21 @@ export default function OfficialView() {
             {/* Featured Post (Only show on Agenda for impact, or always? Let's hide on Archive) */}
 
 
-            {/* News List */}
+            {/* News List - Collapsible on mobile */}
+            {!isContentCollapsed && (
             <div className="grid gap-6">
                 {displayedItems.length === 0 ? (
                     <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900 border-2 border-dashed border-neutral-200 dark:border-neutral-800 transition-colors">
                         {/* Login prompt for protected tabs */}
-                        {!user && (activeTab === 'emails' || activeTab === 'odtuclass') ? (
+                        {!user && (activeTab === 'emails' || activeTab === 'odtuclass' || activeTab === 'starred' || activeTab === 'history') ? (
                             <div className="space-y-3">
                                 <Lock size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
                                 <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-xs mx-auto">
                                     {activeTab === 'emails' 
                                         ? 'ODTÜ e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.'
-                                        : 'ODTÜClass derslerinizi ve ödevlerinizi takip etmek için giriş yapın.'
+                                        : activeTab === 'odtuclass'
+                                            ? 'ODTÜClass derslerinizi ve ödevlerinizi takip etmek için giriş yapın.'
+                                            : 'Yıldızladığınız ve okuduğunuz içerikleri görmek için giriş yapın.'
                                     }
                                 </p>
                                 <a 
@@ -687,26 +698,29 @@ export default function OfficialView() {
                                             );
                                         })()}
 
-                                        {activeTab === 'history' && (
-                                            <button
-                                                onClick={(e) => handleUndoRead(String(item.id), e)}
-                                                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 border-2 border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-wider bg-white dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all shadow-sm"
-                                            >
-                                                <RotateCcw size={12} />
-                                                Geri Al
-                                            </button>
-                                        )}
                                     </div> 
 
                                 </div>
 
                                 <span className="text-xs text-neutral-500 block mt-2">{item.source} · {item.date}</span>
                             </div>
+
+                            {/* Geri Al button - Always visible at bottom right for history items */}
+                            {activeTab === 'history' && (
+                                <button
+                                    onClick={(e) => handleUndoRead(String(item.id), e)}
+                                    className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 border border-neutral-300 dark:border-neutral-600 text-[9px] font-bold uppercase bg-white dark:bg-neutral-800 text-neutral-500 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all rounded"
+                                >
+                                    <RotateCcw size={10} />
+                                    Geri Al
+                                </button>
+                            )}
                         </article>
                         );
                     })
                 )}
             </div>
+            )}
         </div>
 
         {/* Sidebar / Teknokent */}
