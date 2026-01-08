@@ -126,7 +126,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         try {
             let resolvedId = id;
 
-            // UUID Check & Slug Logic (Same as before)
+            // UUID Check & Slug Logic
             const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
             if (!isUUID) {
                 const decodedId = decodeURIComponent(id);
@@ -157,7 +157,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
             setTargetId(resolvedId);
 
-            // 1. Fetch Profile
+            // 1. Fetch Profile First (Critical)
             const { data: profileData, error: profileError } = await supabase
                 .from('profiles')
                 .select('*')
@@ -167,102 +167,78 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             if (profileError) throw profileError;
             setProfile(profileData);
 
-            // 2. Fetch Database Badges (if exists)
-            const { data: badgesData } = await supabase
-                .from('user_badges')
-                .select(`
-            awarded_at,
-            badge:badges (
-                id, name, description, icon, color
-            )
-        `)
-                .eq('user_id', resolvedId);
+            // 2. Parallel Fetching for All Other Data
+            const [
+                { data: badgesData },
+                { data: attendanceData },
+                { data: voicesData },
+                { data: commentsData },
+                { count: friends },
+                { count: followed },
+                { count: totalPostsEver }
+            ] = await Promise.all([
+                // Badges
+                supabase
+                    .from('user_badges')
+                    .select(`
+                        awarded_at,
+                        badge:badges (id, name, description, icon, color)
+                    `)
+                    .eq('user_id', resolvedId),
+                
+                // Event Attendance
+                supabase
+                    .from('event_attendees')
+                    .select(`
+                        created_at,
+                        rsvp_status,
+                        events (
+                            id, title, date, time, location, category,
+                            community:communities (id, name, category)
+                        )
+                    `)
+                    .eq('user_id', resolvedId),
 
-            // Start building achievement badges array
-            const achievementBadges: any[] = [];
-            const now = new Date().toISOString();
+                // Voices (Active)
+                supabase
+                    .from('campus_voices')
+                    .select('id, content, created_at, tags')
+                    .eq('user_id', resolvedId)
+                    .eq('moderation_status', 'approved'),
 
+                // Comments
+                supabase
+                    .from('voice_comments')
+                    .select('id, content, created_at, voice_id')
+                    .eq('user_id', resolvedId),
 
-            // Profile Completed Badge - Only requires student_id, department, class_year
-            const hasCompletedProfile = profileData?.student_id &&
-                profileData?.department &&
-                profileData?.class_year;
-            if (hasCompletedProfile) {
-                achievementBadges.push({
-                    id: 'profile-complete',
-                    name: 'Profil Tamamlandı',
-                    description: 'Tüm profil bilgilerini eksiksiz doldurdu.',
-                    icon: 'Sparkles',
-                    color: '#8B5CF6',
-                    awarded_at: profileData.updated_at || now
-                });
-            }
+                // Friend Count
+                supabase
+                    .from('friendships')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'accepted')
+                    .or(`requester_id.eq.${resolvedId},receiver_id.eq.${resolvedId}`),
 
-            // 3. Fetch Events & Activities
-            // Fetch user's attending events with community category
-            const { data: attendanceData } = await supabase
-                .from('event_attendees')
-                .select(`
-          created_at,
-          rsvp_status,
-          events (
-            id,
-            title,
-            date,
-            time,
-            location,
-            category,
-            community:communities (
-                id,
-                name,
-                category
-            )
-          )
-        `)
-                .eq('user_id', resolvedId);
+                // Followed Communities Count
+                supabase
+                    .from('community_followers')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', resolvedId),
 
-            // Fetch User's Voices (Share)
-            const { data: voicesData } = await supabase
-                .from('campus_voices')
-                .select(`
-            id,
-            content,
-            created_at,
-            tags
-        `)
-                .eq('user_id', resolvedId)
-                .eq('moderation_status', 'approved');
-
-            // Fetch User's Comments
-            const { data: commentsData } = await supabase
-                .from('voice_comments')
-                .select(`
-            id,
-            content,
-            created_at,
-            voice_id
-        `)
-                .eq('user_id', resolvedId);
-
-            // Fetch Friend Count
-            const { count: friends } = await supabase
-                .from('friendships')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'accepted')
-                .or(`requester_id.eq.${resolvedId},receiver_id.eq.${resolvedId}`);
+                // Total Posts Count (Including deleted/pending for badge)
+                supabase
+                    .from('campus_voices')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('user_id', resolvedId)
+            ]);
 
             setFriendCount(friends || 0);
-
-            // Fetch Followed Communities Count
-            const { count: followed } = await supabase
-                .from('community_followers')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', resolvedId);
-
             setFollowedCommunitiesCount(followed || 0);
 
+            // === DATA PROCESSING ===
+
+            // Process Events
             if (attendanceData) {
-                // Process Events for Display
                 const eventsList: EventAttendance[] = attendanceData
                     .filter((item: any) => item.rsvp_status === 'going' && item.events)
                     .map((item: any) => ({
@@ -280,8 +256,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 setUpcomingEvents(upcoming);
                 setPastEvents(past);
 
-                // Process Event Attendance for Activity Feed
-                // Only if privacy allows OR is own profile
+                // Process Activities
                 const showActivities = isOwnProfile || profileData.privacy_settings?.show_activities !== false;
 
                 if (showActivities) {
@@ -291,7 +266,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             id: `evt-${item.events.id}`,
                             type: 'event_attendance',
                             title: item.events.title,
-                            created_at: item.created_at || item.events.date, // Use RSVP time or event time
+                            created_at: item.created_at || item.events.date,
                             target_id: item.events.id,
                             metadata: { location: item.events.location }
                         }));
@@ -318,9 +293,23 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 }
             }
 
-            // === ACTIVITY-BASED BADGES (calculated after fetching activity data) ===
+            // === BADGE LOGIC ===
+            const achievementBadges: any[] = [];
+            const now = new Date().toISOString();
 
-            // First Event Attended Badge
+            // Profile Completed Badge
+            if (profileData?.student_id && profileData?.department && profileData?.class_year) {
+                achievementBadges.push({
+                    id: 'profile-complete',
+                    name: 'Profil Tamamlandı',
+                    description: 'Tüm profil bilgilerini eksiksiz doldurdu.',
+                    icon: 'Sparkles',
+                    color: '#8B5CF6',
+                    awarded_at: profileData.updated_at || now
+                });
+            }
+
+            // First Event Badge
             if (attendanceData && attendanceData.length > 0) {
                 const firstEvent = attendanceData.sort((a: any, b: any) =>
                     new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -335,20 +324,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 });
             }
 
-            // First Post Made Badge - Check if user has EVER made a post (including deleted ones)
-            // Query all voices including deleted to check if badge should persist
-            const { count: totalPostsEver } = await supabase
-                .from('campus_voices')
-                .select('*', { count: 'exact', head: true })
-                .eq('user_id', resolvedId);
-
+            // First Post Badge
             if (totalPostsEver && totalPostsEver > 0) {
-                // Get first post date from current posts, or use account creation date
                 const firstPostDate = voicesData && voicesData.length > 0
                     ? voicesData.sort((a: any, b: any) =>
                         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                     )[0].created_at
                     : profileData?.created_at || now;
+                    
                 achievementBadges.push({
                     id: 'first-post',
                     name: 'İlk Paylaşım',
@@ -371,7 +354,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 });
             }
 
-            // Active Commenter Badge (5+ comments)
+            // Active Commenter Badge
             if (commentsData && commentsData.length >= 5) {
                 achievementBadges.push({
                     id: 'active-commenter',
@@ -383,7 +366,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 });
             }
 
-            // Early Adopter Badge (profile created before 2026-02-01)
+            // Early Adopter Badge
             const createdAt = profileData?.created_at ? new Date(profileData.created_at) : null;
             if (createdAt && createdAt < new Date('2026-02-01')) {
                 achievementBadges.push({
@@ -396,13 +379,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 });
             }
 
-            // Combine Database Badges with Achievement Badges
+            // Combine Badges
             const dbBadges = badgesData ? badgesData.map((item: any) => ({
                 ...item.badge,
                 awarded_at: item.awarded_at
             })) : [];
 
-            // Merge without duplicates (by id)
             const allBadges = [...achievementBadges];
             dbBadges.forEach((dbBadge: any) => {
                 if (!allBadges.find(b => b.id === dbBadge.id)) {
@@ -414,6 +396,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
         } catch (error) {
             console.error('Error fetching profile:', error);
+            toast.error('Profil yüklenirken bir hata oluştu');
         } finally {
             setLoading(false);
         }
