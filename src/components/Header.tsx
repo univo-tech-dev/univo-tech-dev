@@ -94,7 +94,7 @@ function HeaderContent() {
   return (
     <>
       {/* Mobile Top Right Notification - Standalone */}
-      <div className="fixed top-4 right-4 z-[9998] lg:hidden">
+      <div className="fixed top-3 right-3 z-[10001] lg:hidden">
         <NotificationCenter />
       </div>
 
@@ -221,7 +221,7 @@ function HeaderContent() {
                   >
                     <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
                     <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
-                      {item.label === 'Topluluk Meydanı' ? 'Topluluk' : item.label}
+                      {item.label}
                     </span>
                     {/* Animated Underline */}
                     <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
