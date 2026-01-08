@@ -455,6 +455,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         )}
                     </div>
 
+                    <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-4 mb-2">
+                        {profile.full_name.split(' ').map(word => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
+                    </h2>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
+                        {profile.department || 'Bölüm Belirtilmemiş'} • {profile.class_year || 'Sınıf Belirtilmemiş'}
+                    </p>
+
                     <div className="flex justify-center gap-2 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">
                         {(isOwnProfile || profile.privacy_settings?.show_friends !== false) && (
                             <button 
@@ -571,7 +578,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             )}
 
             {/* Profile Completion Warning Card */}
-            {isOwnProfile && profile && (!profile.department || !profile.class_year) && (
+            {isOwnProfile && profile && 
+             (!profile.department || !profile.class_year || profile.department === 'Öğrenci' || profile.department === 'Kampüs') && (
                 <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6 mb-6">
                     <div className="flex gap-4">
                         <div className="p-3 bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-full shrink-0 h-fit">

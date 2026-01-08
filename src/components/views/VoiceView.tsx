@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -103,6 +103,7 @@ export default function VoiceView() {
     const [showVotersModal, setShowVotersModal] = useState(false);
     const [voters, setVoters] = useState<{ user_id: string, display_name: string, option_index: number }[]>([]);
     const [isLoadingVoters, setIsLoadingVoters] = useState(false);
+    const [selectedVoterOption, setSelectedVoterOption] = useState(0);
 
     useEffect(() => {
         fetchVoices();
@@ -619,6 +620,7 @@ export default function VoiceView() {
     const fetchVoters = async () => {
         if (!activePoll) return;
         setIsLoadingVoters(true);
+        setSelectedVoterOption(0);
         setShowVotersModal(true);
         try {
             const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
@@ -661,10 +663,10 @@ export default function VoiceView() {
                         {activeTagFilter && (
                             <button
                                 onClick={() => setActiveTagFilter(null)}
-                                className="text-xs font-black uppercase bg-neutral-900 text-white dark:bg-white dark:text-black px-3 py-1.5 rounded-full flex items-center gap-2 transition-all hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white shadow-sm"
+                                className="text-xs font-black uppercase bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 px-3 py-1.5 rounded-full flex items-center gap-2 transition-all hover:bg-primary active:scale-95 shadow-sm group"
                             >
-                                <span>{activeTagFilter}</span>
-                                <X size={12} strokeWidth={3} />
+                                <span className="group-hover:text-white transition-colors">{activeTagFilter}</span>
+                                <X size={12} strokeWidth={3} className="group-hover:text-white transition-colors" />
                             </button>
                         )}
                     </div>
@@ -1073,9 +1075,10 @@ export default function VoiceView() {
                                                     {totalVotes > 0 ? (
                                                         <button 
                                                             onClick={fetchVoters}
-                                                            className="text-xs text-neutral-500 dark:text-neutral-400 font-bold hover:text-primary transition-colors underline decoration-dotted underline-offset-4"
+                                                            className="text-xs text-neutral-500 dark:text-neutral-400 font-bold hover:text-primary transition-all relative group py-1"
                                                         >
                                                             {totalVotes} oy kullanıldı
+                                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                                                         </button>
                                                     ) : (
                                                         <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium italic">
@@ -1161,43 +1164,78 @@ export default function VoiceView() {
             {showVotersModal && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowVotersModal(false)} />
-                    <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] p-6 animate-in zoom-in duration-200">
-                        <div className="flex justify-between items-center mb-6 border-b-2 border-black dark:border-white pb-2">
-                            <h3 className="text-xl font-bold font-serif uppercase tracking-tight dark:text-white">Anket Katılımcıları</h3>
-                            <button onClick={() => setShowVotersModal(false)} className="hover:text-primary transition-colors">
+                    <div className="relative w-full max-w-lg bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in duration-200">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b-4 border-black dark:border-white bg-neutral-50 dark:bg-neutral-800">
+                            <h3 className="text-xl font-bold font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
+                                <Users size={24} className="text-primary" />
+                                Katılımcı Listesi
+                            </h3>
+                            <button onClick={() => setShowVotersModal(false)} className="hover:text-primary transition-colors p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded">
                                 <X size={24} />
                             </button>
                         </div>
 
-                        <div className="max-h-[60vh] overflow-y-auto space-y-4">
-                            {isLoadingVoters ? (
-                                <div className="text-center py-12 text-neutral-400 animate-pulse font-bold">Yükleniyor...</div>
-                            ) : voters.length === 0 ? (
-                                <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz katılımcı yok.</div>
-                            ) : (
-                                activePoll?.options.map((option, optIdx) => {
-                                    const optionVoters = voters.filter(v => v.option_index === optIdx);
-                                    if (optionVoters.length === 0) return null;
-
+                        {/* Horizontal Options Tabs */}
+                        <div className="px-6 py-4 bg-white dark:bg-neutral-900 border-b-2 border-neutral-100 dark:border-neutral-800">
+                            <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
+                                {activePoll?.options.map((option, idx) => {
+                                    const count = voters.filter(v => v.option_index === idx).length;
+                                    const isActive = selectedVoterOption === idx;
                                     return (
-                                        <div key={optIdx} className="space-y-2">
-                                            <h4 className="text-xs font-black uppercase text-primary border-b border-neutral-100 dark:border-neutral-800 pb-1 flex justify-between">
-                                                <span>{option}</span>
-                                                <span>{optionVoters.length} Kişi</span>
-                                            </h4>
-                                            <div className="flex flex-wrap gap-2">
-                                                {optionVoters.map(voter => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedVoterOption(idx)}
+                                            className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all flex items-center gap-2 border-2 ${
+                                                isActive 
+                                                ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white shadow-sm' 
+                                                : 'bg-white text-neutral-500 border-neutral-200 hover:border-black dark:bg-neutral-800 dark:text-neutral-400 dark:border-neutral-700 dark:hover:border-white'
+                                            }`}
+                                        >
+                                            {option}
+                                            <span className={`px-1.5 py-0.5 rounded-md text-[10px] ${isActive ? 'bg-primary text-white' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'}`}>
+                                                {count}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Voters List */}
+                        <div className="p-6 max-h-[50vh] overflow-y-auto bg-neutral-50/50 dark:bg-neutral-900/50">
+                            {isLoadingVoters ? (
+                                <div className="text-center py-12 text-neutral-400 animate-pulse font-bold flex flex-col items-center gap-2">
+                                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                                    Yükleniyor...
+                                </div>
+                            ) : voters.length === 0 ? (
+                                <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz katılımcı verisi yok.</div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {voters.filter(v => v.option_index === selectedVoterOption).length === 0 ? (
+                                        <div className="text-center py-12 text-neutral-400 italic">Bu seçeneğe henüz oy verilmemiş.</div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            {voters
+                                                .filter(v => v.option_index === selectedVoterOption)
+                                                .map(voter => (
                                                     <div 
                                                         key={voter.user_id}
-                                                        className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-xs font-bold rounded-full border border-neutral-200 dark:border-neutral-700 dark:text-neutral-300"
+                                                        className="flex items-center gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm"
                                                     >
-                                                        {voter.display_name}
+                                                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-black">
+                                                            {voter.display_name.charAt(0)}
+                                                        </div>
+                                                        <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                                                            {voter.display_name}
+                                                        </span>
                                                     </div>
-                                                ))}
-                                            </div>
+                                                ))
+                                            }
                                         </div>
-                                    );
-                                })
+                                    )}
+                                </div>
                             )}
                         </div>
                     </div>

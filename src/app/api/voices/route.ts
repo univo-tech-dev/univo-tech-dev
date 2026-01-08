@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
 
     // 1. Try with nickname
-    let { data, error } = await supabase
+    let query = supabase
       .from('campus_voices')
       .select(`
         *,
@@ -26,12 +26,21 @@ export async function GET(request: Request) {
         voice_reactions (user_id, reaction_type),
         voice_comments (id, content, created_at, user_id, user:user_id (full_name))
       `)
-      .eq('moderation_status', 'approved') as any;
+      .eq('moderation_status', 'approved');
+
+    if (tag) {
+      query = query.contains('tags', [tag]);
+    }
+
+    // Always sort by newest first by default or specified
+    query = query.order('created_at', { ascending: false });
+
+    let { data, error } = await query as any;
 
     // 2. Fallback if nickname column doesn't exist yet
     if (error && error.message.includes('nickname')) {
       console.warn('Nickname column missing, falling back...');
-      const fallbackQuery = await supabase
+      let fallbackQuery = supabase
         .from('campus_voices')
         .select(`
           *,
@@ -40,8 +49,16 @@ export async function GET(request: Request) {
           voice_comments (id, content, created_at, user_id, user:user_id (full_name))
         `)
         .eq('moderation_status', 'approved');
-      data = fallbackQuery.data;
-      error = fallbackQuery.error;
+      
+      if (tag) {
+        fallbackQuery = fallbackQuery.contains('tags', [tag]);
+      }
+      
+      fallbackQuery = fallbackQuery.order('created_at', { ascending: false });
+      
+      const fallbackResult = await fallbackQuery as any;
+      data = fallbackResult.data;
+      error = fallbackResult.error;
     }
 
     if (error) {
@@ -49,14 +66,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    const toTitleCase = (str: string) => {
+      if (!str) return str;
+      return str.split(' ').map(word => {
+        if (!word) return word;
+        return word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR');
+      }).join(' ');
+    };
+
     const formattedData = (data as any[] || []).map((voice: any) => {
       const likes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'like').length;
       const dislikes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'dislike').length;
       
       // Map profile data based on anonymity
-      const user = voice.is_anonymous ? 
+      let user = voice.is_anonymous ? 
         { full_name: 'Rumuzlu Öğrenci', nickname: voice.profiles?.nickname, department: '', avatar_url: null } : 
         voice.profiles;
+
+      if (user && user.full_name && !voice.is_anonymous) {
+        user.full_name = toTitleCase(user.full_name);
+      }
 
       return {
         id: voice.id,
@@ -76,7 +105,7 @@ export async function GET(request: Request) {
           id: c.id,
           content: c.content,
           created_at: c.created_at,
-          user: c.user?.full_name || 'Kullanıcı',
+          user: toTitleCase(c.user?.full_name || 'Kullanıcı'),
           user_id: c.user_id
         })),
         created_at: voice.created_at
