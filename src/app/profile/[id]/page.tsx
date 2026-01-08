@@ -552,6 +552,38 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             </div>
 
+            {/* Bio / Headline Section (Moved to Sidebar) */}
+            {profile.bio && (
+                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 relative overflow-hidden transition-colors">
+                    <Quote size={40} className="absolute top-2 right-2 text-neutral-100 dark:text-neutral-800 -z-10 transform rotate-12" />
+                    <h2 className="text-lg font-bold font-serif mb-3 text-primary">Hakkımda</h2>
+                    <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed italic border-l-4 border-primary pl-4">
+                        {profile.bio}
+                    </p>
+                </div>
+            )}
+
+            {/* Interests Widget */}
+            {showInterests && (
+                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
+                    <h3 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
+                    <Heart size={20} className="text-primary" />
+                    İlgi Alanları
+                    </h3>
+                    {profile.interests && profile.interests.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            {profile.interests.map(interest => (
+                                <span key={interest} className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-xs font-medium hover:bg-primary/10 hover:text-primary transition-colors cursor-default">
+                                    {interest}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-neutral-500 italic">Henüz ilgi alanı belirtilmemiş.</p>
+                    )}
+                </div>
+            )}
+
             {isOwnProfile && (
                 <div 
                     className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm p-6 transition-colors"
@@ -579,7 +611,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
             {/* Profile Completion Warning Card */}
             {isOwnProfile && profile && 
-             (!profile.department || !profile.class_year || profile.department === 'Öğrenci' || profile.department === 'Kampüs') && (
+             (!profile.student_id || !profile.department || !profile.class_year || profile.department === 'Öğrenci' || profile.department === 'Kampüs') && (
                 <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6 mb-6">
                     <div className="flex gap-4">
                         <div className="p-3 bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-full shrink-0 h-fit">
@@ -590,7 +622,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                 Profilini Tamamla!
                             </h3>
                             <p className="text-sm text-amber-800/80 dark:text-amber-200/60 mb-4 leading-relaxed">
-                                Görünüşe göre bölüm veya sınıf bilgin eksik. Kampüste daha iyi bir deneyim için bu bilgileri eklemeni öneririz.
+                                Görünüşe göre profilin henüz tam değil. Profilini tamamlarsan mavi doğrulama rozeti kazanırsın!
                             </p>
                             <button 
                                 onClick={() => router.push(`/profile/${targetId}/edit`)}
@@ -641,26 +673,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             )}
 
-            {/* Interests Widget */}
-            {showInterests && (
-                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
-                    <h3 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
-                    <Heart size={20} className="text-primary" />
-                    İlgi Alanları
-                    </h3>
-                    {profile.interests && profile.interests.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {profile.interests.map(interest => (
-                                <span key={interest} className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-xs font-medium hover:bg-primary/10 hover:text-primary transition-colors cursor-default">
-                                    {interest}
-                                </span>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-sm text-neutral-500 italic">Henüz ilgi alanı belirtilmemiş.</p>
-                    )}
-                </div>
-            )}
         </div>
 
         {/* Right Column: Bio & Activities */}
@@ -671,16 +683,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <BadgeDisplay badges={badges} />
             )}
 
-            {/* Bio / Headline Section */}
-            {profile.bio && (
-                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-8 relative overflow-hidden transition-colors">
-                    <Quote size={80} className="absolute top-4 right-4 text-neutral-100 dark:text-neutral-800 -z-10 transform rotate-12" />
-                    <h2 className="text-xl font-bold font-serif mb-4 text-primary">Hakkımda</h2>
-                    <p className="text-lg text-neutral-700 dark:text-neutral-300 leading-relaxed italic border-l-4 border-primary pl-4">
-                        {profile.bio}
-                    </p>
-                </div>
-            )}
 
             {/* Activity Timeline (New) */}
             {showActivities && activities.length > 0 && (

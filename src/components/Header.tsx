@@ -116,7 +116,7 @@ function HeaderContent() {
             <nav className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2 bg-neutral-100/50 dark:bg-neutral-800/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-700">
               <ul className="flex items-center gap-0.5">
                 {navItems.map((item) => {
-                  const isActive = currentView === item.id;
+                  const isActive = pathname === '/' && currentView === item.id;
                   return (
                     <li key={item.id}>
                       <Link
@@ -206,7 +206,7 @@ function HeaderContent() {
         <div className="flex items-center justify-center h-16 w-full px-1">
           <ul className="flex justify-around items-center w-full h-full max-w-sm">
             {navItems.map((item) => {
-              const isActive = currentView === item.id;
+              const isActive = pathname === '/' && currentView === item.id;
               return (
                 <li key={item.id} className="flex-1 flex justify-center items-center h-full">
                   <Link

@@ -242,7 +242,10 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-[#0a0a0a]">
-        <div className="text-center text-neutral-600 dark:text-neutral-400">Yükleniyor...</div>
+        <div className="text-center">
+            <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--primary-color, #C8102E)', borderTopColor: 'transparent' }}></div>
+            <p className="text-neutral-600 dark:text-neutral-400">Yükleniyor...</p>
+        </div>
     </div>
   );
 
@@ -525,7 +528,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
 
                     <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
                         <div className="flex items-center gap-3">
-                            {formData.privacy_settings?.show_polls !== false ? <Eye size={20} className="text-[#C8102E]" /> : <EyeOff size={20} className="text-neutral-400" />}
+                            {formData.privacy_settings?.show_polls !== false ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
                             <div>
                                 <span className="font-medium text-neutral-900 dark:text-white block">Anket Katılımlarımı Göster</span>
                                 <span className="text-xs text-neutral-500 dark:text-neutral-400">Katılımcı listesinde isminiz veya rumuzunuz görünür.</span>

@@ -97,7 +97,12 @@ export default function LoginPage() {
             const result = await signInWithMetu(username, password);
 
             if (result.success) {
-                toast.success(`Hoş geldin, ${result.studentInfo?.fullName || 'Öğrenci'}!`, { duration: 2000 });
+                const welcomeName = (result.studentInfo?.fullName || 'Öğrenci')
+                    .toLowerCase()
+                    .split(' ')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+                toast.success(`Hoş geldin, ${welcomeName}!`, { duration: 2000 });
                 router.push('/');
                 router.refresh();
                 // We keep loading true while redirecting to avoid double clicks

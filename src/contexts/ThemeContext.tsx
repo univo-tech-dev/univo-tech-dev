@@ -1,6 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './AuthContext';
 
 export type Theme = 'light' | 'dark' | 'system';
 export type ColorTheme = 'default' | 'blue' | 'green' | 'purple' | 'orange';
@@ -16,21 +18,31 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const { user, profile } = useAuth();
   const [theme, setTheme] = useState<Theme>('system');
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
   const [colorTheme, setColorTheme] = useState<ColorTheme>('default');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  // Initial load from localStorage and then profile
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
-
     const savedColorTheme = localStorage.getItem('colorTheme') as ColorTheme | null;
-    if (savedColorTheme) {
-      setColorTheme(savedColorTheme);
-    }
+    
+    if (savedTheme) setTheme(savedTheme);
+    if (savedColorTheme) setColorTheme(savedColorTheme);
+    
+    setIsInitialLoad(false);
   }, []);
+
+  // Update from profile when it loads
+  useEffect(() => {
+    if (profile && (profile as any).theme_preference) {
+      const { theme: dbTheme, colorTheme: dbColorTheme } = (profile as any).theme_preference;
+      if (dbTheme) setTheme(dbTheme);
+      if (dbColorTheme) setColorTheme(dbColorTheme);
+    }
+  }, [profile]);
 
   // Handle Light/Dark Mode
   useEffect(() => {
@@ -54,6 +66,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       } else {
         localStorage.removeItem('theme');
       }
+
+      // Sync to DB
+      if (!isInitialLoad && user) {
+        syncThemeToDb(theme, colorTheme);
+      }
     };
 
     updateTheme();
@@ -67,14 +84,33 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme]);
+  }, [theme, user]);
 
   // Handle Color Theme
   useEffect(() => {
     const root = window.document.documentElement;
     root.setAttribute('data-theme-color', colorTheme);
     localStorage.setItem('colorTheme', colorTheme);
-  }, [colorTheme]);
+
+    // Sync to DB
+    if (!isInitialLoad && user) {
+      syncThemeToDb(theme, colorTheme);
+    }
+  }, [colorTheme, user]);
+
+  const syncThemeToDb = async (t: Theme, ct: ColorTheme) => {
+    if (!user) return;
+    try {
+      await supabase
+        .from('profiles')
+        .update({
+          theme_preference: { theme: t, colorTheme: ct }
+        })
+        .eq('id', user.id);
+    } catch (error) {
+      console.error('Error syncing theme to DB:', error);
+    }
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, colorTheme, setColorTheme }}>

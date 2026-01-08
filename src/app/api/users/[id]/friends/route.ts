@@ -117,9 +117,15 @@ export async function GET(
       
       if (!p) return null;
 
+      const cleanDept = (dept: string) => {
+        if (!dept) return dept;
+        return dept.replace(/\.base$/i, '').replace(/\s*BASE$/i, '').replace(/\s*DBE$/i, '').trim();
+      };
+
       return {
         ...p,
         full_name: toTitleCase(p.full_name),
+        department: cleanDept(p.department),
         friendshipId: f.id,
         friendsSince: f.created_at
       };

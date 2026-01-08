@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .from('poll_votes')
       .select(`
         option_index,
-        profiles:user_id (id, full_name, nickname, privacy_settings)
+        profiles:user_id!inner (id, full_name, nickname, privacy_settings)
       `)
       .eq('poll_id', pollId) as any;
 
@@ -26,7 +26,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             .from('poll_votes')
             .select(`
                 option_index,
-                profiles:user_id (id, full_name, privacy_settings)
+                profiles:user_id!inner (id, full_name, privacy_settings)
             `)
             .eq('poll_id', pollId) as any; // Added 'as any' here
         data = fallback.data;
@@ -35,24 +35,29 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     if (error) throw error;
 
-    const formattedVoters = ((data || []) as any[]).map((v: any) => {
-      const p = v.profiles;
-      if (!p) return { 
-        option_index: v.option_index, 
-        user_id: 'unknown', 
-        display_name: 'Bilinmeyen Öğrenci' 
-      };
+    const toTitleCase = (str: string) => {
+      if (!str) return str;
+      return str.split(' ').map(word => {
+        if (!word) return word;
+        return word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR');
+      }).join(' ');
+    };
 
-      const canShowName = p.privacy_settings?.show_polls !== false;
-      
-      return {
-        option_index: v.option_index,
-        user_id: p.id,
-        display_name: canShowName 
-            ? p.full_name 
-            : (p.nickname || 'Rumuzlu Öğrenci')
-      };
-    });
+    const formattedVoters = ((data || []) as any[])
+      .map((v: any) => {
+        const p = v.profiles;
+        if (!p) return null;
+
+        const canShowName = p.privacy_settings?.show_polls !== false;
+        const displayName = canShowName ? p.full_name : (p.nickname || 'Rumuzlu Öğrenci');
+        
+        return {
+          option_index: v.option_index,
+          user_id: p.id,
+          display_name: toTitleCase(displayName)
+        };
+      })
+      .filter(Boolean);
 
     return NextResponse.json({ voters: formattedVoters });
   } catch (error: any) {

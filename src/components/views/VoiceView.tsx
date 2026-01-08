@@ -571,7 +571,7 @@ export default function VoiceView() {
 
         const { data, error } = await supabase
             .from('poll_votes')
-            .select('option_index, user_id')
+            .select('option_index, user_id, profiles:user_id!inner(id)')
             .eq('poll_id', pollId);
 
         if (error) {
@@ -1078,7 +1078,7 @@ export default function VoiceView() {
                                                             className="text-xs text-neutral-500 dark:text-neutral-400 font-bold hover:text-primary transition-all relative group py-1"
                                                         >
                                                             {totalVotes} oy kullanıldı
-                                                            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                                                            <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
                                                         </button>
                                                     ) : (
                                                         <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium italic">
@@ -1169,7 +1169,7 @@ export default function VoiceView() {
                         <div className="flex justify-between items-center p-6 border-b-4 border-black dark:border-white bg-neutral-50 dark:bg-neutral-800">
                             <h3 className="text-xl font-bold font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
                                 <Users size={24} className="text-primary" />
-                                Katılımcı Listesi
+                                Oy Kullananlar
                             </h3>
                             <button onClick={() => setShowVotersModal(false)} className="hover:text-primary transition-colors p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded">
                                 <X size={24} />
@@ -1216,7 +1216,7 @@ export default function VoiceView() {
                                     {voters.filter(v => v.option_index === selectedVoterOption).length === 0 ? (
                                         <div className="text-center py-12 text-neutral-400 italic">Bu seçeneğe henüz oy verilmemiş.</div>
                                     ) : (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="flex flex-col gap-3">
                                             {voters
                                                 .filter(v => v.option_index === selectedVoterOption)
                                                 .map(voter => (
@@ -1228,7 +1228,7 @@ export default function VoiceView() {
                                                             {voter.display_name.charAt(0)}
                                                         </div>
                                                         <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate">
-                                                            {voter.display_name}
+                                                            {voter.display_name.split(' ').map((word: string) => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
                                                         </span>
                                                     </div>
                                                 ))

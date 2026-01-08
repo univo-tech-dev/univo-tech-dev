@@ -78,13 +78,23 @@ export async function GET(request: Request) {
       const likes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'like').length;
       const dislikes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'dislike').length;
       
+      const cleanDept = (dept: string) => {
+        if (!dept) return dept;
+        // Remove .base, BASE, DBE suffixes or variations
+        return dept.replace(/\.base$/i, '').replace(/\s*BASE$/i, '').replace(/\s*DBE$/i, '').trim();
+      };
+
       // Map profile data based on anonymity
       let user = voice.is_anonymous ? 
         { full_name: 'Rumuzlu Öğrenci', nickname: voice.profiles?.nickname, department: '', avatar_url: null } : 
-        voice.profiles;
+        { ...voice.profiles };
 
       if (user && user.full_name && !voice.is_anonymous) {
         user.full_name = toTitleCase(user.full_name);
+      }
+      
+      if (user && user.department) {
+        user.department = cleanDept(user.department);
       }
 
       return {
