@@ -632,23 +632,26 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
                 {/* Left Column: Identity & Social */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group transition-colors">
-                        <div className="h-32 w-full absolute top-0 left-0 opacity-20" style={{ backgroundImage: 'radial-gradient(currentColor 2px, transparent 2px)', backgroundSize: '20px 20px', color: 'var(--primary-color)' }} />
-
-                        {/* Mobile Actions: Settings (Left) & Notifications (Right) */}
+                        {/* Mobile Actions: Settings (Left) & Notifications (Right) - Outside Card */}
                         {isOwnProfile && (
-                            <>
+                            <div className="flex justify-between items-center px-2 z-10 relative">
                                 <button
                                     onClick={() => router.push('/settings')}
-                                    className="absolute top-4 left-4 z-20 p-2 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-white dark:hover:bg-black transition-colors"
+                                    className="p-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
                                 >
                                     <Settings size={20} />
                                 </button>
-                                <div className="absolute top-4 right-4 z-20 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-full">
+                                <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full shadow-sm">
                                     <NotificationCenter />
                                 </div>
-                            </>
+                            </div>
                         )}
+
+                    <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group transition-colors !mt-3">
+                        <div className="h-32 w-full absolute top-0 left-0 opacity-20" style={{ backgroundImage: 'radial-gradient(currentColor 2px, transparent 2px)', backgroundSize: '20px 20px', color: 'var(--primary-color)' }} />
+
+                        {/* Mobile Actions: Settings (Left) & Notifications (Right) */}
+
 
                         <div className="pt-12 px-6 pb-6 text-center relative z-10">
                             <div
