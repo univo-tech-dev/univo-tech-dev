@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
@@ -10,6 +10,8 @@ import BadgeDisplay from '@/components/profile/BadgeDisplay';
 import ActivityTimeline, { ActivityItem } from '@/components/profile/ActivityTimeline';
 import FriendButton from '@/components/FriendButton';
 import FriendListModal from '@/components/FriendListModal';
+import { analyzeCourses, formatDetectionMessage } from '@/lib/course-analyzer';
+import { toast } from 'sonner';
 
 interface Profile {
   id: string;
@@ -56,6 +58,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [friendCount, setFriendCount] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [showFriendsModal, setShowFriendsModal] = useState(false);
+  const [detectionResult, setDetectionResult] = useState<any>(null);
+  const [showDetectionCard, setShowDetectionCard] = useState(false);
+  const [detecting, setDetecting] = useState(false);
   
   // Determine if viewing own profile
   const [targetId, setTargetId] = useState<string>(id);
@@ -63,7 +68,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   useEffect(() => {
     fetchProfileData();
-  }, [id, user]); // Added user to dependency to ensure correct isOwnProfile logic if user loads late
+    if (isOwnProfile && user) {
+        handleProfileDetection();
+    }
+  }, [id, user, isOwnProfile]); // Added user and isOwnProfile to dependency
 
   const fetchProfileData = async () => {
     try {
@@ -241,6 +249,66 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleProfileDetection = async () => {
+    if (!user || detecting) return;
+    
+    // Check if already confirmed or detected recently
+    if (user.user_metadata.profile_confirmed) return;
+
+    try {
+        setDetecting(true);
+        const response = await fetch('/api/profile/detect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: user.id })
+        });
+        
+        const data = await response.json();
+        if (data.success && data.detection.detectedDepartment) {
+            setDetectionResult(data.detection);
+            // Only show card if the detected info is DIFFERENT from current profile
+            const isDifferent = data.detection.detectedDepartment !== profile?.department || 
+                               data.detection.detectedClass !== profile?.class_year;
+            
+            if (isDifferent) {
+                setShowDetectionCard(true);
+            }
+        }
+    } catch (err) {
+        console.error('Detection error:', err);
+    } finally {
+        setDetecting(false);
+    }
+  };
+
+  const confirmDetection = async () => {
+      if (!user || !detectionResult) return;
+      
+      try {
+          const { error: profileError } = await supabase
+              .from('profiles')
+              .update({
+                  department: detectionResult.detectedDepartment,
+                  class_year: detectionResult.detectedClass
+              })
+              .eq('id', user.id);
+          
+          if (profileError) throw profileError;
+
+          const { error: authError } = await supabase.auth.updateUser({
+              data: { profile_confirmed: true }
+          });
+
+          if (authError) throw authError;
+
+          toast.success('Profil bilgileriniz güncellendi!');
+          setShowDetectionCard(false);
+          fetchProfileData();
+      } catch (err: any) {
+          toast.error('Güncelleme hatası: ' + err.message);
+      }
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -459,6 +527,41 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         <Building2 size={16} />
                         Başvuru Yap
                     </button>
+                </div>
+            )}
+
+            {/* AI Profile Detection Card */}
+            {isOwnProfile && showDetectionCard && detectionResult && (
+                <div className="bg-primary/5 dark:bg-primary/10 border-2 border-primary/30 rounded-xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-500">
+                    <div className="absolute top-0 right-0 p-2 opacity-10">
+                        <GraduationCap size={80} className="rotate-12" />
+                    </div>
+                    
+                    <h3 className="text-lg font-bold font-serif mb-2 text-primary dark:text-primary-light flex items-center gap-2">
+                        <span className="p-1 bg-primary text-white rounded-md"><BookOpen size={16} /></span>
+                        Profilini Güncelleyelim mi?
+                    </h3>
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
+                        ODTÜClass derslerini analiz ettik. Bilgilerin şu şekilde görünüyor:
+                        <div className="mt-2 font-bold text-neutral-900 dark:text-white bg-white/50 dark:bg-black/20 p-2 rounded border border-primary/20">
+                            {detectionResult.detectedDepartment} · {detectionResult.detectedClass}
+                        </div>
+                    </p>
+                    
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={confirmDetection}
+                            className="flex-1 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity"
+                        >
+                            Evet, Doğru
+                        </button>
+                        <button 
+                            onClick={() => setShowDetectionCard(false)}
+                            className="flex-1 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                        >
+                            Değil, Düzenle
+                        </button>
+                    </div>
                 </div>
             )}
 

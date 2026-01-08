@@ -80,20 +80,40 @@ export async function POST(request: Request) {
         if (fullName) fullName = fullName.replace('You are logged in as', '').trim();
         
         // --- ENHANCED SCRAPING: Get Department & Courses ---
-        // SKIPPED FOR PERFORMANCE - Profile scraping causes timeout on Vercel
-        // Department can be entered manually by user
+        // Optimization: We scrape only name and courses, department is derived later
         let department = '';
         let courses: { name: string, url: string }[] = [];
-        // Profile scraping disabled to speed up login
-        // try {
-        //     const profileUrl = $dash('a[href*="user/profile.php"]').first().attr('href');
-        //     if (profileUrl) {
-        //         const profileRes = await client.get(profileUrl);
-        //         // ... scraping logic ...
-        //     }
-        // } catch (scrapeErr) {
-        //     console.warn('Could not scrape department or courses:', scrapeErr);
-        // }
+        
+        try {
+            // First find the courses from the dashboard
+            const courseLinks = $dash('a[href*="course/view.php?id="]');
+            courseLinks.each((_, el) => {
+                const name = $(el).text().trim();
+                const url = $(el).attr('href');
+                if (name && url && !courses.find(c => c.url === url)) {
+                    courses.push({ name, url });
+                }
+            });
+
+            // Try to get more courses from the profile page if limited on dashboard
+            if (courses.length < 3) {
+                const profileUrl = $dash('a[href*="user/profile.php"]').first().attr('href');
+                if (profileUrl) {
+                    const profileRes = await client.get(profileUrl);
+                    const $prof = cheerio.load(profileRes.data);
+                    const profCourseLinks = $prof('a[href*="course/view.php?id="]');
+                    profCourseLinks.each((_, el) => {
+                        const name = $prof(el).text().trim();
+                        const url = $prof(el).attr('href');
+                        if (name && url && !courses.find(c => c.url === url)) {
+                            courses.push({ name, url });
+                        }
+                    });
+                }
+            }
+        } catch (scrapeErr) {
+            console.warn('Could not scrape courses:', scrapeErr);
+        }
 
         // --- 3. UNIVO AUTHENTICATION (Proxy Strategy) ---
         

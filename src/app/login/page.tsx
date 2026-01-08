@@ -113,7 +113,7 @@ export default function LoginPage() {
     // University Selection Step
     if (step === 'select') {
         return (
-            <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center p-4">
+            <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
                 <div className="bg-white dark:bg-neutral-900 w-full max-w-md border-2 border-neutral-200 dark:border-neutral-800 shadow-xl rounded-2xl overflow-hidden">
                     
                     {/* Header */}
@@ -164,7 +164,7 @@ export default function LoginPage() {
                     </div>
                 </div>
                 
-                <p className="fixed bottom-4 left-0 right-0 text-xs text-neutral-400 dark:text-neutral-600 text-center z-50">
+                <p className="text-xs text-neutral-400 dark:text-neutral-600 text-center mt-8 pb-4">
                 &copy; {new Date().getFullYear()} Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
                 </p>
             </div>
@@ -173,7 +173,7 @@ export default function LoginPage() {
 
     // Login Form Step
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center p-4">
+        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
             <div className="bg-white dark:bg-neutral-900 w-full max-w-md border-2 border-neutral-200 dark:border-neutral-800 shadow-xl rounded-2xl overflow-hidden">
                 
                 {/* Header with Back Button */}
