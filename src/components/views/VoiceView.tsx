@@ -1109,6 +1109,8 @@ export default function VoiceView() {
                         </div>
                     </div>
                 </div>
-                );
+            </div>
+        </div>
+    );
 }
 
