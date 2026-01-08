@@ -30,8 +30,28 @@ export default function NotificationCenter() {
   useEffect(() => {
     if (user) {
       fetchNotifications();
-      const interval = setInterval(fetchNotifications, 30000);
-      return () => clearInterval(interval);
+      
+      // Real-time subscription for new notifications
+      const channel = supabase
+        .channel(`notifications:${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('New notification received:', payload);
+            fetchNotifications(); // Refresh both list and count
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user]);
 
@@ -143,7 +163,6 @@ export default function NotificationCenter() {
       if (response.ok) {
         // Mark notification as read (or delete it)
         markAsRead(notificationId);
-        // Optional: Trigger a refresh or show success toast
       }
     } catch (error) {
       console.error(`Error handling friend request (${action}):`, error);

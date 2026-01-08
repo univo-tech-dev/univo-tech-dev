@@ -436,11 +436,6 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             </label>
                         )}
                     </div>
-                    
-                    <h1 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mb-1">{profile.full_name}</h1>
-                    <p className="text-primary dark:text-primary-light font-medium text-sm mb-4">
-                        {profile.class_year || 'Öğrenci'} {profile.department ? `· ${profile.department}` : ''}
-                    </p>
 
                     <div className="flex justify-center gap-6 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">
                         <button 
@@ -555,14 +550,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     </h3>
                     <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
                         ODTÜClass derslerini analiz ettik. Bilgilerin şu şekilde görünüyor:
-                        <div className="mt-2 font-bold text-neutral-900 dark:text-white bg-white/50 dark:bg-black/20 p-2 rounded border border-primary/20">
-                            {detectionResult.detectedDepartment 
-                                ? `${detectionResult.detectedDepartment} · ${detectionResult.detectedClass}`
-                                : detectionResult.detectedClass
-                            }
-                        </div>
                     </p>
-                    
                     <div className="flex gap-2">
                         <button 
                             onClick={confirmDetection}
