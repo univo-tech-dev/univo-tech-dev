@@ -793,14 +793,9 @@ export default function VoiceView() {
                                                             {voice.user.nickname || 'Rumuzlu Öğrenci'}
                                                         </span>
                                                     ) : (
-                                                        <>
-                                                            <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline flex items-center gap-1">
-                                                                {voice.user.full_name}
-                                                                {voice.is_verified && (
-                                                                    <BadgeCheck size={16} className="text-blue-500 fill-blue-500" />
-                                                                )}
-                                                            </Link>
-                                                        </>
+                                                        <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
+                                                            {voice.user.full_name}
+                                                        </Link>
                                                     )}
 
                                                     {voice.user.department && (

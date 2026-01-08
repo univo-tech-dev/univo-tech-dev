@@ -141,12 +141,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       const now = new Date().toISOString();
 
 
-      // Profile Completed Badge
-      const validDepts = ['Bilgisayar Mühendisliği', 'Elektrik-Elektronik Mühendisliği', 'Makina Mühendisliği', 'İnşaat Mühendisliği'];
+      // Profile Completed Badge - Only requires student_id, department, class_year
       const hasCompletedProfile = profileData?.student_id && 
                                    profileData?.department && 
-                                   profileData?.class_year && 
-                                   profileData?.bio;
+                                   profileData?.class_year;
       if (hasCompletedProfile) {
         achievementBadges.push({
           id: 'profile-complete',
@@ -295,18 +293,27 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         });
       }
 
-      // First Post Made Badge
-      if (voicesData && voicesData.length > 0) {
-        const firstPost = voicesData.sort((a: any, b: any) => 
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        )[0];
+      // First Post Made Badge - Check if user has EVER made a post (including deleted ones)
+      // Query all voices including deleted to check if badge should persist
+      const { count: totalPostsEver } = await supabase
+        .from('campus_voices')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', resolvedId);
+
+      if (totalPostsEver && totalPostsEver > 0) {
+        // Get first post date from current posts, or use account creation date
+        const firstPostDate = voicesData && voicesData.length > 0 
+          ? voicesData.sort((a: any, b: any) => 
+              new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+            )[0].created_at 
+          : profileData?.created_at || now;
         achievementBadges.push({
           id: 'first-post',
           name: 'İlk Paylaşım',
           description: 'Kampüsün Sesi\'nde ilk paylaşımını yaptı!',
           icon: 'MessageSquare',
           color: '#F59E0B',
-          awarded_at: firstPost.created_at || now
+          awarded_at: firstPostDate
         });
       }
 
@@ -573,11 +580,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         )}
                     </div>
 
-                    <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-4 mb-2 flex items-center justify-center gap-2">
+                    <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-4 mb-2">
                         {profile.full_name.split(' ').map(word => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
-                        {profile.student_id && profile.student_id.length > 0 && (
-                            <BadgeCheck size={20} className="text-blue-500 fill-blue-500" />
-                        )}
                     </h2>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
                         {(() => {
@@ -683,15 +687,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
             {/* 1. Profile Completion Warning Card (Moved Up) */}
             {isOwnProfile && profile && (() => {
-                // Check if profile is incomplete
+                // Check if profile is incomplete - only requires department + class_year
                 const validDepts = ['Bilgisayar Mühendisliği', 'Elektrik-Elektronik Mühendisliği', 'Makina Mühendisliği', 'İnşaat Mühendisliği', 'Endüstri Mühendisliği', 'Havacılık ve Uzay Mühendisliği', 'Kimya Mühendisliği', 'Çevre Mühendisliği', 'Gıda Mühendisliği', 'Jeoloji Mühendisliği', 'Maden Mühendisliği', 'Metalurji ve Malzeme Mühendisliği', 'Petrol ve Doğalgaz Mühendisliği', 'Mimarlık', 'Şehir ve Bölge Planlama', 'Endüstriyel Tasarım', 'Psikoloji', 'Sosyoloji', 'Felsefe', 'Tarih', 'İktisat', 'İşletme', 'Siyaset Bilimi ve Kamu Yönetimi', 'Uluslararası İlişkiler', 'Matematik', 'Fizik', 'Kimya', 'Biyoloji', 'İstatistik', 'Moleküler Biyoloji ve Genetik', 'İngilizce Öğretmenliği', 'Okul Öncesi Eğitimi', 'Bilgisayar ve Öğretim Teknolojileri Eğitimi', 'Fen Bilgisi Öğretmenliği', 'İlköğretim Matematik Öğretmenliği', 'Beden Eğitimi ve Spor', 'Diğer', 'İngilizce Hazırlık Programı'];
                 const validClasses = ['Hazırlık', '1. Sınıf', '2. Sınıf', '3. Sınıf', '4. Sınıf', 'Yüksek Lisans', 'Doktora', 'Mezun'];
                 
-                const hasValidStudentId = profile.student_id && profile.student_id.length > 0;
                 const hasValidDept = profile.department && validDepts.includes(profile.department);
                 const hasValidClass = profile.class_year && validClasses.includes(profile.class_year);
                 
-                const isIncomplete = !hasValidStudentId || !hasValidDept || !hasValidClass;
+                // Profile is incomplete only if dept OR class is missing/invalid
+                const isIncomplete = !hasValidDept || !hasValidClass;
                 
                 return isIncomplete ? (
                     <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6">
