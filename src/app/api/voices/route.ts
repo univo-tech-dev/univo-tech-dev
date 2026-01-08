@@ -17,7 +17,8 @@ export async function GET(request: Request) {
     const sort = searchParams.get('sort');
 
 
-    let query = supabase
+    // 1. Try with nickname
+    let { data, error } = await supabase
       .from('campus_voices')
       .select(`
         *,
@@ -27,51 +28,57 @@ export async function GET(request: Request) {
       `)
       .eq('moderation_status', 'approved');
 
-    if (tag) {
-      query = query.contains('tags', [tag]);
+    // 2. Fallback if nickname column doesn't exist yet
+    if (error && error.message.includes('nickname')) {
+      console.warn('Nickname column missing, falling back...');
+      const fallbackQuery = await supabase
+        .from('campus_voices')
+        .select(`
+          *,
+          profiles:user_id (full_name, department, avatar_url),
+          voice_reactions (user_id, reaction_type),
+          voice_comments (id, content, created_at, user_id, user:user_id (full_name))
+        `)
+        .eq('moderation_status', 'approved');
+      data = fallbackQuery.data;
+      error = fallbackQuery.error;
     }
-
-    if (sort === 'popular') {
-      query = query.order('created_at', { ascending: false });
-    } else {
-      query = query.order('created_at', { ascending: false });
-    }
-
-    const { data, error } = await query;
 
     if (error) {
       console.error('Error fetching voices:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const formattedData = data.map((voice: any) => {
+    const formattedData = (data as any[] || []).map((voice: any) => {
       const likes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'like').length;
       const dislikes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'dislike').length;
+      
+      // Map profile data based on anonymity
+      const user = voice.is_anonymous ? 
+        { full_name: 'Rumuzlu Öğrenci', nickname: voice.profiles?.nickname, department: '', avatar_url: null } : 
+        voice.profiles;
 
       return {
         id: voice.id,
-        user_id: voice.user_id, // include user_id
+        user_id: voice.user_id,
         content: voice.content,
-        created_at: voice.created_at,
         is_anonymous: voice.is_anonymous,
         is_editors_choice: voice.is_editors_choice,
         tags: voice.tags,
-        user: voice.is_anonymous ? 
-          { full_name: 'Rumuzlu Öğrenci', nickname: voice.profiles?.nickname, department: '', avatar_url: null } : 
-          voice.profiles,
+        user,
         counts: {
           likes,
           dislikes,
           comments: voice.voice_comments.length
         },
-        reactions: voice.voice_reactions,
-        comments: voice.voice_comments.map((c: any) => ({
+        voice_comments: voice.voice_comments.map((c: any) => ({
           id: c.id,
           content: c.content,
           created_at: c.created_at,
           user: c.user?.full_name || 'Kullanıcı',
           user_id: c.user_id
-        }))
+        })),
+        created_at: voice.created_at
       };
     });
 

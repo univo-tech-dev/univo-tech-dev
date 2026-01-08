@@ -525,7 +525,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                             {formData.privacy_settings?.show_polls ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
                             <div>
                                 <span className="font-medium text-neutral-900 dark:text-white block">Anket Katılımlarımı Göster</span>
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Hangi anketlere oy verdiğiniz ve isminiz/rumuzunuz katılımcı listesinde görünür.</span>
+                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Katılımcı listesinde isminiz veya rumuzunuz görünür.</span>
                             </div>
                         </div>
                         <input 

@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('poll_votes')
       .select(`
         option_index,
@@ -21,18 +21,33 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       `)
       .eq('poll_id', pollId);
 
+    if (error && error.message.includes('nickname')) {
+        const fallback = await supabase
+            .from('poll_votes')
+            .select(`
+                option_index,
+                profiles:user_id (id, full_name, privacy_settings)
+            `)
+            .eq('poll_id', pollId);
+        data = fallback.data;
+        error = fallback.error;
+    }
+
     if (error) throw error;
 
-    const formattedVoters = data.map((v: any) => {
+    const formattedVoters = ((data || []) as any[]).map((v: any) => {
       const p = v.profiles;
+      if (!p) return { 
+        option_index: v.option_index, 
+        user_id: 'unknown', 
+        display_name: 'Bilinmeyen Öğrenci' 
+      };
+
       const canShowName = p.privacy_settings?.show_polls !== false;
       
       return {
         option_index: v.option_index,
         user_id: p.id,
-        // Privacy Logic:
-        // 1. If privacy allows -> Full Name
-        // 2. If privacy restricted -> Nickname (if set) OR "Rumuzlu Öğrenci"
         display_name: canShowName 
             ? p.full_name 
             : (p.nickname || 'Rumuzlu Öğrenci')

@@ -570,6 +570,31 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             )}
 
+            {/* Profile Completion Warning Card */}
+            {isOwnProfile && (!profile.department || !profile.class_year) && (
+                <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6 mb-6">
+                    <div className="flex gap-4">
+                        <div className="p-3 bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-full shrink-0 h-fit">
+                            <Users size={24} />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-lg font-bold font-serif mb-1 text-amber-900 dark:text-amber-100">
+                                Profilini Tamamla!
+                            </h3>
+                            <p className="text-sm text-amber-800/80 dark:text-amber-200/60 mb-4 leading-relaxed">
+                                Görünüşe göre bölüm veya sınıf bilgin eksik. Kampüste daha iyi bir deneyim için bu bilgileri eklemeni öneririz.
+                            </p>
+                            <button 
+                                onClick={() => router.push(`/profile/${targetId}/edit`)}
+                                className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-bold hover:bg-amber-700 transition-colors shadow-sm"
+                            >
+                                Bilgilerimi Güncelle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* AI Profile Detection Card */}
             {isOwnProfile && showDetectionCard && detectionResult && (
                 <div className="bg-primary/5 dark:bg-primary/10 border-2 border-primary/30 rounded-xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-500">

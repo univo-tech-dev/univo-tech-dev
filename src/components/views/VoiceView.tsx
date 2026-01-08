@@ -1068,14 +1068,19 @@ export default function VoiceView() {
                                                 })}
                                             </div>
                                             {userVote !== null && (
-                                                <div className="flex flex-col items-center mt-3 gap-2">
-                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>
-                                                    <button 
-                                                        onClick={fetchVoters}
-                                                        className="text-[10px] font-bold uppercase tracking-wider text-primary hover:underline"
-                                                    >
-                                                        Katılımcıları Gör
-                                                    </button>
+                                                <div className="flex flex-col items-center mt-3">
+                                                    {totalVotes > 0 ? (
+                                                        <button 
+                                                            onClick={fetchVoters}
+                                                            className="text-xs text-neutral-500 dark:text-neutral-400 font-bold hover:text-primary transition-colors underline decoration-dotted underline-offset-4"
+                                                        >
+                                                            {totalVotes} oy kullanıldı
+                                                        </button>
+                                                    ) : (
+                                                        <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium italic">
+                                                            Henüz oy kullanılmadı
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </>
