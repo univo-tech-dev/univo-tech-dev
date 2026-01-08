@@ -500,15 +500,22 @@ export default function VoiceView() {
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState();
 
-                // 2. Count Unique Devices (Deduplicate by Device ID)
-                const uniqueDevices = new Set();
+                // 2. Count Unique Users (Deduplicate by User ID if logged in, otherwise Device ID)
+                const uniqueUsers = new Set();
                 Object.values(state).forEach((presences: any) => {
                     presences.forEach((p: any) => {
-                        if (p.device_id) uniqueDevices.add(p.device_id);
+                        // If user is logged in, use their ID (unifies phone/desktop sessions)
+                        if (p.user_id) {
+                            uniqueUsers.add(`user:${p.user_id}`);
+                        } 
+                        // If anonymous, count by device
+                        else if (p.device_id) {
+                            uniqueUsers.add(`device:${p.device_id}`);
+                        }
                     });
                 });
 
-                setActiveUsers(Math.max(1, uniqueDevices.size));
+                setActiveUsers(Math.max(1, uniqueUsers.size));
             })
             .subscribe(async (status) => {
                 if (status === 'SUBSCRIBED') {
@@ -1079,10 +1086,10 @@ export default function VoiceView() {
                                                     {totalVotes > 0 ? (
                                                         <button 
                                                             onClick={fetchVoters}
-                                                            className="text-xs text-neutral-500 dark:text-neutral-400 font-bold hover:text-primary transition-all relative group py-1"
+                                                            className="text-xs text-neutral-500 dark:text-neutral-400 font-bold hover:text-black dark:hover:text-white transition-all relative group py-1"
                                                         >
                                                             {totalVotes} oy kullanıldı
-                                                            <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full"></span>
+                                                            <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-black dark:bg-white transition-all duration-300 group-hover:w-full"></span>
                                                         </button>
                                                     ) : (
                                                         <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium italic">

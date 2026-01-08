@@ -883,7 +883,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
                     {/* 4. Interests Widget (Moved to Bottom) */}
                     {showInterests && (
-                        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
+                        <div className="hidden lg:block bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
                             <h3 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
                                 <Heart size={20} className="text-primary" />
                                 İlgi Alanları

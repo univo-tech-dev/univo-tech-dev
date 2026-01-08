@@ -93,7 +93,12 @@ function HeaderContent() {
 
   return (
     <>
-      <header className={`sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
+      {/* Mobile Top Right Notification - Standalone */}
+      <div className="fixed top-4 right-4 z-[9998] lg:hidden">
+        <NotificationCenter />
+      </div>
+
+      <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
         <div className="w-full px-4 md:container md:mx-auto">
           <div className="flex items-center justify-between h-16 max-w-full relative">
 
@@ -204,8 +209,8 @@ function HeaderContent() {
       {/* Mobile Bottom Navigation - Shows on mobile only (below lg) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-center h-16 w-full px-2">
-          <ul className="grid grid-cols-4 gap-0 w-full h-full max-w-md mx-auto">
-            {navItems.map((item) => {
+          <ul className="grid grid-cols-5 gap-0 w-full h-full max-w-md mx-auto">
+            {navItems.slice(0, 2).map((item) => {
               const isActive = pathname === '/' && currentView === item.id;
               return (
                 <li key={item.id} className="flex justify-center items-center h-full">
@@ -216,13 +221,45 @@ function HeaderContent() {
                   >
                     <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
                     <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
-                      {item.label}
+                      {item.label === 'Topluluk Meydanı' ? 'Topluluk' : item.label}
                     </span>
                     {/* Animated Underline */}
                     <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
                   </Link>
                 </li>
               );
+            })}
+
+            {/* Middle: Search Button */}
+            <li className="flex justify-center items-center h-full">
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
+                className="relative flex flex-col items-center justify-center w-full h-full gap-0.5 text-neutral-400 dark:text-neutral-500 active:scale-95 transition-all"
+              >
+                <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-1">
+                  <SearchIcon size={20} />
+                </div>
+              </button>
+            </li>
+
+            {navItems.slice(2).map((item) => {
+               const isActive = pathname === '/' && currentView === item.id;
+               return (
+                <li key={item.id} className="flex justify-center items-center h-full">
+                  <Link
+                    href={item.href}
+                    className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${isActive ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
+                      }`}
+                  >
+                    <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
+                    <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
+                       {item.label === 'Resmi Gündem' ? 'Resmi' : item.label}
+                    </span>
+                    {/* Animated Underline */}
+                    <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                  </Link>
+                </li>
+               );
             })}
 
             {/* Profile Link (4th item) */}
