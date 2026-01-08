@@ -202,6 +202,30 @@ export default function NotificationCenter() {
     }
   };
 
+  const clearAllNotifications = async () => {
+    setIsLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const response = await fetch('/api/notifications', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+
+      if (response.ok) {
+        setNotifications([]);
+        setUnreadCount(0);
+      }
+    } catch (error) {
+      console.error('Error clearing all notifications:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const getRelativeTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -235,13 +259,24 @@ export default function NotificationCenter() {
 
       {isOpen && (
         <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-32px)] origin-top-right bg-white dark:bg-neutral-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] z-[10002] max-h-[500px] flex flex-col rounded-none">
-          <div className="p-4 border-b-2 border-black dark:border-white flex justify-between items-center">
-            <h3 className="font-bold font-serif text-lg dark:text-white">Bildirimler</h3>
+          <div className="p-4 border-b-2 border-black dark:border-white flex flex-col gap-2">
+            <div className="flex justify-between items-center">
+                <h3 className="font-bold font-serif text-lg dark:text-white">Bildirimler</h3>
+                {notifications.length > 0 && (
+                  <button 
+                    onClick={clearAllNotifications}
+                    disabled={isLoading}
+                    className="text-xs font-bold text-neutral-500 hover:text-red-600 transition-colors"
+                  >
+                    Tümünü Temizle
+                  </button>
+                )}
+            </div>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
                 disabled={isLoading}
-                className="text-xs font-bold hover:underline disabled:opacity-50"
+                className="text-xs font-bold text-left hover:underline disabled:opacity-50 w-fit"
                 style={{ color: 'var(--primary-color, #C8102E)' }}
               >
                 Tümünü Okundu İşaretle
@@ -304,8 +339,8 @@ export default function NotificationCenter() {
                       )}
                     </div>
 
-                    <div className="flex items-start gap-1">
-                      {!notification.read && (
+                    <div className="flex flex-col gap-1">
+                      {!notification.read && notification.type !== 'friend_request' && (
                         <button
                           onClick={() => markAsRead(notification.id)}
                           className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors group"
@@ -314,6 +349,13 @@ export default function NotificationCenter() {
                           <Check size={16} className="text-neutral-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
                         </button>
                       )}
+                      <button
+                          onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}
+                          className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors group"
+                          title="Bildirimi sil"
+                        >
+                          <X size={16} className="text-neutral-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" />
+                        </button>
                     </div>
                   </div>
                 </div>
