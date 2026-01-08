@@ -31,7 +31,7 @@ export async function GET(request: Request) {
       .from('notifications')
       .select(`
         *,
-        actor:profiles (
+        actor:profiles!notifications_actor_id_fkey (
           id,
           full_name,
           avatar_url
