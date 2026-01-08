@@ -642,9 +642,9 @@ export default function VoiceView() {
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Newspaper Header - Sticky on mobile */}
-            <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
+            <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
                 <h2 className="text-3xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white">Kampüsün Sesi</h2>
-                <div className="flex justify-between items-center text-sm font-medium border-t border-neutral-200 dark:border-neutral-800 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+                <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-neutral-600 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
                     <span>SAYI: {issueNumber}</span>
                     <span>SERBEST KÜRSÜ</span>
                     <span>{formattedDate.toUpperCase()}</span>
@@ -657,7 +657,7 @@ export default function VoiceView() {
                     {/* Weekly Poll - Moved above feed */}
 
 
-                    <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
+                    <div className="flex justify-between items-end border-b-2 border-black dark:border-neutral-600 pb-2 mb-6">
                         <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
                             <MessageSquare size={24} />
                             Öğrenci Kürsüsü
@@ -690,7 +690,7 @@ export default function VoiceView() {
                                     ref={textareaRef}
                                     rows={3}
                                     maxLength={280}
-                                    className="w-full p-3 border-2 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neutral-400 dark:hover:border-neutral-600 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                    className="w-full p-3 border-2 border-black dark:border-neutral-600 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neural-500 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
                                     style={{ '--tw-ring-color': 'var(--primary-color, #C8102E)' } as React.CSSProperties}
                                     placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
                                     value={newStatus}
@@ -1019,8 +1019,8 @@ export default function VoiceView() {
                         <div className="hidden lg:flex lg:flex-col lg:gap-8 lg:pr-2">
                             <div className="flex flex-row flex-nowrap items-start gap-0 overflow-x-auto pb-4 lg:pb-0 lg:flex-col lg:overflow-x-visible lg:gap-8 lg:pr-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
                                 {/* Weekly Poll */}
-                                <div className="border border-neutral-200 dark:border-neutral-800 p-4 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
-                                    <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-3">
+                                <div className="border-4 border-black dark:border-neutral-600 p-4 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
+                                    <div className="flex items-center justify-between border-b-2 border-black dark:border-neutral-600 pb-2 mb-3">
                                         <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
                                             Haftanın Anketi
                                         </h3>
@@ -1096,8 +1096,8 @@ export default function VoiceView() {
                                 </div>
 
                                 {/* Trending Topics */}
-                                <div className="border border-neutral-200 dark:border-neutral-800 p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
-                                    <h3 className="text-xl font-bold border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
+                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
+                                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
                                         <TrendingUp size={24} style={{ color: 'var(--primary-color, #C8102E)' }} />
                                         Kampüste Gündem
                                     </h3>
@@ -1137,8 +1137,8 @@ export default function VoiceView() {
                                 </div>
 
 
-                                <div className="border border-neutral-200 dark:border-neutral-800 p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
-                                    <h3 className="text-xl font-bold border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
+                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
+                                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                                         Kampüs Nabzı
                                     </h3>
                                     <div className="grid grid-cols-2 gap-4 text-center">

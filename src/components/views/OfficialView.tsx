@@ -425,9 +425,9 @@ export default function OfficialView() {
   return (
     <div className="container mx-auto px-4 py-8 relative">
       {/* Newspaper Header - Sticky on mobile */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
+      <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
         <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white">Resmi Gündem</h2>
-        <div className="flex justify-between items-center text-sm font-medium border-t border-neutral-200 dark:border-neutral-800 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+        <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
           <span>SAYI: {issueNumber}</span>
           <Link 
             href="/official/archive" 
@@ -447,7 +447,7 @@ export default function OfficialView() {
             
             {/* Pinned Announcement */}
             {news[0] && (
-                <div className="border border-neutral-200 dark:border-neutral-800 p-4 sm:p-6 bg-neutral-50 dark:bg-white/5 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] relative mt-4 z-10 rounded-xl">
+                <div className="border-2 border-black dark:border-neutral-600 p-4 sm:p-6 bg-neutral-50 dark:bg-white/5 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] relative mt-4 z-10 rounded-xl">
                      <div 
                         className="absolute -top-3 left-6 text-white px-3 py-1 text-xs font-black uppercase tracking-wider -rotate-1 shadow-sm z-20"
                         style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
@@ -471,7 +471,7 @@ export default function OfficialView() {
             )}
 
             {/* Tab Navigation - Icons always visible, active tab shows label */}
-            <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-1 sm:gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
+            <div className="flex border-b-2 border-black dark:border-neutral-600 mb-6 gap-1 sm:gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
                 {[
                     { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0"/> },
                     { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0"/> },
