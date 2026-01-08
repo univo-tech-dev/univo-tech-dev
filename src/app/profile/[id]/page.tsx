@@ -451,7 +451,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     <button
                         onClick={() => {
                             // For now, just mailto. Can be replaced with a modal/form later
-                            window.location.href = 'mailto:admin@univo.app?subject=Topluluk Yönetim Paneli Başvurusu&body=Merhaba,%0D%0A%0D%0ATopluluk adı:%0D%0ATopluluk açıklaması:%0D%0AÜniversite:%0D%0AIletişim bilgileri:%0D%0A';
+                            window.location.href = 'mailto:dogan.kerem@metu.edu.tr?subject=Topluluk Yönetim Paneli Başvurusu&body=Merhaba,%0D%0A%0D%0ATopluluk adı:%0D%0ATopluluk açıklaması:%0D%0AÜniversite:%0D%0AIletişim bilgileri:%0D%0A';
                         }}
                         className="w-full py-2.5 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm hover:opacity-90"
                         style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}

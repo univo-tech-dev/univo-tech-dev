@@ -297,7 +297,7 @@ export default function LoginPage() {
                 </div>
             </div>
             
-            <p className="fixed bottom-4 left-0 right-0 text-xs text-neutral-400 dark:text-neutral-600 text-center z-50">
+            <p className="text-xs text-neutral-400 dark:text-neutral-600 text-center mt-8 pb-8">
                 &copy; {new Date().getFullYear()} Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
             </p>
         </div>
