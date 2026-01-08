@@ -22,7 +22,7 @@ export default function SettingsPage() {
     const { theme, setTheme, colorTheme, setColorTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [privacySettings, setPrivacySettings] = useState({
-        show_email: false,
+
         show_interests: true,
         show_activities: true,
         show_friends: true,
@@ -127,18 +127,32 @@ export default function SettingsPage() {
                         {/* Theme Mode */}
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-                                    {theme === 'dark' ? 
-                                        <Moon size={20} style={{ color: 'var(--primary-color)' }} /> : 
-                                        <Sun size={20} className="text-neutral-600 dark:text-neutral-400" />
-                                    }
+                                <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg md:bg-purple-100 md:text-purple-600">
+                                    {theme === 'dark' ? (
+                                        <>
+                                            <Moon size={20} className="md:hidden" style={{ color: 'var(--primary-color)' }} />
+                                            <Moon size={20} className="hidden md:block" />
+                                        </>
+                                    ) : (
+                                        <Sun size={20} className="text-neutral-600 dark:text-neutral-400 md:text-purple-600" />
+                                    )}
                                 </div>
                                 <div className="font-medium text-neutral-900 dark:text-white">Karanlık Mod</div>
                             </div>
+                            
+                            {/* Mobile Switch */}
                             <button
                                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200 dark:bg-neutral-700"
+                                className="md:hidden relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200 dark:bg-neutral-700"
                                 style={{ backgroundColor: theme === 'dark' ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+
+                            {/* Desktop Switch */}
+                            <button
+                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                className={`hidden md:block relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${theme === 'dark' ? 'bg-purple-600' : 'bg-neutral-200'}`}
                             >
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
@@ -178,24 +192,7 @@ export default function SettingsPage() {
                     <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Gizlilik</h2>
                     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden divide-y divide-neutral-100 dark:divide-neutral-800">
                         
-                        <div className="p-4 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                                    <Shield size={20} />
-                                </div>
-                                <div>
-                                    <div className="font-medium text-neutral-900 dark:text-white">E-posta Görünürlüğü</div>
-                                    <div className="text-xs text-neutral-500">Profilinde e-posta adresini göster</div>
-                                </div>
-                            </div>
-                            <button
-                                onClick={() => updatePrivacy('show_email', !privacySettings.show_email)}
-                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
-                                style={{ backgroundColor: privacySettings.show_email ? 'var(--primary-color)' : undefined }}
-                            >
-                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_email ? 'translate-x-6' : 'translate-x-0'}`} />
-                            </button>
-                        </div>
+
 
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -209,8 +206,14 @@ export default function SettingsPage() {
                             </div>
                             <button
                                 onClick={() => updatePrivacy('show_friends', !privacySettings.show_friends)}
-                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
+                                className="md:hidden relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
                                 style={{ backgroundColor: privacySettings.show_friends ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_friends ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                            <button
+                                onClick={() => updatePrivacy('show_friends', !privacySettings.show_friends)}
+                                className={`hidden md:block relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${privacySettings.show_friends ? 'bg-blue-600' : 'bg-neutral-200'}`}
                             >
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_friends ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
@@ -228,8 +231,14 @@ export default function SettingsPage() {
                             </div>
                             <button
                                 onClick={() => updatePrivacy('show_activities', !privacySettings.show_activities)}
-                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
+                                className="md:hidden relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
                                 style={{ backgroundColor: privacySettings.show_activities ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_activities ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                            <button
+                                onClick={() => updatePrivacy('show_activities', !privacySettings.show_activities)}
+                                className={`hidden md:block relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${privacySettings.show_activities ? 'bg-blue-600' : 'bg-neutral-200'}`}
                             >
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_activities ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
@@ -247,8 +256,14 @@ export default function SettingsPage() {
                             </div>
                             <button
                                 onClick={() => updatePrivacy('show_interests', !privacySettings.show_interests)}
-                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
+                                className="md:hidden relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
                                 style={{ backgroundColor: privacySettings.show_interests ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_interests ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                            <button
+                                onClick={() => updatePrivacy('show_interests', !privacySettings.show_interests)}
+                                className={`hidden md:block relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${privacySettings.show_interests ? 'bg-blue-600' : 'bg-neutral-200'}`}
                             >
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_interests ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
@@ -266,8 +281,14 @@ export default function SettingsPage() {
                             </div>
                             <button
                                 onClick={() => updatePrivacy('show_polls', !privacySettings.show_polls)}
-                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
+                                className="md:hidden relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
                                 style={{ backgroundColor: privacySettings.show_polls ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_polls ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                            <button
+                                onClick={() => updatePrivacy('show_polls', !privacySettings.show_polls)}
+                                className={`hidden md:block relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out ${privacySettings.show_polls ? 'bg-blue-600' : 'bg-neutral-200'}`}
                             >
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_polls ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
