@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import NotificationCenter from '../NotificationCenter';
 import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, BadgeCheck, Globe, Lock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -500,8 +501,11 @@ export default function VoiceView() {
 
     return (
         <div className="container mx-auto px-4 py-8 relative">
-            {/* Newspaper Header - Sticky on mobile */}
-            <div className="border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center transition-colors md:static sticky top-0 z-[9998] bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 relative">
+            {/* Newspaper Header - Static on mobile */}
+            <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 relative pr-14">
+                <div className="absolute top-4 right-4 lg:hidden z-10">
+                    <NotificationCenter />
+                </div>
                 <h2 className="text-3xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 text-black dark:text-white flex items-center justify-center gap-4">
                     Kampüsün Sesi
                     {/* Badge for Mode */}
@@ -509,7 +513,7 @@ export default function VoiceView() {
                         {isGlobalMode ? 'GLOBAL' : 'ODTÜ'}
                     </span>
                 </h2>
-                <div className="flex justify-between items-center text-sm font-medium border-t border-neutral-200 dark:border-neutral-800 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+                <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
                     <span>SAYI: {issueNumber}</span>
                     <span>{isGlobalMode ? 'DÜNYA GÜNDEMİ' : 'SERBEST KÜRSÜ'}</span>
                     <span>{formattedDate.toUpperCase()}</span>
