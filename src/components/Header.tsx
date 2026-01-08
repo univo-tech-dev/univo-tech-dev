@@ -93,7 +93,7 @@ function HeaderContent() {
 
   return (
     <>
-      <header className={`sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-neutral-600 transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
+      <header className={`sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
         <div className="w-full px-4 md:container md:mx-auto">
           <div className="flex items-center justify-between h-16 max-w-full relative">
 
@@ -113,7 +113,7 @@ function HeaderContent() {
             </Link>
 
             {/* Center: Desktop Navigation - Only show on large screens to avoid overlap */}
-            <nav className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2 bg-neutral-100/50 dark:bg-neutral-800/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-black dark:border-neutral-600">
+            <nav className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2 bg-neutral-100/50 dark:bg-neutral-800/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-black dark:border-white">
               <ul className="flex items-center gap-0.5">
                 {navItems.map((item) => {
                   const isActive = pathname === '/' && currentView === item.id;
@@ -202,7 +202,7 @@ function HeaderContent() {
 
       {/* Mobile Bottom Navigation - Moved outside header to prevent transform issues */}
       {/* Mobile Bottom Navigation - Shows on mobile only (below lg) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-neutral-600 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-center h-16 w-full px-2">
           <ul className="grid grid-cols-4 gap-0 w-full h-full max-w-md mx-auto">
             {navItems.map((item) => {
@@ -265,7 +265,7 @@ function HeaderContent() {
 
 export default function Header() {
   return (
-    <Suspense fallback={<div className="h-16 bg-white dark:bg-[#0a0a0a] border-b border-black dark:border-neutral-600"></div>}>
+    <Suspense fallback={<div className="h-16 bg-white dark:bg-[#0a0a0a] border-b border-black dark:border-white"></div>}>
       <HeaderContent />
     </Suspense>
   );

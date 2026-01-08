@@ -1019,8 +1019,8 @@ export default function VoiceView() {
                         <div className="hidden lg:flex lg:flex-col lg:gap-8 lg:pr-2">
                             <div className="flex flex-row flex-nowrap items-start gap-0 overflow-x-auto pb-4 lg:pb-0 lg:flex-col lg:overflow-x-visible lg:gap-8 lg:pr-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
                                 {/* Weekly Poll */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-4 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
-                                    <div className="flex items-center justify-between border-b-2 border-black dark:border-neutral-600 pb-2 mb-3">
+                                <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-none">
+                                    <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
                                         <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
                                             Haftanın Anketi
                                         </h3>
@@ -1096,8 +1096,8 @@ export default function VoiceView() {
                                 </div>
 
                                 {/* Trending Topics */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
-                                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
+                                <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-none">
+                                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white">
                                         <TrendingUp size={24} style={{ color: 'var(--primary-color, #C8102E)' }} />
                                         Kampüste Gündem
                                     </h3>
@@ -1137,8 +1137,8 @@ export default function VoiceView() {
                                 </div>
 
 
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-xl">
-                                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
+                                <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 w-[calc(100vw-32px)] mx-4 lg:mx-0 lg:w-full snap-center rounded-none">
+                                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
                                         Kampüs Nabzı
                                     </h3>
                                     <div className="grid grid-cols-2 gap-4 text-center">

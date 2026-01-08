@@ -45,7 +45,7 @@ export default function CommunityView() {
         {/* Left Sidebar / Navigation (Category Filter) */}
         <div className="lg:col-span-1">
           <div className="">
-            <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif dark:text-white transition-colors">Kategoriler</h3>
+            <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif dark:text-white transition-colors">Kategoriler</h3>
             <CategoryFilter
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
@@ -53,8 +53,8 @@ export default function CommunityView() {
 
             <div className="mt-8">
               {/* Popular Events - Replaced TrendingWidget */}
-              <div className="border border-primary dark:border-primary p-6 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-[0_0_15px_rgba(255,255,255,0.02)] transition-colors rounded-xl">
-                <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white transition-colors">
+              <div className="border border-primary dark:border-primary p-6 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(var(--primary-rgb),1)] dark:shadow-[4px_4px_0px_0px_rgba(var(--primary-rgb),0.5)] transition-colors rounded-none">
+                <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 dark:text-white transition-colors">
                   <Calendar size={24} style={{ color: 'var(--primary-color, #C8102E)' }} />
                   Popüler
                 </h3>
@@ -65,7 +65,7 @@ export default function CommunityView() {
                         <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:text-primary transition-colors">{event.title}</h4>
                         <span className="text-xs font-bold bg-primary text-white px-2 py-1 uppercase transition-colors">{event.date}</span>
                       </div>
-                      <div className="flex justify-between items-end border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
+                      <div className="flex justify-between items-end border-b border-black dark:border-white pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
                         <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{event.attendees} katılımcı</p>
                         <ArrowRight size={16} className="text-neutral-400 dark:text-neutral-500 group-hover:translate-x-1 group-hover:text-primary transition-all" />
                       </div>
@@ -79,7 +79,7 @@ export default function CommunityView() {
 
         {/* Main Column */}
         <div className="lg:col-span-3">
-          <h3 className="text-xl font-bold border-b-2 border-black dark:border-neutral-600 pb-2 mb-6 flex items-center gap-2 font-serif dark:text-white transition-colors">
+          <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-6 flex items-center gap-2 font-serif dark:text-white transition-colors">
             <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-sm uppercase">Güncel</span>
             Etkinlikler & Kulüpler
           </h3>
