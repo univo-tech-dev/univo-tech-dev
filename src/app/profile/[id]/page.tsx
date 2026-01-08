@@ -682,9 +682,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
         </div>
 
-        {/* Right Column: Bio & Activities */}
+        {/* Right Column: Bio, Badges & Activities */}
         <div className="lg:col-span-2 space-y-8">
-            {/* Bio moved to Top of Right Column */}
+            {/* 1. Bio Section */}
             {profile.bio && (
                 <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 relative overflow-hidden transition-colors">
                     <Quote size={40} className="absolute top-2 right-2 text-neutral-100 dark:text-neutral-800 -z-10 transform rotate-12" />
@@ -695,18 +695,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             )}
 
-        </div>
-
-        {/* Right Column: Bio & Activities */}
-        <div className="lg:col-span-2 space-y-8">
-            
-            {/* Badges Section */}
+            {/* 2. Badges Section */}
             {badges.length > 0 && (
                 <BadgeDisplay badges={badges} />
             )}
 
-
-            {/* Activity Timeline (New) */}
+            {/* 3. Activity Timeline */}
             {showActivities && activities.length > 0 && (
                  <div>
                     <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-3 dark:text-white">
@@ -718,7 +712,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                  </div>
             )}
 
-            {/* Activities Section */}
+            {/* 4. Upcoming Events */}
             {showActivities && (
                 <div>
                     <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-3 dark:text-white">
@@ -739,7 +733,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all cursor-pointer group"
                                 >
                                     <span className="inline-block px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-[10px] uppercase rounded font-bold mb-3 tracking-wider">
-                                        {(event as any).community?.category || event.category || 'Etkinlik'}
+                                        {(event as any).community?.category || (event.category === 'EVENT' ? 'Etkinlik' : event.category) || 'Etkinlik'}
                                     </span>
                                     <h3 className="font-bold text-lg mb-2 text-neutral-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
                                         {event.title}

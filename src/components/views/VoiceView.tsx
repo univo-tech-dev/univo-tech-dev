@@ -571,8 +571,9 @@ export default function VoiceView() {
 
         const { data, error } = await supabase
             .from('poll_votes')
-            .select('option_index, user_id, profiles:user_id!inner(id)')
-            .eq('poll_id', pollId);
+            .select('option_index, user_id, profiles:user_id!inner(id, is_archived)')
+            .eq('poll_id', pollId)
+            .eq('profiles.is_archived', false);
 
         if (error) {
             console.error('Fetch Results Error:', error);
@@ -1049,9 +1050,10 @@ export default function VoiceView() {
                                                             key={idx}
                                                             onClick={() => handlePollVote(idx)}
                                                             className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden ${isSelected
-                                                                ? 'border-black dark:border-white bg-neutral-50 dark:bg-neutral-800'
-                                                                : 'border-neutral-200 dark:border-neutral-800 hover:border-black dark:hover:border-white'
+                                                                ? 'border-primary dark:border-primary bg-primary/5 dark:bg-primary/10'
+                                                                : 'border-neutral-200 dark:border-neutral-800 hover:border-primary dark:hover:border-primary'
                                                                 }`}
+                                                            style={isSelected ? { borderColor: 'var(--primary-color)' } : {}}
                                                         >
                                                             {showResults && (
                                                                 <div
@@ -1061,10 +1063,10 @@ export default function VoiceView() {
                                                             )}
 
                                                             <div className="relative p-3 flex justify-between items-center z-10 font-bold">
-                                                                <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
+                                                                <span className={isSelected ? 'text-primary dark:text-primary-light' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-primary transition-colors'}>
                                                                     {option}
                                                                 </span>
-                                                                {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
+                                                                {showResults && <span className="text-sm font-black text-primary dark:text-primary-light">{percentage}%</span>}
                                                             </div>
                                                         </button>
                                                     );
@@ -1224,7 +1226,10 @@ export default function VoiceView() {
                                                         key={voter.user_id}
                                                         className="flex items-center gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm"
                                                     >
-                                                        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-black">
+                                                        <div 
+                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black shadow-sm"
+                                                            style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                                        >
                                                             {voter.display_name.charAt(0)}
                                                         </div>
                                                         <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate">
