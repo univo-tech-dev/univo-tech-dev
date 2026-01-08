@@ -101,15 +101,28 @@ export default function OfficialView() {
                 const data = await res.json();
                 
                 // Map raw IMAP data
-                const mappedEmails = (data.emails || []).map((msg: any) => ({
-                    id: `email-${msg.id}`,
-                    type: 'email',
-                    title: msg.subject,
-                    source: 'ODTÜ E-Posta', 
-                    date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }),
-                    summary: `Gönderen: ${msg.from}`,
-                    link: `https://metumail.metu.edu.tr/`
-                }));
+                const mappedEmails = (data.emails || []).map((msg: any) => {
+                    // Extract sender name from 'From' header (format: "Name <email@domain.com>")
+                    let senderName = msg.from || 'Bilinmeyen Gönderen';
+                    // Try to extract the name part before <email>
+                    const nameMatch = senderName.match(/^"?([^"<]+)"?\s*</);
+                    if (nameMatch && nameMatch[1]) {
+                        senderName = nameMatch[1].trim();
+                    } else if (senderName.includes('@')) {
+                        // If only email, use part before @
+                        senderName = senderName.split('@')[0].replace(/[<>"]/g, '');
+                    }
+                    
+                    return {
+                        id: `email-${msg.id}`,
+                        type: 'email',
+                        title: msg.subject,
+                        source: senderName, // Use sender name instead of 'ODTÜ E-Posta'
+                        date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' }),
+                        summary: `E-posta içeriği için tıklayınız.`,
+                        link: `https://metumail.metu.edu.tr/`
+                    };
+                });
 
                 setEmails(mappedEmails);
                 setIsEmailConnected(true);
@@ -618,15 +631,15 @@ export default function OfficialView() {
                             <div className="flex-1 pr-32">
                                 <div className="flex items-center gap-2 mb-1">
                                     {item.type === 'event' ? (
-                                        <Calendar size={16} className="text-blue-600"/>
+                                        <Calendar size={16} className="text-blue-600 transition-colors duration-300"/>
                                     ) : item.type === 'email' ? (
-                                        <Mail size={16} className="text-amber-600"/>
+                                        <Mail size={16} className="text-amber-600 transition-colors duration-300"/>
                                     ) : (item.type === 'grade' || item.type === 'assignment') ? (
-                                        <GraduationCap size={16} className="text-violet-600"/>
+                                        <GraduationCap size={16} className="text-violet-600 transition-colors duration-300"/>
                                     ) : (
-                                        <Megaphone size={16} className="text-emerald-600"/>
+                                        <Megaphone size={16} className="text-emerald-600 transition-colors duration-300"/>
                                     )}
-                                    <span className={`text-xs font-bold uppercase ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
+                                    <span className={`text-xs font-bold uppercase transition-colors duration-300 ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
                                         {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
                                     </span>
                                     <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>

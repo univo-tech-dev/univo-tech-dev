@@ -1239,9 +1239,10 @@ export default function VoiceView() {
                                             {voters
                                                 .filter(v => v.option_index === selectedVoterOption)
                                                 .map(voter => (
-                                                    <div 
+                                                    <Link 
                                                         key={voter.user_id}
-                                                        className="flex items-center gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm"
+                                                        href={`/profile/${voter.user_id}`}
+                                                        className="flex items-center gap-3 p-3 bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm hover:bg-neutral-50 dark:hover:bg-neutral-700 hover:border-primary transition-all cursor-pointer"
                                                     >
                                                         <div 
                                                             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black shadow-sm"
@@ -1249,10 +1250,10 @@ export default function VoiceView() {
                                                         >
                                                             {voter.display_name.charAt(0)}
                                                         </div>
-                                                        <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                                                        <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200 truncate hover:underline">
                                                             {voter.display_name.split(' ').map((word: string) => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
                                                         </span>
-                                                    </div>
+                                                    </Link>
                                                 ))
                                             }
                                         </div>
