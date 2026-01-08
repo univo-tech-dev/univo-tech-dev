@@ -22,11 +22,13 @@ interface PrivacySettings {
   show_interests: boolean;
   show_activities: boolean;
   show_friends: boolean;
+  show_polls: boolean;
 }
 
 interface Profile {
   id: string;
   full_name: string;
+  nickname?: string;
   avatar_url?: string;
   department?: string;
   class_year?: string;
@@ -58,13 +60,14 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
   const [formData, setFormData] = useState<Profile>({
     id: '',
     full_name: '',
+    nickname: '',
     avatar_url: '',
     department: '',
     class_year: '',
     bio: '',
     interests: [],
     social_links: { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
-    privacy_settings: { show_email: false, show_interests: true, show_activities: true, show_friends: true }
+    privacy_settings: { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true }
   });
   
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -93,13 +96,14 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
         setFormData({
           id: data.id,
           full_name: data.full_name || '',
+          nickname: data.nickname || '',
           avatar_url: data.avatar_url || '',
           department: data.department || '',
           class_year: data.class_year || '',
           bio: data.bio || '',
           interests: data.interests || [],
           social_links: data.social_links || { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
-          privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true, show_friends: true }
+          privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true }
         });
       }
     } catch (error) {
@@ -210,6 +214,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
         .upsert({
           id: id,
           full_name: formData.full_name,
+          nickname: formData.nickname,
           avatar_url: avatarUrl,
           department: formData.department,
           class_year: formData.class_year,
@@ -343,6 +348,20 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                       <option key={opt} value={opt}>{opt}</option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1 flex items-center gap-1">
+                    <Quote size={14} className="text-neutral-500" /> Rumuz (Anonim Paylaşımlar İçin)
+                  </label>
+                  <input
+                    type="text"
+                    name="nickname"
+                    value={formData.nickname}
+                    onChange={handleChange}
+                    placeholder="Kampüs Kedisi, ODTÜ'lü..."
+                    className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded-md focus:ring-2 focus:ring-[#C8102E] focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white"
+                  />
                 </div>
               </div>
             </div>
@@ -497,6 +516,22 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                             type="checkbox" 
                             checked={formData.privacy_settings?.show_friends} 
                             onChange={() => handlePrivacyToggle('show_friends')}
+                            className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
+                        />
+                    </label>
+
+                    <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                        <div className="flex items-center gap-3">
+                            {formData.privacy_settings?.show_polls ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
+                            <div>
+                                <span className="font-medium text-neutral-900 dark:text-white block">Anket Katılımlarımı Göster</span>
+                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Hangi anketlere oy verdiğiniz ve isminiz/rumuzunuz katılımcı listesinde görünür.</span>
+                            </div>
+                        </div>
+                        <input 
+                            type="checkbox" 
+                            checked={formData.privacy_settings?.show_polls} 
+                            onChange={() => handlePrivacyToggle('show_polls')}
                             className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
                         />
                     </label>

@@ -10,6 +10,7 @@ import BadgeDisplay from '@/components/profile/BadgeDisplay';
 import ActivityTimeline, { ActivityItem } from '@/components/profile/ActivityTimeline';
 import FriendButton from '@/components/FriendButton';
 import FriendListModal from '@/components/FriendListModal';
+import FollowedCommunitiesModal from '@/components/profile/FollowedCommunitiesModal';
 import { analyzeCourses, formatDetectionMessage } from '@/lib/course-analyzer';
 import { toast } from 'sonner';
 
@@ -26,6 +27,7 @@ interface Profile {
     show_email: boolean;
     show_interests: boolean;
     show_activities: boolean;
+    show_friends: boolean;
   };
   social_links?: {
     linkedin?: string;
@@ -56,8 +58,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [friendCount, setFriendCount] = useState(0);
+  const [followedCommunitiesCount, setFollowedCommunitiesCount] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [showFriendsModal, setShowFriendsModal] = useState(false);
+  const [showCommunitiesModal, setShowCommunitiesModal] = useState(false);
   const [detectionResult, setDetectionResult] = useState<any>(null);
   const [showDetectionCard, setShowDetectionCard] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -68,10 +72,13 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
   useEffect(() => {
     fetchProfileData();
-    if (isOwnProfile && user) {
+  }, [id, user]);
+
+  useEffect(() => {
+    if (isOwnProfile && user && profile && !loading) {
         handleProfileDetection();
     }
-  }, [id, user, isOwnProfile]); // Added user and isOwnProfile to dependency
+  }, [isOwnProfile, user, profile, loading]);
 
   const fetchProfileData = async () => {
     try {
@@ -187,6 +194,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
       setFriendCount(friends || 0);
 
+      // Fetch Followed Communities Count
+      const { count: followed } = await supabase
+        .from('community_followers')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', resolvedId);
+      
+      setFollowedCommunitiesCount(followed || 0);
+
       if (attendanceData) {
         // Process Events for Display
         const eventsList: EventAttendance[] = attendanceData
@@ -266,11 +281,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         });
         
         const data = await response.json();
-        if (data.success && data.detection.detectedClass) {
+        console.log('Detection Raw Data:', data);
+        if (data.success && data.detection && (data.detection.detectedClass || data.detection.isPrep)) {
             setDetectionResult(data.detection);
             // Only show card if the detected info is DIFFERENT from current profile
             const isDifferent = data.detection.detectedDepartment !== profile?.department || 
                                data.detection.detectedClass !== profile?.class_year;
+            
+            console.log('Detection Check:', { isDifferent, detected: data.detection, current: { dept: profile?.department, class: profile?.class_year } });
             
             if (isDifferent) {
                 setShowDetectionCard(true);
@@ -437,13 +455,22 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         )}
                     </div>
 
-                    <div className="flex justify-center gap-6 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">
+                    <div className="flex justify-center gap-2 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">
+                        {(isOwnProfile || profile.privacy_settings?.show_friends !== false) && (
+                            <button 
+                                onClick={() => setShowFriendsModal(true)}
+                                className="flex-1 text-center hover:bg-neutral-50 dark:hover:bg-neutral-800 px-2 py-2 rounded-lg transition-colors border-r border-neutral-100 dark:border-neutral-800"
+                            >
+                                <div className="text-lg font-bold text-neutral-900 dark:text-white">{friendCount}</div>
+                                <div className="text-[10px] text-neutral-500 uppercase tracking-tighter font-bold">Arkadaş</div>
+                            </button>
+                        )}
                         <button 
-                            onClick={() => setShowFriendsModal(true)}
-                            className="text-center hover:bg-neutral-50 dark:hover:bg-neutral-800 px-4 py-2 rounded-lg transition-colors"
+                            onClick={() => setShowCommunitiesModal(true)}
+                            className="flex-1 text-center hover:bg-neutral-50 dark:hover:bg-neutral-800 px-2 py-2 rounded-lg transition-colors"
                         >
-                            <div className="text-lg font-bold text-neutral-900 dark:text-white">{friendCount}</div>
-                            <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Arkadaş</div>
+                            <div className="text-lg font-bold text-neutral-900 dark:text-white">{followedCommunitiesCount}</div>
+                            <div className="text-[10px] text-neutral-500 uppercase tracking-tighter font-bold">Topluluk</div>
                         </button>
                     </div>
 
@@ -452,6 +479,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         isOpen={showFriendsModal}
                         onClose={() => setShowFriendsModal(false)}
                         isOwnProfile={isOwnProfile}
+                    />
+
+                    <FollowedCommunitiesModal 
+                        userId={targetId}
+                        isOpen={showCommunitiesModal}
+                        onClose={() => setShowCommunitiesModal(false)}
                     />
 
                     {/* Friend Button - Only for other users' profiles */}
@@ -629,45 +662,47 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             )}
 
             {/* Activities Section */}
-            <div>
-                 <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-3 dark:text-white">
-                    <Calendar size={28} className="text-neutral-900 dark:text-white" />
-                    Yaklaşan Etkinlikler
-                 </h2>
+            {showActivities && (
+                <div>
+                    <h2 className="text-2xl font-bold font-serif mb-6 flex items-center gap-3 dark:text-white">
+                        <Calendar size={28} className="text-neutral-900 dark:text-white" />
+                        Yaklaşan Etkinlikler
+                    </h2>
 
-                 {upcomingEvents.length === 0 ? (
-                    <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-8 text-center mb-8">
-                         <p className="text-neutral-500 dark:text-neutral-400">Yaklaşan etkinlik bulunamadı.</p>
-                    </div>
-                 ) : (
-                    <div className="grid md:grid-cols-2 gap-4 mb-10">
-                        {upcomingEvents.map((event) => (
-                            <div
-                                key={event.id}
-                                onClick={() => router.push(`/events/${event.id}`)}
-                                className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all cursor-pointer group"
-                            >
-                                <span className="inline-block px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs rounded font-medium mb-3">
-                                    {event.category}
-                                </span>
-                                <h3 className="font-bold text-lg mb-2 text-neutral-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
-                                    {event.title}
-                                </h3>
-                                <div className="space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
-                                    <div className="flex items-center gap-2">
-                                        <Calendar size={14} className="text-primary" />
-                                        <span>{new Date(event.date).toLocaleDateString('tr-TR')} · {event.time}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <MapPin size={14} className="text-primary" />
-                                        <span>{event.location}</span>
+                    {upcomingEvents.length === 0 ? (
+                        <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-8 text-center mb-8">
+                            <p className="text-neutral-500 dark:text-neutral-400">Yaklaşan etkinlik bulunamadı.</p>
+                        </div>
+                    ) : (
+                        <div className="grid md:grid-cols-2 gap-4 mb-10">
+                            {upcomingEvents.map((event) => (
+                                <div
+                                    key={event.id}
+                                    onClick={() => router.push(`/events/${event.id}`)}
+                                    className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all cursor-pointer group"
+                                >
+                                    <span className="inline-block px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs rounded font-medium mb-3">
+                                        {event.category}
+                                    </span>
+                                    <h3 className="font-bold text-lg mb-2 text-neutral-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
+                                        {event.title}
+                                    </h3>
+                                    <div className="space-y-1 text-sm text-neutral-600 dark:text-neutral-400">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar size={14} className="text-primary" />
+                                            <span>{new Date(event.date).toLocaleDateString('tr-TR')} · {event.time}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <MapPin size={14} className="text-primary" />
+                                            <span>{event.location}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                 )}
-            </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
       </div>
     </div>

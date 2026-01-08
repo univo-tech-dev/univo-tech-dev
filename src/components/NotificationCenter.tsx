@@ -25,6 +25,7 @@ export default function NotificationCenter() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [actingId, setActingId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -140,6 +141,7 @@ export default function NotificationCenter() {
   };
 
   const handleFriendRequest = async (actorId: string, action: 'accept' | 'reject', notificationId: string) => {
+    setActingId(notificationId);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -171,6 +173,8 @@ export default function NotificationCenter() {
       }
     } catch (error) {
       console.error(`Error handling friend request (${action}):`, error);
+    } finally {
+      setActingId(null);
     }
   };
 
@@ -255,13 +259,16 @@ export default function NotificationCenter() {
                 <div
                   key={notification.id}
                   className={`p-4 border-b border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors ${
-                    !notification.read ? 'bg-red-50/30 dark:bg-red-900/10' : ''
+                    !notification.read ? 'bg-neutral-50/50 dark:bg-white/[0.02]' : ''
                   }`}
                 >
                   <div className="flex gap-3">
                     {notification.actor && (
                       <Link href={`/profile/${notification.actor.id}`}>
-                        <div className="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0 bg-[#C8102E]">
+                        <div 
+                          className="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0"
+                          style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                        >
                           {notification.actor.full_name?.charAt(0) || '?'}
                         </div>
                       </Link>
@@ -276,16 +283,18 @@ export default function NotificationCenter() {
                         <div className="flex gap-2 mt-2 mb-1">
                           <button
                             onClick={() => handleFriendRequest(notification.actor!.id, 'accept', notification.id)}
-                            className="text-white text-xs font-bold px-3 py-1.5 rounded-md hover:opacity-90 transition-colors"
+                            disabled={actingId === notification.id}
+                            className="text-white text-xs font-bold px-3 py-1.5 rounded-md hover:opacity-90 transition-colors disabled:opacity-50"
                             style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                           >
-                            Kabul Et
+                            {actingId === notification.id ? '...' : 'Kabul Et'}
                           </button>
                           <button
                             onClick={() => handleFriendRequest(notification.actor!.id, 'reject', notification.id)}
-                            className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-bold px-3 py-1.5 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                            disabled={actingId === notification.id}
+                            className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 text-xs font-bold px-3 py-1.5 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
                           >
-                            Reddet
+                            {actingId === notification.id ? '...' : 'Reddet'}
                           </button>
                         </div>
                       ) : (
@@ -299,19 +308,12 @@ export default function NotificationCenter() {
                       {!notification.read && (
                         <button
                           onClick={() => markAsRead(notification.id)}
-                          className="p-1 hover:bg-green-100 dark:hover:bg-green-900/30 rounded transition-colors"
+                          className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors group"
                           title="Okundu işaretle"
                         >
-                          <Check size={14} className="text-green-600 dark:text-green-400" />
+                          <Check size={16} className="text-neutral-400 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors" />
                         </button>
                       )}
-                      <button
-                        onClick={() => deleteNotification(notification.id)}
-                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
-                        title="Sil"
-                      >
-                        <X size={14} className="text-red-600 dark:text-red-400" />
-                      </button>
                     </div>
                   </div>
                 </div>

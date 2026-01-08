@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Menu, X, MessageCircle, Users, Building2, LayoutDashboard, User, Settings, LogOut, Globe, Radio } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import AuthButton from './AuthButton';
-import GlobalSearch from './search/GlobalSearch';
 import { Search as SearchIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -21,7 +20,6 @@ const ALLOWED_DASHBOARD_USERS = [
 ];
 
 function HeaderContent() {
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCommunityAdmin, setIsCommunityAdmin] = useState(false);
   const [isAtTop, setIsAtTop] = useState(true);
   const searchParams = useSearchParams();
@@ -167,7 +165,7 @@ function HeaderContent() {
 
               {/* Search (Desktop) - Prominent */}
               <button
-                onClick={() => setIsSearchOpen(true)}
+                onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
                 className="hidden lg:block p-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all hover:scale-105"
                 aria-label="Search"
               >
@@ -190,7 +188,7 @@ function HeaderContent() {
                 <NotificationCenter />
 
                 <button
-                  onClick={() => setIsSearchOpen(true)}
+                  onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
                   className="p-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all"
                 >
                   <SearchIcon size={24} />
@@ -200,8 +198,6 @@ function HeaderContent() {
             </div>
           </div>
         </div>
-
-        <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
       </header>
 
       {/* Mobile Bottom Navigation - Moved outside header to prevent transform issues */}

@@ -21,6 +21,7 @@ interface Voice {
     tags: string[] | null;
     user: {
         full_name: string;
+        nickname?: string;
         department: string;
         avatar_url?: string;
     };
@@ -97,6 +98,11 @@ export default function VoiceView() {
     // Filter state
     const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
     const [allTags, setAllTags] = useState<{ tag: string, count: number }[]>([]);
+
+    // Poll Voters State
+    const [showVotersModal, setShowVotersModal] = useState(false);
+    const [voters, setVoters] = useState<{ user_id: string, display_name: string, option_index: number }[]>([]);
+    const [isLoadingVoters, setIsLoadingVoters] = useState(false);
 
     useEffect(() => {
         fetchVoices();
@@ -610,6 +616,25 @@ export default function VoiceView() {
         fetchPoll();
     }, [user]);
 
+    const fetchVoters = async () => {
+        if (!activePoll) return;
+        setIsLoadingVoters(true);
+        setShowVotersModal(true);
+        try {
+            const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+            const res = await fetch(`/api/poll/${pollId}/voters`);
+            const data = await res.json();
+            if (data.voters) {
+                setVoters(data.voters);
+            }
+        } catch (e) {
+            console.error('Failed to fetch voters', e);
+            toast.error('Katılımcılar yüklenemedi');
+        } finally {
+            setIsLoadingVoters(false);
+        }
+    };
+
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Newspaper Header - Sticky on mobile */}
@@ -758,16 +783,20 @@ export default function VoiceView() {
                                                 {/* Meta */}
                                                 <div className="flex items-center gap-2 mb-2 flex-wrap">
                                                     {voice.is_anonymous ? (
-                                                        <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">Rumuzlu Öğrenci</span>
+                                                        <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">
+                                                            {voice.user.nickname || 'Rumuzlu Öğrenci'}
+                                                        </span>
                                                     ) : (
                                                         <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
                                                             {voice.user.full_name}
                                                         </Link>
                                                     )}
 
-                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1">
-                                                        {voice.user.department || 'Kampüs'}
-                                                    </span>
+                                                    {voice.user.department && (
+                                                        <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1">
+                                                            {voice.user.department}
+                                                        </span>
+                                                    )}
 
 
                                                     {/* 3-Dot Menu (Moved to Top Right) */}
@@ -1038,7 +1067,17 @@ export default function VoiceView() {
                                                     );
                                                 })}
                                             </div>
-                                            {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>}
+                                            {userVote !== null && (
+                                                <div className="flex flex-col items-center mt-3 gap-2">
+                                                    <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{totalVotes} oy kullanıldı</div>
+                                                    <button 
+                                                        onClick={fetchVoters}
+                                                        className="text-[10px] font-bold uppercase tracking-wider text-primary hover:underline"
+                                                    >
+                                                        Katılımcıları Gör
+                                                    </button>
+                                                </div>
+                                            )}
                                         </>
                                     )}
                                 </div>
@@ -1111,6 +1150,53 @@ export default function VoiceView() {
                     </div>
                 </div>
             </div>
+
+            {/* Poll Voters Modal */}
+            {showVotersModal && (
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowVotersModal(false)} />
+                    <div className="relative w-full max-w-md bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] p-6 animate-in zoom-in duration-200">
+                        <div className="flex justify-between items-center mb-6 border-b-2 border-black dark:border-white pb-2">
+                            <h3 className="text-xl font-bold font-serif uppercase tracking-tight dark:text-white">Anket Katılımcıları</h3>
+                            <button onClick={() => setShowVotersModal(false)} className="hover:text-primary transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="max-h-[60vh] overflow-y-auto space-y-4">
+                            {isLoadingVoters ? (
+                                <div className="text-center py-12 text-neutral-400 animate-pulse font-bold">Yükleniyor...</div>
+                            ) : voters.length === 0 ? (
+                                <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz katılımcı yok.</div>
+                            ) : (
+                                activePoll?.options.map((option, optIdx) => {
+                                    const optionVoters = voters.filter(v => v.option_index === optIdx);
+                                    if (optionVoters.length === 0) return null;
+
+                                    return (
+                                        <div key={optIdx} className="space-y-2">
+                                            <h4 className="text-xs font-black uppercase text-primary border-b border-neutral-100 dark:border-neutral-800 pb-1 flex justify-between">
+                                                <span>{option}</span>
+                                                <span>{optionVoters.length} Kişi</span>
+                                            </h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {optionVoters.map(voter => (
+                                                    <div 
+                                                        key={voter.user_id}
+                                                        className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-xs font-bold rounded-full border border-neutral-200 dark:border-neutral-700 dark:text-neutral-300"
+                                                    >
+                                                        {voter.display_name}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
