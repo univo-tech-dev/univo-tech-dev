@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calendar, MapPin, Type, FileText } from 'lucide-react';
+import { Calendar, MapPin, Type, FileText, X, Upload } from 'lucide-react';
 
 export default function EditEventPage() {
   const { user } = useAuth();
@@ -14,6 +14,7 @@ export default function EditEventPage() {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [uploading, setUploading] = useState(false);
   
   const [formData, setFormData] = useState({
       title: '',
@@ -44,7 +45,7 @@ export default function EditEventPage() {
             if (data) {
                 setFormData({
                     title: data.title || '',
-                    date: data.date || '',
+                    date: data.date ? data.date.split('T')[0] : '',
                     time: data.time || '', // "HH:MM:SS" or "HH:MM"
                     location: data.location || '',
                     category: data.category || 'event',
@@ -69,6 +70,34 @@ export default function EditEventPage() {
 
   const handleChange = (e: any) => {
       setFormData({...formData, [e.target.name]: e.target.value});
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `events/${Date.now()}.${fileExt}`;
+
+    setUploading(true);
+    try {
+        const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+        setFormData({ ...formData, image_url: data.publicUrl });
+    } catch (error) {
+        console.error('Upload error:', error);
+        alert('Resim yüklenirken hata oluştu!');
+    } finally {
+        setUploading(false);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, image_url: '' });
   };
 
   const handleSubmit = async (e: any) => {
@@ -198,20 +227,46 @@ export default function EditEventPage() {
             </div>
 
             <div>
-                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Etkinlik Afişi (URL)</label>
-                <div className="relative">
-                    <div className="absolute top-3 left-3 text-neutral-400">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Etkinlik Afişi</label>
+                {formData.image_url ? (
+                    <div className="relative w-full h-64 rounded-lg overflow-hidden group border-2 border-neutral-200 dark:border-neutral-800">
+                        <img src={formData.image_url} alt="Afiş Önizleme" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                                type="button" 
+                                onClick={removeImage}
+                                className="bg-red-500 text-white px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-red-600 transition-colors"
+                            >
+                                <X size={20} /> Kaldır
+                            </button>
+                        </div>
                     </div>
-                    <input 
-                        type="text" 
-                        name="image_url" 
-                        value={formData.image_url}
-                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] dark:focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] dark:hover:border-[var(--primary-color)] focus:outline-none transition-colors"
-                        placeholder="https://..."
-                        onChange={handleChange}
-                    />
-                </div>
+                ) : (
+                    <div className="relative">
+                        <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            disabled={uploading}
+                            className="hidden" 
+                            id="image-upload"
+                        />
+                        <label 
+                            htmlFor="image-upload" 
+                            className={`w-full h-32 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-lg flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-[var(--primary-color)] hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                        >
+                            {uploading ? (
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary-color)]"></div>
+                            ) : (
+                                <>
+                                    <Upload size={32} className="text-neutral-400 dark:text-neutral-500" />
+                                    <span className="text-sm font-bold text-neutral-500 dark:text-neutral-400">Afiş Yüklemek İçin Tıklayın</span>
+                                    <span className="text-xs text-neutral-400">JPG, PNG, GIF (Max 5MB)</span>
+                                </>
+                            )}
+                        </label>
+                    </div>
+                )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

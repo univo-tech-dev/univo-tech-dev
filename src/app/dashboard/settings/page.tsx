@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
-import { Rocket, ChevronDown, Check, X, Upload, Instagram, Twitter, Globe, Users } from 'lucide-react';
+import { Rocket, ChevronDown, Check, X, Upload, Instagram, Twitter, Globe, Users, Trash2 } from 'lucide-react';
 
 export default function SettingsPage() {
     const { user, profile } = useAuth();
@@ -16,6 +16,8 @@ export default function SettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [showLogoModal, setShowLogoModal] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const isAdmin = user?.email === ADMIN_EMAIL || profile?.full_name === ADMIN_NAME;
 
@@ -83,6 +85,8 @@ export default function SettingsPage() {
             const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
             // Update local state immediately
             setCommunity({ ...community, logo_url: data.publicUrl });
+            toast.success("Logo güncellendi (Kaydetmeyi unutmayın!)");
+            setShowLogoModal(false);
         } catch (error) {
             console.error('Upload error:', error);
             alert('Logo yüklenirken hata oluştu!');
@@ -94,6 +98,34 @@ export default function SettingsPage() {
     const removeLogo = () => {
         if (!window.confirm('Topluluk logosunu silmek istediğinize emin misiniz?')) return;
         setCommunity({ ...community, logo_url: '' });
+        setShowLogoModal(false);
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleDeleteCommunity = async () => {
+        const confirmName = window.prompt(`Topluluğu silmek için lütfen "${community.name}" yazın:`);
+        if (confirmName !== community.name) {
+            if (confirmName !== null) toast.error("İsim eşleşmedi, silme işlemi iptal edildi.");
+            return;
+        }
+
+        if(!window.confirm("Bu işlem geri alınamaz! Emin misiniz?")) return;
+
+        try {
+            setLoading(true);
+            const { error } = await supabase.from('communities').delete().eq('id', community.id);
+            if(error) throw error;
+            toast.success("Topluluk silindi.");
+            setCommunity(null);
+            router.refresh();
+        } catch(e: any) {
+            toast.error("Hata: " + e.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (loading) {
@@ -153,48 +185,80 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto pb-12">
             <h1 className="text-3xl font-black font-serif mb-8 dark:text-white">Topluluk Ayarları</h1>
-            
-            <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-colors">
-                <form className="space-y-6" onSubmit={handleUpdate}>
-                    {/* Logo Upload Section - Centered */}
-                    <div className="flex flex-col items-center gap-6 justify-center pb-6 border-b border-neutral-100 dark:border-neutral-800">
-                        <div className="relative group">
-                            <div className="w-32 h-32 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700 overflow-hidden">
-                                {community.logo_url ? (
-                                    <img src={community.logo_url} alt="Logo" className="w-full h-full object-cover" />
-                                ) : (
-                                    <Users size={40} className="text-neutral-400" />
-                                )}
-                            </div>
-                            
-                            {/* Upload Overlay */}
-                            <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full text-white font-medium text-xs">
-                                <Upload size={20} className="mb-1" />
-                                Değiştir
-                                <input 
-                                    type="file" 
-                                    accept="image/*" 
-                                    className="hidden" 
-                                    onChange={handleLogoUpload}
-                                />
-                            </label>
 
+            {/* Logo Change Modal */}
+            {showLogoModal && (
+                <div className="fixed inset-0 z-[10001] bg-black/50 flex items-center justify-center p-4 animate-in fade-in zoom-in duration-200">
+                    <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 max-w-xs w-full shadow-xl border border-neutral-200 dark:border-neutral-800">
+                        <h3 className="text-lg font-bold text-center mb-4 text-neutral-900 dark:text-white">Topluluk Logosu</h3>
+                        <div className="flex flex-col gap-3">
+                            <button
+                                type="button"
+                                onClick={triggerFileInput}
+                                className="w-full py-2.5 rounded-lg bg-[var(--primary-color)] text-white font-bold hover:opacity-90 flex items-center justify-center gap-2"
+                            >
+                                <Upload size={18} />
+                                Yeni Logo Yükle
+                            </button>
+                            
                             {community.logo_url && (
                                 <button
                                     type="button"
                                     onClick={removeLogo}
-                                    className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-sm hover:bg-red-600 transition-colors z-10"
-                                    title="Logoyu Kaldır"
+                                    className="w-full py-2.5 rounded-lg border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 font-bold hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center justify-center gap-2"
                                 >
-                                    <X size={14} />
+                                    <Trash2 size={18} />
+                                    Logoyu Kaldır
                                 </button>
                             )}
+                            
+                            <button
+                                type="button"
+                                onClick={() => setShowLogoModal(false)}
+                                className="w-full py-2.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white font-medium"
+                            >
+                                İptal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-colors mb-12">
+                <form className="space-y-6" onSubmit={handleUpdate}>
+                    {/* Logo Upload Section - Active Interaction */}
+                    <div className="flex flex-col items-center gap-6 justify-center pb-6 border-b border-neutral-100 dark:border-neutral-800">
+                        <div 
+                            className="relative group cursor-pointer"
+                            onClick={() => setShowLogoModal(true)}
+                        >
+                            <div className="w-32 h-32 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700 overflow-hidden group-hover:border-[var(--primary-color)] transition-colors">
+                                {community.logo_url ? (
+                                    <img src={community.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                                ) : (
+                                    <Users size={40} className="text-neutral-400 group-hover:text-[var(--primary-color)] transition-colors" />
+                                )}
+                            </div>
+                            
+                            {/* Hidden Input */}
+                            <input 
+                                ref={fileInputRef}
+                                type="file" 
+                                accept="image/*" 
+                                className="hidden" 
+                                onChange={handleLogoUpload}
+                            />
+                            
+                            {/* Hover Badge */}
+                            <div className="absolute bottom-0 right-0 bg-[var(--primary-color)] text-white p-2 rounded-full shadow-sm group-hover:scale-110 transition-transform">
+                                <Upload size={16} />
+                            </div>
                         </div>
                         <div className="text-center">
                             <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Topluluk Logosu</p>
-                            <p className="text-xs text-neutral-500 max-w-[200px] mx-auto">PNG, JPG veya GIF. Önerilen boyut: 400x400px.</p>
+                            <p className="text-xs text-neutral-500 max-w-[200px] mx-auto">Değiştirmek için logoya tıklayın.</p>
                         </div>
                     </div>
 
@@ -267,12 +331,45 @@ export default function SettingsPage() {
                         <button 
                             type="submit" 
                             disabled={saving}
-                            className="bg-[var(--primary-color)] text-white px-6 py-3 font-bold uppercase hover:bg-[var(--primary-color-hover)] transition-colors disabled:opacity-50"
+                            className="w-full bg-[var(--primary-color)] text-white px-6 py-3 font-bold uppercase hover:bg-[var(--primary-color-hover)] transition-colors disabled:opacity-50"
                         >
                             {saving ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
                         </button>
                     </div>
                 </form>
+            </div>
+
+            {/* Danger Zone */}
+            <div className="space-y-4">
+                <h3 className="text-sm font-bold uppercase text-red-600 dark:text-red-400 px-1">Tehlikeli Bölge</h3>
+                <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-100 dark:border-red-900/30 p-6 rounded-lg space-y-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h4 className="font-bold text-neutral-900 dark:text-white">Sahipliği Devret</h4>
+                            <p className="text-xs text-neutral-500 mt-1">Topluluk yönetimini başka bir üyeye devredin.</p>
+                        </div>
+                         <a 
+                            href={`mailto:destek@univo.app?subject=Topluluk Sahiplik Devri: ${community.name}&body=Merhaba, ${community.name} topluluğunun yönetimini devretmek istiyorum. Devralacak yeni yöneticinin bilgileri:`}
+                            className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 px-4 py-2 font-bold text-xs uppercase hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                        >
+                            Destek ile İletişime Geç
+                        </a>
+                    </div>
+                    
+                    <div className="border-t border-red-200 dark:border-red-900/30 pt-6 flex items-center justify-between">
+                         <div>
+                            <h4 className="font-bold text-red-600 dark:text-red-400">Topluluğu Sil</h4>
+                            <p className="text-xs text-red-400 mt-1">Bu işlem geri alınamaz. Tüm etkinlikler ve veriler silinir.</p>
+                        </div>
+                        <button 
+                            type="button"
+                            onClick={handleDeleteCommunity}
+                            className="bg-red-600 text-white px-4 py-2 font-bold text-xs uppercase hover:bg-red-700 transition-colors"
+                        >
+                            Topluluğu Sil
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

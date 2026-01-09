@@ -200,9 +200,8 @@ export default function CreateEventPage() {
                 <input 
                     type="text" 
                     name="maps_url" 
-                    required
                     className="w-full px-4 py-2 border-2 border-neutral-100 dark:border-neutral-800 text-sm focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none placeholder:italic bg-white dark:bg-black text-black dark:text-white transition-colors"
-                    placeholder="Google Maps Linki (Zorunlu) - Haritada Bul'a tıklayıp doğrulayın."
+                    placeholder="Google Maps Linki (Opsiyonel)"
                     onChange={handleChange}
                 />
             </div>
@@ -299,7 +298,7 @@ export default function CreateEventPage() {
                         type="text" 
                         name="registration_link" 
                         className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors"
-                        placeholder="Luma vb."
+                        placeholder="Google Forms, Luma vb. (opsiyonel)"
                         onChange={handleChange}
                    />
                 </div>
@@ -327,8 +326,8 @@ export default function CreateEventPage() {
                         required 
                         rows={6}
                         className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors"
-                        placeholder="Etkinliğin tüm detayları (Min. 100 karakter)..."
-                        minLength={100}
+                        placeholder="Etkinliğin tüm detayları (Min. 300 karakter)..."
+                        minLength={300}
                         onChange={handleChange}
                     />
                 </div>

@@ -193,9 +193,9 @@ export default function SettingsPage() {
                                         theme === 'dark' ? "bg-[var(--primary-color)]" : "bg-neutral-300"
                                     )}
                                 >
-                                    <span 
+                                    <div
                                         className={cn(
-                                            "absolute left-1 top-0.5 w-5 h-5 bg-white rounded-full transition-transform duration-300 shadow-sm",
+                                            "absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 shadow-sm",
                                             theme === 'dark' ? "translate-x-7" : "translate-x-0"
                                         )} 
                                     />
@@ -270,7 +270,7 @@ export default function SettingsPage() {
                                         >
                                             <span 
                                                 className={cn(
-                                                    "absolute left-1 top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm",
+                                                    "absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm",
                                                     privacySettings[item.id as keyof typeof privacySettings] 
                                                         ? "translate-x-6" 
                                                         : "translate-x-0"

@@ -28,23 +28,20 @@ async function getCommunity(id: string) {
 // No, let's stick to true implementation: Fetch from DB.
 async function getCommunityEvents(communityId: string) {
    const supabase = createClient(supabaseUrl, supabaseKey);
+   const today = new Date().toISOString().split('T')[0];
    const { data, error } = await supabase
      .from('events')
      .select(`
         *,
-        community:community_id (id, name, logo_url)
+        community:communities (id, name, logo_url)
      `)
      .eq('community_id', communityId)
+     .gte('date', today)
      .order('date', { ascending: true });
 
    if (error) return [];
    
-   // Map DB result to Event interface if needed, or mostly it matches
-   return data.map((e: any) => ({
-      ...e,
-      date: e.date.replace('2025', '2026'), // Hot-fix: Ensure old seed data appears as 2026
-      community: e.community // Ensure nested structure matches expected Event type
-   })) as Event[];
+   return data as any[];
 }
 
 async function getFollowerCount(communityId: string) {

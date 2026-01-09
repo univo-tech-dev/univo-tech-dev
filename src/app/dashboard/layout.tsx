@@ -68,15 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <NavLink href="/dashboard/settings" icon={<Settings size={20} />} label="Ayarlar" active={pathname === '/dashboard/settings'} />
         </nav>
 
-        <div className="p-4 border-t border-neutral-200 dark:border-neutral-800">
-            <button 
-                onClick={() => signOut()} 
-                className="w-full flex items-center gap-3 px-4 py-3 text-neutral-600 dark:text-neutral-400 hover:text-white hover:bg-[var(--primary-color)] rounded-lg transition-all text-sm font-bold uppercase tracking-wide group"
-            >
-                <LogOut size={20} className="group-hover:text-white" />
-                Çıkış Yap
-            </button>
-        </div>
+
       </aside>
 
       {/* Main Content */}
