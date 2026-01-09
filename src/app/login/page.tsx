@@ -171,9 +171,10 @@ export default function LoginPage() {
                                 key={uni.id}
                                 onClick={() => handleSelectUniversity(uni)}
                                 disabled={!uni.enabled}
+                                style={{ '--hover-color': uni.color } as React.CSSProperties}
                                 className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 group ${
                                     uni.enabled 
-                                        ? 'border-neutral-200 dark:border-neutral-700 hover:border-[var(--primary-color)] hover:shadow-md cursor-pointer'
+                                        ? 'border-neutral-200 dark:border-neutral-700 hover:border-[var(--hover-color)] hover:shadow-md cursor-pointer'
                                         : 'border-neutral-100 dark:border-neutral-800 opacity-50 cursor-not-allowed'
                                 }`}
                             >
@@ -192,7 +193,7 @@ export default function LoginPage() {
                                     <p className="text-xs text-neutral-500 dark:text-neutral-400">{uni.fullName}</p>
                                 </div>
                                 {uni.enabled ? (
-                                    <ArrowRight size={20} className="text-neutral-400 group-hover:text-[var(--primary-color)] transition-colors" />
+                                    <ArrowRight size={20} className="text-neutral-400 group-hover:text-[var(--hover-color)] transition-colors" />
                                 ) : (
                                     <span className="text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-2 py-1 rounded shrink-0 whitespace-nowrap">Yakında</span>
                                 )}
