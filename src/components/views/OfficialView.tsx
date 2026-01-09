@@ -458,22 +458,57 @@ export default function OfficialView() {
     }
   ]);
 
-  // Filtered Lists
-  const filteredNews = allNews.filter(item => {
-    if (blockedSources.includes(item.source)) return false;
-    if (activeTab === 'agenda') return (item.type === 'announcement' || item.type === 'event');
-    if (activeTab === 'emails') return user && item.type === 'email';
-    if (activeTab === 'starred') return starredIds.includes(String(item.id));
-    if (activeTab === 'history') return readIds.includes(String(item.id));
-    return true;
-  });
+  // Filtered Lists Logic
+  const getDisplayedItems = () => {
+      if (activeTab === 'odtuclass') return odtuClassData;
+      
+      if (activeTab === 'starred') {
+          // Special handling for Starred tab to show GHOST ITEMS
+          const finalList: any[] = [];
+          if (starredIds && starredIds.length > 0) {
+              starredIds.forEach(starId => {
+                  const found = allNews.find(i => String(i.id) === String(starId));
+                  if (found) {
+                      finalList.push(found);
+                  } else {
+                      // Ghost Item (Saved locally but missing from server)
+                      finalList.push({
+                          id: starId,
+                          type: 'unknown',
+                          title: 'İçerik Ulaşılamıyor',
+                          source: 'Bilinmeyen Kaynak',
+                          date: 'Tarih Yok',
+                          summary: `Bu içerik sunucudan alınamadı. (ID: ${starId})`,
+                          isGhost: true
+                      });
+                  }
+              });
+          }
+          return finalList;
+      }
 
-  const displayedItems = activeTab === 'odtuclass' ? odtuClassData : filteredNews.filter(item => {
-    if (activeTab === 'agenda' || activeTab === 'emails') {
-        return !readIds.includes(String(item.id));
-    }
-    return true;
-  });
+      // Standard Filtering for other tabs
+      return allNews.filter(item => {
+          if (blockedSources.includes(item.source)) return false;
+          
+          if (activeTab === 'agenda') {
+              // Show only unread announcements/event
+              return (item.type === 'announcement' || item.type === 'event') && !readIds.includes(String(item.id));
+          }
+          
+          if (activeTab === 'emails') {
+              return user && item.type === 'email' && !readIds.includes(String(item.id));
+          }
+          
+          if (activeTab === 'history') {
+              return readIds.includes(String(item.id));
+          }
+          
+          return true;
+      });
+  };
+
+  const displayedItems = getDisplayedItems();
 
   // Paginated items - show only up to displayLimit
   const paginatedItems = displayedItems.slice(0, displayLimit);
