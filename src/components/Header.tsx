@@ -155,36 +155,18 @@ function HeaderContent() {
         <div className="w-full px-4 md:container md:mx-auto">
           <div className="flex items-center justify-between h-16 max-w-full relative">
 
-            {/* Left: Logo - Coin Flip Animation */}
-            <div 
-              className="flex items-center gap-0 shrink-0 group cursor-pointer"
-              onClick={() => {
-                const logoContainer = document.getElementById('logo-flip-container');
-                if (logoContainer) {
-                   logoContainer.classList.toggle('rotate-x-180');
-                }
-              }}
-            >
-              <div className="relative w-12 h-12 md:w-16 md:h-16 perspective-1000">
-                  <div id="logo-flip-container" className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out">
-                      {/* Front: Univo Logo */}
-                      <div className="absolute inset-0 backface-hidden">
-                          <Image
-                            src="/logo_black.png"
-                            alt="Univo Logo"
-                            fill
-                            className="object-cover transition-all duration-300 dark:invert mix-blend-multiply dark:mix-blend-screen"
-                          />
-                      </div>
-                      
-                      {/* Back: Earth Icon */}
-                      <div className="absolute inset-0 backface-hidden rotate-x-180 flex items-center justify-center bg-black dark:bg-white rounded-full">
-                          <Globe className="text-white dark:text-black w-8 h-8 md:w-10 md:h-10" strokeWidth={1.5} />
-                      </div>
+            {/* Left: Logo */}
+            <div className="flex items-center gap-0 shrink-0 group">
+              <Link href="/?view=voice" className="flex items-center gap-0">
+                  <div className="relative w-10 h-10 md:w-12 md:h-12 mr-2">
+                      <Image
+                        src="/logo_black.png"
+                        alt="Univo Logo"
+                        fill
+                        className="object-contain dark:invert"
+                      />
                   </div>
-              </div>
-              <Link href="/?view=voice">
-                  <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight hover:text-primary transition-colors -ml-1">
+                  <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight hover:text-primary transition-colors">
                     Univo
                   </h1>
               </Link>
