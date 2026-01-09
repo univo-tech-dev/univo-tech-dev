@@ -73,9 +73,23 @@ export async function POST(request: Request) {
             const courseLinks = $dash('a[href*="course/view.php?id="]');
             courseLinks.each((_, el) => {
                 const name = $(el).text().trim();
-                const url = $(el).attr('href');
-                if (name && url && !courses.find(c => c.url === url)) {
-                    courses.push({ name, url });
+                let url = $(el).attr('href');
+                
+                if (name && url) {
+                    // Ensure absolute URL
+                    if (!url.startsWith('http')) {
+                        url = url.startsWith('/') ? `${baseUrl}${url}` : `${baseUrl}/${url}`;
+                    }
+
+                    // Clean URL (Keep only ID)
+                    const idMatch = url.match(/id=(\d+)/);
+                    if (idMatch && idMatch[1]) {
+                        url = `${baseUrl}/course/view.php?id=${idMatch[1]}`;
+                    }
+
+                    if (!courses.find(c => c.url === url)) {
+                        courses.push({ name, url });
+                    }
                 }
             });
         } catch (scrapeErr) {

@@ -372,16 +372,32 @@ export default function OfficialView() {
 
   // ODTUClass Data (Real or Mock) - Only show if user is logged in
   const realCourses = user?.user_metadata?.odtu_courses;
-  const odtuClassData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => ({
-      id: `oc-${c.url}`,
-      title: c.name,
-      source: 'ODTÜClass',
-      type: 'grade', // Use 'grade' type styling (Violet) for courses
-      course: c.name.split(' ')[0], // Heuristic for short code
-      date: 'Güz 2025',
-      summary: 'Ders sayfasına gitmek için tıklayınız.',
-      link: c.url
-  })) : [
+  const odtuClassData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => {
+      // Ensure absolute and clean URL
+      let cleanLink = c.url;
+      const baseUrl = 'https://odtuclass2025f.metu.edu.tr';
+
+      if (!cleanLink.startsWith('http')) {
+          cleanLink = cleanLink.startsWith('/') ? `${baseUrl}${cleanLink}` : `${baseUrl}/${cleanLink}`;
+      }
+
+      // Extract ID to reconstruct a clean course link (removes session keys/anchors)
+      const idMatch = cleanLink.match(/id=(\d+)/);
+      if (idMatch && idMatch[1]) {
+          cleanLink = `${baseUrl}/course/view.php?id=${idMatch[1]}`;
+      }
+
+      return {
+        id: `oc-${c.url}`,
+        title: c.name,
+        source: 'ODTÜClass',
+        type: 'grade', // Use 'grade' type styling (Violet) for courses
+        course: c.name.split(' ')[0], // Heuristic for short code
+        date: 'Güz 2025',
+        summary: 'Ders sayfasına gitmek için tıklayınız.',
+        link: cleanLink
+      };
+  }) : [
     {
         id: 'oc1',
         title: 'PHYS105 - Midterm 2 Sonuçları',
