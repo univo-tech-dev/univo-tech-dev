@@ -728,17 +728,24 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     />
                                 )}
 
-                                {/* Desktop: Discrete Edit Button (Always Visible or Hover) */}
+                                {/* Desktop: Click to Edit Overlay (Restored Center Position, Safe Click) */}
                                 {isOwnProfile && !isUploading && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowChangePhotoModal(true);
-                                        }}
-                                        className="absolute bottom-0 right-0 p-2 bg-neutral-900/80 dark:bg-white/90 backdrop-blur-sm rounded-full text-white dark:text-black shadow-lg hover:scale-110 transition-all duration-200 z-20 group-hover/avatar:opacity-100 opacity-0 md:opacity-100"
-                                    >
-                                        <Camera size={14} strokeWidth={2.5} />
-                                    </button>
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-all duration-300 z-10 pointer-events-none">
+                                        {/* Background Dim - Visual Only */}
+                                        <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
+                                        
+                                        {/* Clickable Center Button */}
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowChangePhotoModal(true);
+                                            }}
+                                            className="relative z-20 p-3 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full text-white shadow-lg transform hover:scale-110 transition-all duration-200 pointer-events-auto"
+                                            title="Fotoğrafı Değiştir"
+                                        >
+                                            <Camera size={24} strokeWidth={2.5} />
+                                        </button>
+                                    </div>
                                 )}
 
                                 {/* Status Indicator */}

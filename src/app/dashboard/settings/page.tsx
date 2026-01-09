@@ -350,7 +350,7 @@ export default function SettingsPage() {
                         </div>
                          <a 
                             href={`mailto:destek@univo.app?subject=Topluluk Sahiplik Devri: ${community.name}&body=Merhaba, ${community.name} topluluğunun yönetimini devretmek istiyorum. Devralacak yeni yöneticinin bilgileri:`}
-                            className="bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 px-4 py-2 font-bold text-xs uppercase hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                            className="bg-white dark:bg-neutral-900 border-2 border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 font-bold text-xs uppercase hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
                         >
                             Destek ile İletişime Geç
                         </a>
