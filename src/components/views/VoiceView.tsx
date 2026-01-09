@@ -1095,7 +1095,8 @@ export default function VoiceView() {
                                         <button
                                             key={idx}
                                             onClick={() => setSelectedVoterOption(idx)}
-                                            className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all flex items-center gap-2 border-2 ${isActive ? 'text-white border-primary bg-primary' : 'bg-white text-neutral-600 border-neutral-200 hover:border-primary dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700'}`}
+                                            style={isActive ? { backgroundColor: 'var(--primary-color, #C8102E)', borderColor: 'var(--primary-color, #C8102E)' } : {}}
+                                            className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all flex items-center gap-2 border-2 ${isActive ? 'text-white' : 'bg-white text-neutral-600 border-neutral-200 hover:border-black dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700'}`}
                                         >
                                             {option} <span className="opacity-70">({count})</span>
                                         </button>

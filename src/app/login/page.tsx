@@ -210,7 +210,10 @@ export default function LoginPage() {
 
     // Login Form Step
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
+        <div 
+            className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4"
+            style={{ '--primary-color': selectedUni?.color || '#C8102E' } as React.CSSProperties}
+        >
             <div className="bg-white dark:bg-neutral-900 w-full max-w-md border-2 border-neutral-200 dark:border-neutral-800 shadow-xl rounded-2xl overflow-hidden">
                 
                 {/* Header with Back Button */}
