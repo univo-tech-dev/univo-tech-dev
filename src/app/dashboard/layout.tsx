@@ -37,7 +37,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     checkAdminStatus();
   }, [user, authLoading]);
 
-  if (loading || authLoading) return <div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>;
+  if (loading || authLoading) return (
+    <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-[#0a0a0a]">
+        <div className="text-center">
+            <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4 border-[#C8102E] dark:border-white"></div>
+            <p className="text-neutral-600 dark:text-neutral-400 font-serif">Panel Yükleniyor...</p>
+        </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-[#0a0a0a] flex transition-colors">

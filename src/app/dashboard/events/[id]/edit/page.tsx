@@ -103,13 +103,13 @@ export default function EditEventPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-black font-serif mb-8 text-neutral-900 border-b-4 border-black pb-4">
+        <h2 className="text-3xl font-black font-serif mb-8 text-neutral-900 dark:text-white border-b-4 border-black dark:border-white pb-4 transition-colors">
             ETKİNLİĞİ DÜZENLE
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-neutral-900 p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
             <div>
-                <label className="block text-sm font-bold uppercase mb-2">Başlık</label>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Başlık</label>
                 <div className="relative">
                     <Type className="absolute top-3 left-3 text-neutral-400" size={20} />
                     <input 
@@ -117,7 +117,7 @@ export default function EditEventPage() {
                         name="title" 
                         required 
                         value={formData.title}
-                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none font-bold placeholder:font-normal transition-colors"
+                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors font-bold placeholder:font-normal transition-colors"
                         onChange={handleChange}
                     />
                 </div>
@@ -125,31 +125,31 @@ export default function EditEventPage() {
 
             <div className="grid grid-cols-2 gap-6">
                 <div>
-                   <label className="block text-sm font-bold uppercase mb-2">Tarih</label>
+                   <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Tarih</label>
                    <input 
                         type="date" 
                         name="date" 
                         required 
                         value={formData.date}
-                        className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         onChange={handleChange}
                    />
                 </div>
                 <div>
-                   <label className="block text-sm font-bold uppercase mb-2">Saat</label>
+                   <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Saat</label>
                    <input 
                         type="time" 
                         name="time" 
                         required 
                         value={formData.time}
-                        className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         onChange={handleChange}
                    />
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-bold uppercase mb-2">Konum</label>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Konum</label>
                 <div className="relative mb-2">
                     <MapPin className="absolute top-3 left-3 text-neutral-400" size={20} />
                     <input 
@@ -157,7 +157,7 @@ export default function EditEventPage() {
                         name="location" 
                         required 
                         value={formData.location}
-                        className="w-full pl-10 pr-32 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full pl-10 pr-32 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         onChange={handleChange}
                     />
                     <button 
@@ -166,7 +166,7 @@ export default function EditEventPage() {
                             const query = formData.location || 'ODTÜ Ankara';
                             window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`, '_blank');
                         }}
-                        className="absolute right-2 top-2 bottom-2 bg-neutral-100 hover:bg-[#C8102E] hover:text-white border border-neutral-200 text-neutral-600 text-xs font-bold uppercase px-4 rounded transition-colors flex items-center gap-1"
+                        className="absolute right-2 top-2 bottom-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-[#C8102E] hover:text-white border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 text-xs font-bold uppercase px-4 rounded transition-colors flex items-center gap-1"
                     >
                         <MapPin size={14} />
                         Haritada Bul
@@ -176,18 +176,18 @@ export default function EditEventPage() {
                     type="text" 
                     name="maps_url" 
                     value={formData.maps_url}
-                    className="w-full px-4 py-2 border-2 border-neutral-100 text-sm focus:border-black focus:outline-none placeholder:italic"
+                    className="w-full px-4 py-2 border-2 border-neutral-100 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 text-sm focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none dark:text-white transition-colors placeholder:italic"
                     placeholder="Google Maps Linki (Opsiyonel) - Eğer 'Haritada Bul' butonu yanlış yer gösteriyorsa buraya doğrusunu yapıştırın."
                     onChange={handleChange}
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-bold uppercase mb-2">Kategori</label>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Kategori</label>
                 <select 
                     name="category" 
                     value={formData.category}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none bg-white"
+                    className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors bg-white"
                     onChange={handleChange}
                 >
                     <option value="event">Etkinlik</option>
@@ -198,7 +198,7 @@ export default function EditEventPage() {
             </div>
 
             <div>
-                <label className="block text-sm font-bold uppercase mb-2">Etkinlik Afişi (URL)</label>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Etkinlik Afişi (URL)</label>
                 <div className="relative">
                     <div className="absolute top-3 left-3 text-neutral-400">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -207,7 +207,7 @@ export default function EditEventPage() {
                         type="text" 
                         name="image_url" 
                         value={formData.image_url}
-                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         placeholder="https://..."
                         onChange={handleChange}
                     />
@@ -216,24 +216,24 @@ export default function EditEventPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                   <label className="block text-sm font-bold uppercase mb-2">Kontenjan (Kişi)</label>
+                   <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Kontenjan (Kişi)</label>
                    <input 
                         type="number" 
                         name="quota" 
                         min="0" 
                         value={formData.quota}
-                        className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         placeholder="Sınırsız için boş bırakın"
                         onChange={handleChange}
                    />
                 </div>
                 <div>
-                   <label className="block text-sm font-bold uppercase mb-2">Harici Kayıt Linki</label>
+                   <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Harici Kayıt Linki</label>
                    <input 
                         type="text" 
                         name="registration_link" 
                         value={formData.registration_link}
-                        className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         placeholder="Örn: Google Forms..."
                         onChange={handleChange}
                    />
@@ -241,19 +241,19 @@ export default function EditEventPage() {
             </div>
 
             <div>
-                <label className="block text-sm font-bold uppercase mb-2">Kısa Açıklama (Özet)</label>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Kısa Açıklama (Özet)</label>
                 <textarea 
                     name="excerpt" 
                     required 
                     rows={2}
                     value={formData.excerpt}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none resize-none"
+                    className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors resize-none"
                     onChange={handleChange}
                 />
             </div>
 
             <div>
-                <label className="block text-sm font-bold uppercase mb-2">Detaylı Açıklama</label>
+                <label className="block text-sm font-bold uppercase mb-2 dark:text-neutral-200">Detaylı Açıklama</label>
                 <div className="relative">
                      <FileText className="absolute top-3 left-3 text-neutral-400" size={20} />
                      <textarea 
@@ -261,7 +261,7 @@ export default function EditEventPage() {
                         required 
                         rows={6}
                         value={formData.description}
-                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[#C8102E] dark:focus:border-[#C8102E] hover:border-[#C8102E] dark:hover:border-[#C8102E] focus:outline-none transition-colors"
                         onChange={handleChange}
                     />
                 </div>
