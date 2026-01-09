@@ -631,6 +631,7 @@ export default function OfficialView() {
                                 ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}
                                 ${isRead && (activeTab !== 'history' && activeTab !== 'starred') ? 'hidden' : ''} 
                                 ${isRead ? 'opacity-75 grayscale' : ''}
+                                ${item.isGhost ? 'opacity-60 bg-neutral-100 dark:bg-neutral-900/50' : ''}
                             `}
                             style={{ 
                                 borderLeftColor: isRead 
@@ -639,9 +640,11 @@ export default function OfficialView() {
                                         ? '#2563eb' 
                                         : item.type === 'email' 
                                             ? '#d97706' 
-                                            : (item.type === 'grade' || item.type === 'assignment')
-                                                ? '#7c3aed' 
-                                                : '#059669'
+                                            : item.isGhost
+                                                ? '#9ca3af' // Gray for ghost items
+                                                : (item.type === 'grade' || item.type === 'assignment')
+                                                    ? '#7c3aed' 
+                                                    : '#059669'
                                       )
                             }}
                         >   
