@@ -64,7 +64,7 @@ export default async function EventDetailPage({
               <span>{event.time}</span>
               <span className="w-2 h-2 bg-black dark:bg-white rounded-full"></span>
               <a 
-                href="https://www.google.com/maps/search/?api=1&query=ODTÜ+Devrim+Stadyumu" 
+                href={event.maps_url || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location)}`}
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="hover:underline decoration-2 underline-offset-4 cursor-pointer hover:text-primary transition-colors"

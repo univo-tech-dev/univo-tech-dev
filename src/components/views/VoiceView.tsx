@@ -794,12 +794,12 @@ export default function VoiceView() {
                                                                                         Sil
                                                                                     </button>
                                                                                 </>
-                                                                            ) : (
+                                                                            ) : !voice.is_anonymous ? (
                                                                                 <FriendButton
                                                                                     targetUserId={voice.user_id}
                                                                                     variant="menu-item"
                                                                                 />
-                                                                            )}
+                                                                            ) : null}
                                                                         </div>
                                                                     </>
                                                                 )}

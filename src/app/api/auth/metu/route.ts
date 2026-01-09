@@ -167,6 +167,12 @@ export async function POST(request: Request) {
         } else {
              // C. Update Metadata if exists
              const updates: any = {};
+             
+             // Update Full Name (fix for Turkish characters)
+             if (fullName && user.user_metadata.full_name !== fullName) {
+                 updates.full_name = fullName;
+             }
+
              if (!user.user_metadata.is_metu_verified) updates.is_metu_verified = true;
              if (detectedDept && !user.user_metadata.department) updates.department = detectedDept;
              if (detectedClass && !user.user_metadata.class_year) updates.class_year = detectedClass;
@@ -180,6 +186,8 @@ export async function POST(request: Request) {
              
              // Also update profile table
              const pUpdates: any = {};
+             if (fullName) pUpdates.full_name = fullName;
+
              if (detectedDept) pUpdates.department = detectedDept;
              else if (detectedDept === '' && (user.user_metadata.department === 'BASE' || user.user_metadata.department === 'DBE')) {
                  pUpdates.department = null;

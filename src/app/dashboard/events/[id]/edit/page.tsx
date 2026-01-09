@@ -1,23 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Calendar, MapPin, Type, FileText } from 'lucide-react';
 
-export default function CreateEventPage() {
+export default function EditEventPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [communityId, setCommunityId] = useState<string | null>(null);
+  const params = useParams(); // { id: string }
+  const eventId = params?.id as string;
 
+  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  
   const [formData, setFormData] = useState({
       title: '',
       date: '',
       time: '',
       location: '',
-      category: 'event', // event, announcement, workshop, talk
+      category: 'event', 
       description: '',
       excerpt: '',
       image_url: '',
@@ -27,13 +30,42 @@ export default function CreateEventPage() {
   });
 
   useEffect(() => {
-      async function fetchCommunity() {
-          if (!user) return;
-          const { data } = await supabase.from('communities').select('id').eq('admin_id', user.id).single();
-          if (data) setCommunityId(data.id);
-      }
-      fetchCommunity();
-  }, [user]);
+    async function fetchEventData() {
+        if (!user || !eventId) return;
+
+        try {
+            const { data, error } = await supabase
+                .from('events')
+                .select('*')
+                .eq('id', eventId)
+                .single();
+
+            if (error) throw error;
+            if (data) {
+                setFormData({
+                    title: data.title || '',
+                    date: data.date || '',
+                    time: data.time || '', // "HH:MM:SS" or "HH:MM"
+                    location: data.location || '',
+                    category: data.category || 'event',
+                    description: data.description || '',
+                    excerpt: data.excerpt || '',
+                    image_url: data.image_url || '',
+                    quota: data.quota ? String(data.quota) : '',
+                    registration_link: data.registration_link || '',
+                    maps_url: data.maps_url || ''
+                });
+            }
+        } catch (err: any) {
+            console.error(err);
+            alert("Etkinlik yüklenemedi: " + err.message);
+            router.push('/dashboard/events');
+        } finally {
+            setFetching(false);
+        }
+    }
+    fetchEventData();
+  }, [user, eventId]);
 
   const handleChange = (e: any) => {
       setFormData({...formData, [e.target.name]: e.target.value});
@@ -43,58 +75,36 @@ export default function CreateEventPage() {
       e.preventDefault();
       setLoading(true);
 
-      if (!communityId) {
-          alert("Topluluk bulunamadı.");
-          setLoading(false);
-          return;
-      }
-
       try {
-          // 1. Create Event
-          const { data, error } = await supabase
+          // Prepare update payload
+          // quota should be null if empty string
+          const payload = {
+              ...formData,
+              quota: formData.quota === '' ? null : parseInt(String(formData.quota)),
+          };
+
+          const { error } = await supabase
             .from('events')
-            .insert({
-                ...formData,
-                community_id: communityId
-            })
-            .select()
-            .single();
+            .update(payload)
+            .eq('id', eventId);
 
           if (error) throw error;
 
-          // 2. Notify Followers (Application-level logic)
-          // Fetch all followers
-          const { data: followers } = await supabase
-            .from('community_followers')
-            .select('user_id')
-            .eq('community_id', communityId);
-          
-          if (followers && followers.length > 0 && user) {
-              const notifications = followers.map(f => ({
-                  user_id: f.user_id,
-                  type: 'event_created',
-                  actor_id: user.id,
-                  message: `Takip ettiğiniz topluluk yeni bir etkinlik yayınladı: ${formData.title}`,
-                  read: false
-              }));
-              
-              const { error: notifError } = await supabase.from('notifications').insert(notifications);
-              if (notifError) console.error("Notification Error:", notifError);
-          }
-
-          router.push('/dashboard');
-      } catch (err) {
+          router.push('/dashboard/events');
+      } catch (err: any) {
           console.error(err);
-          alert("Etkinlik oluşturulurken hata oluştu.");
+          alert("Etkinlik güncellenirken hata oluştu: " + err.message);
       } finally {
           setLoading(false);
       }
   };
 
+  if (fetching) return <div className="p-8 text-center font-bold">Yükleniyor...</div>;
+
   return (
     <div className="max-w-3xl mx-auto">
         <h2 className="text-3xl font-black font-serif mb-8 text-neutral-900 border-b-4 border-black pb-4">
-            YENİ ETKİNLİK OLUŞTUR
+            ETKİNLİĞİ DÜZENLE
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -106,8 +116,8 @@ export default function CreateEventPage() {
                         type="text" 
                         name="title" 
                         required 
+                        value={formData.title}
                         className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none font-bold placeholder:font-normal transition-colors"
-                        placeholder="Etkinlik Başlığı"
                         onChange={handleChange}
                     />
                 </div>
@@ -120,6 +130,7 @@ export default function CreateEventPage() {
                         type="date" 
                         name="date" 
                         required 
+                        value={formData.date}
                         className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
                         onChange={handleChange}
                    />
@@ -130,6 +141,7 @@ export default function CreateEventPage() {
                         type="time" 
                         name="time" 
                         required 
+                        value={formData.time}
                         className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
                         onChange={handleChange}
                    />
@@ -144,10 +156,9 @@ export default function CreateEventPage() {
                         type="text" 
                         name="location" 
                         required 
-                        className="w-full pl-10 pr-32 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
-                        placeholder="Örn: Ana Kampüs Meydanı"
-                        onChange={handleChange}
                         value={formData.location}
+                        className="w-full pl-10 pr-32 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
+                        onChange={handleChange}
                     />
                     <button 
                         type="button"
@@ -164,6 +175,7 @@ export default function CreateEventPage() {
                 <input 
                     type="text" 
                     name="maps_url" 
+                    value={formData.maps_url}
                     className="w-full px-4 py-2 border-2 border-neutral-100 text-sm focus:border-black focus:outline-none placeholder:italic"
                     placeholder="Google Maps Linki (Opsiyonel) - Eğer 'Haritada Bul' butonu yanlış yer gösteriyorsa buraya doğrusunu yapıştırın."
                     onChange={handleChange}
@@ -174,6 +186,7 @@ export default function CreateEventPage() {
                 <label className="block text-sm font-bold uppercase mb-2">Kategori</label>
                 <select 
                     name="category" 
+                    value={formData.category}
                     className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none bg-white"
                     onChange={handleChange}
                 >
@@ -193,6 +206,7 @@ export default function CreateEventPage() {
                     <input 
                         type="text" 
                         name="image_url" 
+                        value={formData.image_url}
                         className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
                         placeholder="https://..."
                         onChange={handleChange}
@@ -206,7 +220,8 @@ export default function CreateEventPage() {
                    <input 
                         type="number" 
                         name="quota" 
-                        min="0"
+                        min="0" 
+                        value={formData.quota}
                         className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
                         placeholder="Sınırsız için boş bırakın"
                         onChange={handleChange}
@@ -217,6 +232,7 @@ export default function CreateEventPage() {
                    <input 
                         type="text" 
                         name="registration_link" 
+                        value={formData.registration_link}
                         className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
                         placeholder="Örn: Google Forms..."
                         onChange={handleChange}
@@ -230,8 +246,8 @@ export default function CreateEventPage() {
                     name="excerpt" 
                     required 
                     rows={2}
+                    value={formData.excerpt}
                     className="w-full px-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none resize-none"
-                    placeholder="Listelenirken görünecek kısa açıklama..."
                     onChange={handleChange}
                 />
             </div>
@@ -244,8 +260,8 @@ export default function CreateEventPage() {
                         name="description" 
                         required 
                         rows={6}
+                        value={formData.description}
                         className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 focus:border-black focus:outline-none"
-                        placeholder="Etkinliğin tüm detayları..."
                         onChange={handleChange}
                     />
                 </div>
@@ -256,7 +272,7 @@ export default function CreateEventPage() {
                 disabled={loading}
                 className="w-full bg-[#C8102E] text-white font-bold uppercase py-4 hover:bg-[#a60d26] transition-colors disabled:opacity-50"
             >
-                {loading ? 'Oluşturuluyor...' : 'Etkinliği Yayınla'}
+                {loading ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
             </button>
         </form>
     </div>

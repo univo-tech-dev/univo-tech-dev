@@ -12,6 +12,18 @@ export default function EventsPage() {
     const [events, setEvents] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const handleDelete = async (eventId: string) => {
+        if (!confirm('Bu etkinliği silmek istediğinize emin misiniz?')) return;
+        
+        try {
+            const { error } = await supabase.from('events').delete().eq('id', eventId);
+            if (error) throw error;
+            setEvents(events.filter(e => e.id !== eventId));
+        } catch (error: any) {
+            alert('Silme işlemi başarısız: ' + error.message);
+        }
+    };
+
     useEffect(() => {
         async function fetchEvents() {
             if (!user) return;
@@ -75,10 +87,14 @@ export default function EventsPage() {
                                     </td>
                                     <td className="p-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button className="p-2 hover:bg-neutral-200 rounded text-neutral-600" title="Düzenle">
+                                            <Link href={`/dashboard/events/${event.id}/edit`} className="p-2 hover:bg-neutral-200 rounded text-neutral-600" title="Düzenle">
                                                 <Edit size={18} />
-                                            </button>
-                                            <button className="p-2 hover:bg-neutral-200 rounded text-red-600" title="Sil">
+                                            </Link>
+                                            <button 
+                                                onClick={() => handleDelete(event.id)}
+                                                className="p-2 hover:bg-neutral-200 rounded text-red-600" 
+                                                title="Sil"
+                                            >
                                                 <Trash2 size={18} />
                                             </button>
                                         </div>
