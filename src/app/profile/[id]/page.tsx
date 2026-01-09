@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck, X, Settings, Trash2 } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck, X, Settings, Trash2, Ghost } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
@@ -384,6 +384,18 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     icon: 'Flame',
                     color: '#F97316',
                     awarded_at: profileData.created_at
+                });
+            }
+
+            // Hidden Identity Badge (Gizli Kimlik)
+            if (profileData?.nickname) {
+                achievementBadges.push({
+                    id: 'hidden-identity',
+                    name: 'Gizli Kimlik',
+                    description: 'Anonim bir kimlik oluşturarak gizliliğe adım attı.',
+                    icon: 'Ghost',
+                    color: '#6366f1',
+                    awarded_at: profileData.updated_at || now
                 });
             }
 

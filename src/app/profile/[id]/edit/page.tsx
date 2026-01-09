@@ -86,6 +86,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
   
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [initialNickname, setInitialNickname] = useState<string | null>(null);
 
   useEffect(() => {
     // Security check: Only allow editing own profile
@@ -119,6 +120,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
           social_links: data.social_links || { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
           privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true }
         });
+        setInitialNickname(data.nickname || '');
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -209,6 +211,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setSaving(true);
     console.log('Starting profile update...', formData);
 
@@ -251,6 +254,16 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
         .eq('id', id);
 
       if (error) throw error;
+
+      // Check if Hidden Identity Badge should be awarded
+      if (!initialNickname && formData.nickname && formData.nickname.trim().length > 0) {
+          await supabase.from('notifications').insert({
+              user_id: user.id,
+              type: 'badge',
+              message: "Tebrikler! Anonim bir kimlik oluşturarak 'Gizli Kimlik' rozetini kazandınız.",
+              read: false
+          });
+      }
 
       toast.success('Profil başarıyla güncellendi.');
       router.push(`/profile/${id}`);

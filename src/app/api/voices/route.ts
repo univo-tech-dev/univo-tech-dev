@@ -25,7 +25,7 @@ export async function GET(request: Request) {
         *,
         profiles:user_id (full_name, nickname, department, avatar_url, student_id, class_year),
         voice_reactions (user_id, reaction_type),
-        voice_comments (id, content, created_at, user_id, user:user_id (full_name, avatar_url, theme_color))
+        voice_comments (id, content, created_at, user_id, user:user_id (full_name, avatar_url))
       `)
       .eq('moderation_status', 'approved');
 
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
           *,
           profiles:user_id (full_name, department, avatar_url, student_id, class_year),
           voice_reactions (user_id, reaction_type),
-          voice_comments (id, content, created_at, user_id, user:user_id (full_name, avatar_url, theme_color))
+          voice_comments (id, content, created_at, user_id, user:user_id (full_name, avatar_url))
         `)
         .eq('moderation_status', 'approved');
       
@@ -118,7 +118,6 @@ export async function GET(request: Request) {
           created_at: c.created_at,
           user: toTitleCase(c.user?.full_name || 'Kullanıcı'),
           user_avatar: c.user?.avatar_url,
-          user_theme: c.user?.theme_color,
           user_id: c.user_id
         })),
         created_at: voice.created_at

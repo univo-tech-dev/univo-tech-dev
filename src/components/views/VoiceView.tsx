@@ -566,22 +566,22 @@ export default function VoiceView() {
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
                     <div className="flex items-center gap-3">
                         <div 
-                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer"
+                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
                             onClick={() => setIsGlobalMode(!isGlobalMode)}
                             title={isGlobalMode ? "ODTÜ Moduna Geç" : "Global Moda Geç"}
                         >
-                            <div 
-                                className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
-                                style={{ transform: isGlobalMode ? 'rotateX(180deg)' : 'rotateX(0deg)' }}
-                            >
+                                <div 
+                                    className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
+                                    style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+                                >
                                 {/* Front: ODTÜ */}
                                 <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md">
                                      <img src="/odtu_logo.png" alt="ODTÜ" className="w-full h-full object-cover" />
                                 </div>
                                 {/* Back: Global */}
                                 <div 
-                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-x-180"
-                                    style={{ transform: 'rotateX(180deg)' }}
+                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
+                                    style={{ transform: 'rotateY(180deg)' }}
                                 >
                                     <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
                                 </div>
@@ -590,7 +590,7 @@ export default function VoiceView() {
                     </div>
                 </div>
 
-                <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-8 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 mt-4">
+                <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
                     <span>SAYI: {issueNumber}</span>
                     <span>{isGlobalMode ? 'DÜNYA GÜNDEMİ' : 'SERBEST KÜRSÜ'}</span>
                     <span>{formattedDate.toUpperCase()}</span>
