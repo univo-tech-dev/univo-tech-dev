@@ -727,187 +727,197 @@ export default function OfficialView() {
                                             </div>
                                         ) : (
                                             <>
-                                                {paginatedItems.map((item: any, index: number) => {
-                                                    const isExpanded = expandedId === item.id;
-                                                    const isRead = readIds.includes(String(item.id));
+                                                <AnimatePresence mode="wait">
+                                                    <motion.div
+                                                        key={`${activeTab}-${displayLimit}`}
+                                                        initial={{ opacity: 0, x: 20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: -20 }}
+                                                        transition={{ duration: 0.3 }}
+                                                    >
+                                                        {paginatedItems.map((item: any, index: number) => {
+                                                            const isExpanded = expandedId === item.id;
+                                                            const isRead = readIds.includes(String(item.id));
 
-                                                    return (
-                                                        <article
-                                                            key={index}
-                                                            onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                                                            className={`flex flex-col sm:flex-row gap-2 sm:gap-4 items-start p-3 sm:p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group min-w-0 overflow-hidden rounded-xl
+                                                            return (
+                                                                <article
+                                                                    key={index}
+                                                                    onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                                                                    className={`flex flex-col sm:flex-row gap-2 sm:gap-4 items-start p-3 sm:p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group min-w-0 overflow-hidden rounded-xl
                                 ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}
                                 ${isRead && (activeTab !== 'history' && activeTab !== 'starred') ? 'hidden' : ''} 
                                 ${isRead ? 'opacity-75 grayscale' : ''}
                                 ${item.isGhost ? 'opacity-60 bg-neutral-100 dark:bg-neutral-900/50' : ''}
                             `}
-                                                            style={{
-                                                                borderLeftColor: isRead
-                                                                    ? 'transparent'
-                                                                    : (item.type === 'event'
-                                                                        ? '#2563eb'
-                                                                        : item.type === 'email'
-                                                                            ? '#d97706'
-                                                                            : item.isGhost
-                                                                                ? '#9ca3af' // Gray for ghost items
-                                                                                : (item.type === 'grade' || item.type === 'assignment')
-                                                                                    ? '#7c3aed'
-                                                                                    : '#059669'
-                                                                    )
-                                                            }}
-                                                        >
-                                                            {starredIds.includes(String(item.id)) && (
-                                                                <div className="absolute -left-1 top-4 z-20 shadow-sm">
-                                                                    <div className="bg-yellow-400 text-white p-1 rounded-r-md shadow-md">
-                                                                        <Star size={12} className="fill-white" />
-                                                                    </div>
-                                                                    <div className="absolute top-full left-0 w-1 h-1 bg-yellow-600 rounded-bl-full brightness-75"></div>
-                                                                </div>
-                                                            )}
-
-                                                            {(activeTab !== 'history') && (
-                                                                <div className="absolute right-12 top-4 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleSubscribeSource(item.source); }}
-                                                                        className={`flex items-center gap-1 px-2 py-1 rounded shadow-sm text-[9px] font-bold uppercase transition-all hover:scale-105 active:scale-95 border border-transparent
-                                            ${subscribedSources.includes(item.source)
-                                                                                ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800'
-                                                                                : 'bg-white dark:bg-neutral-800 text-emerald-600 border-neutral-200 dark:border-neutral-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'}`}
-                                                                    >
-                                                                        {subscribedSources.includes(item.source) ? <CheckCircle size={10} className="fill-current" /> : <Megaphone size={10} />}
-                                                                        {subscribedSources.includes(item.source) ? 'Abone' : 'Abone Ol'}
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleBlockSource(item.source); }}
-                                                                        className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded shadow-sm text-[9px] font-bold uppercase transition-all hover:scale-105 active:scale-95 border border-neutral-200 dark:border-neutral-700 hover:border-red-200 dark:hover:border-red-800"
-                                                                    >
-                                                                        <X size={10} /> Engelle
-                                                                    </button>
-                                                                </div>
-                                                            )}
-
-                                                            <div className="absolute right-4 top-4 flex items-center gap-3 z-10 text-neutral-300 dark:text-neutral-600 group-hover:text-black dark:group-hover:text-white transition-colors">
-                                                                <div className="font-bold ml-1 text-2xl leading-none select-none">
-                                                                    {isExpanded ? '−' : '+'}
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="flex-1 pr-32">
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <div className={`transition-colors duration-300 flex items-center justify-center ${item.type === 'event' ? 'text-blue-600' :
-                                                                        item.type === 'email' ? 'text-amber-600' :
-                                                                            (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' :
-                                                                                'text-emerald-600'
-                                                                        }`}>
-                                                                        {item.type === 'event' ? (
-                                                                            <Calendar size={16} />
-                                                                        ) : item.type === 'email' ? (
-                                                                            <Mail size={16} />
-                                                                        ) : (item.type === 'grade' || item.type === 'assignment') ? (
-                                                                            <GraduationCap size={16} />
-                                                                        ) : (
-                                                                            <Megaphone size={16} />
-                                                                        )}
-                                                                    </div>
-                                                                    <span className={`text-xs font-bold uppercase transition-colors duration-300 ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
-                                                                        {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
-                                                                    </span>
-                                                                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
-
-                                                                    {subscribedSources.includes(item.source) && (
-                                                                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-700 dark:text-emerald-400 rounded uppercase">
-                                                                            Abone
+                                                                    style={{
+                                                                        borderLeftColor: isRead
+                                                                            ? 'transparent'
+                                                                            : (item.type === 'event'
+                                                                                ? '#2563eb'
+                                                                                : item.type === 'email'
+                                                                                    ? '#d97706'
+                                                                                    : item.isGhost
+                                                                                        ? '#9ca3af' // Gray for ghost items
+                                                                                        : (item.type === 'grade' || item.type === 'assignment')
+                                                                                            ? '#7c3aed'
+                                                                                            : '#059669'
+                                                                            )
+                                                                    }}
+                                                                >
+                                                                    {starredIds.includes(String(item.id)) && (
+                                                                        <div className="absolute -left-1 top-4 z-20 shadow-sm">
+                                                                            <div className="bg-yellow-400 text-white p-1 rounded-r-md shadow-md">
+                                                                                <Star size={12} className="fill-white" />
+                                                                            </div>
+                                                                            <div className="absolute top-full left-0 w-1 h-1 bg-yellow-600 rounded-bl-full brightness-75"></div>
                                                                         </div>
                                                                     )}
-                                                                </div>
 
-                                                                <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
-                                                                    {item.title}
-                                                                </h4>
+                                                                    {(activeTab !== 'history') && (
+                                                                        <div className="absolute right-12 top-4 z-20 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); handleSubscribeSource(item.source); }}
+                                                                                className={`flex items-center gap-1 px-2 py-1 rounded shadow-sm text-[9px] font-bold uppercase transition-all hover:scale-105 active:scale-95 border border-transparent
+                                            ${subscribedSources.includes(item.source)
+                                                                                        ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800'
+                                                                                        : 'bg-white dark:bg-neutral-800 text-emerald-600 border-neutral-200 dark:border-neutral-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'}`}
+                                                                            >
+                                                                                {subscribedSources.includes(item.source) ? <CheckCircle size={10} className="fill-current" /> : <Megaphone size={10} />}
+                                                                                {subscribedSources.includes(item.source) ? 'Abone' : 'Abone Ol'}
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); handleBlockSource(item.source); }}
+                                                                                className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-neutral-800 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded shadow-sm text-[9px] font-bold uppercase transition-all hover:scale-105 active:scale-95 border border-neutral-200 dark:border-neutral-700 hover:border-red-200 dark:hover:border-red-800"
+                                                                            >
+                                                                                <X size={10} /> Engelle
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
 
-                                                                <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
-                                                                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                                                                        {item.summary || 'Detaylar için bağlantıya tıklayınız.'}
-                                                                    </p>
-
-                                                                    <div className="flex flex-wrap items-center gap-2 pt-2 mb-4">
-                                                                        {(() => {
-                                                                            const activeColorClass = item.type === 'email'
-                                                                                ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-600 !text-amber-800 dark:!text-amber-400'
-                                                                                : item.type === 'event'
-                                                                                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-600 !text-blue-800 dark:!text-blue-400'
-                                                                                    : (item.type === 'grade' || item.type === 'assignment')
-                                                                                        ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-600 !text-violet-800 dark:!text-violet-400'
-                                                                                        : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-600 !text-emerald-800 dark:!text-emerald-400';
-
-                                                                            const hoverClass = item.type === 'email' ? 'hover:bg-amber-100 dark:hover:bg-amber-900/40' : item.type === 'event' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/40' : (item.type === 'grade' || item.type === 'assignment') ? 'hover:bg-violet-100 dark:hover:bg-violet-900/40' : 'hover:bg-emerald-100 dark:hover:bg-emerald-900/40';
-                                                                            const shadowClass = 'shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]';
-
-                                                                            return (
-                                                                                <>
-                                                                                    <button
-                                                                                        onClick={(e) => handleMarkRead(String(item.id), e)}
-                                                                                        className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
-                                                                                    >
-                                                                                        {isRead ? <CheckCircle size={12} /> : <div className="w-3 h-3 rounded-full border-2 border-current" />}
-                                                                                        {isRead ? 'Okundu' : 'Okundu İşaretle'}
-                                                                                    </button>
-
-                                                                                    <button
-                                                                                        onClick={(e) => handleStar(String(item.id), e)}
-                                                                                        className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
-                                                                                    >
-                                                                                        <Star size={12} className={starredIds.includes(String(item.id)) ? 'fill-current' : ''} />
-                                                                                        {starredIds.includes(String(item.id)) ? 'Yıldızlı' : 'Yıldızla'}
-                                                                                    </button>
-
-                                                                                    <a
-                                                                                        href={item.link}
-                                                                                        target="_blank"
-                                                                                        rel="noopener noreferrer"
-                                                                                        onClick={(e) => e.stopPropagation()}
-                                                                                        className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
-                                                                                    >
-                                                                                        <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
-                                                                                        Kaynağa Git
-                                                                                    </a>
-                                                                                </>
-                                                                            );
-                                                                        })()}
+                                                                    <div className="absolute right-4 top-4 flex items-center gap-3 z-10 text-neutral-300 dark:text-neutral-600 group-hover:text-black dark:group-hover:text-white transition-colors">
+                                                                        <div className="font-bold ml-1 text-2xl leading-none select-none">
+                                                                            {isExpanded ? '−' : '+'}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                                <span className="text-xs text-neutral-500 block mt-2">{item.source} · {item.date}</span>
-                                                            </div>
 
-                                                            {activeTab !== 'history' && (
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        if (activeTab === 'starred') {
-                                                                            handleStar(String(item.id), e);
-                                                                        } else {
-                                                                            handleMarkRead(String(item.id), e);
-                                                                        }
-                                                                    }}
-                                                                    className="absolute bottom-3 right-3 p-2 bg-white dark:bg-neutral-800 rounded-full shadow-md border border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-red-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all opacity-0 group-hover:opacity-100 z-10 scale-90 hover:scale-100"
-                                                                    title={activeTab === 'starred' ? "Listeden Kaldır" : "Gündemden Kaldır"}
-                                                                >
-                                                                    <Trash2 size={14} strokeWidth={2.5} />
-                                                                </button>
-                                                            )}
+                                                                    <div className="flex-1 pr-32">
+                                                                        <div className="flex items-center gap-2 mb-1">
+                                                                            <div className={`transition-colors duration-300 flex items-center justify-center ${item.type === 'event' ? 'text-blue-600' :
+                                                                                item.type === 'email' ? 'text-amber-600' :
+                                                                                    (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' :
+                                                                                        'text-emerald-600'
+                                                                                }`}>
+                                                                                {item.type === 'event' ? (
+                                                                                    <Calendar size={16} />
+                                                                                ) : item.type === 'email' ? (
+                                                                                    <Mail size={16} />
+                                                                                ) : (item.type === 'grade' || item.type === 'assignment') ? (
+                                                                                    <GraduationCap size={16} />
+                                                                                ) : (
+                                                                                    <Megaphone size={16} />
+                                                                                )}
+                                                                            </div>
+                                                                            <span className={`text-xs font-bold uppercase transition-colors duration-300 ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
+                                                                                {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
+                                                                            </span>
+                                                                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
 
-                                                            {activeTab === 'history' && (
-                                                                <button
-                                                                    onClick={(e) => handleUndoRead(String(item.id), e)}
-                                                                    className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 border border-neutral-300 dark:border-neutral-600 text-[9px] font-bold uppercase bg-white dark:bg-neutral-800 text-neutral-500 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all rounded"
-                                                                >
-                                                                    <RotateCcw size={10} />
-                                                                    Geri Al
-                                                                </button>
-                                                            )}
-                                                        </article>
-                                                    );
-                                                })}
+                                                                            {subscribedSources.includes(item.source) && (
+                                                                                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-700 dark:text-emerald-400 rounded uppercase">
+                                                                                    Abone
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+
+                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
+                                                                            {item.title}
+                                                                        </h4>
+
+                                                                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                                                            <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                                                                                {item.summary || 'Detaylar için bağlantıya tıklayınız.'}
+                                                                            </p>
+
+                                                                            <div className="flex flex-wrap items-center gap-2 pt-2 mb-4">
+                                                                                {(() => {
+                                                                                    const activeColorClass = item.type === 'email'
+                                                                                        ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-600 !text-amber-800 dark:!text-amber-400'
+                                                                                        : item.type === 'event'
+                                                                                            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-600 !text-blue-800 dark:!text-blue-400'
+                                                                                            : (item.type === 'grade' || item.type === 'assignment')
+                                                                                                ? 'bg-violet-50 dark:bg-violet-900/20 border-violet-600 !text-violet-800 dark:!text-violet-400'
+                                                                                                : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-600 !text-emerald-800 dark:!text-emerald-400';
+
+                                                                                    const hoverClass = item.type === 'email' ? 'hover:bg-amber-100 dark:hover:bg-amber-900/40' : item.type === 'event' ? 'hover:bg-blue-100 dark:hover:bg-blue-900/40' : (item.type === 'grade' || item.type === 'assignment') ? 'hover:bg-violet-100 dark:hover:bg-violet-900/40' : 'hover:bg-emerald-100 dark:hover:bg-emerald-900/40';
+                                                                                    const shadowClass = 'shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]';
+
+                                                                                    return (
+                                                                                        <>
+                                                                                            <button
+                                                                                                onClick={(e) => handleMarkRead(String(item.id), e)}
+                                                                                                className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
+                                                                                            >
+                                                                                                {isRead ? <CheckCircle size={12} /> : <div className="w-3 h-3 rounded-full border-2 border-current" />}
+                                                                                                {isRead ? 'Okundu' : 'Okundu İşaretle'}
+                                                                                            </button>
+
+                                                                                            <button
+                                                                                                onClick={(e) => handleStar(String(item.id), e)}
+                                                                                                className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
+                                                                                            >
+                                                                                                <Star size={12} className={starredIds.includes(String(item.id)) ? 'fill-current' : ''} />
+                                                                                                {starredIds.includes(String(item.id)) ? 'Yıldızlı' : 'Yıldızla'}
+                                                                                            </button>
+
+                                                                                            <a
+                                                                                                href={item.link}
+                                                                                                target="_blank"
+                                                                                                rel="noopener noreferrer"
+                                                                                                onClick={(e) => e.stopPropagation()}
+                                                                                                className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
+                                                                                            >
+                                                                                                <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
+                                                                                                Kaynağa Git
+                                                                                            </a>
+                                                                                        </>
+                                                                                    );
+                                                                                })()}
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-xs text-neutral-500 block mt-2">{item.source} · {item.date}</span>
+                                                                    </div>
+
+                                                                    {activeTab !== 'history' && (
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                if (activeTab === 'starred') {
+                                                                                    handleStar(String(item.id), e);
+                                                                                } else {
+                                                                                    handleMarkRead(String(item.id), e);
+                                                                                }
+                                                                            }}
+                                                                            className="absolute bottom-3 right-3 p-2 bg-white dark:bg-neutral-800 rounded-full shadow-md border border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-red-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all opacity-0 group-hover:opacity-100 z-10 scale-90 hover:scale-100"
+                                                                            title={activeTab === 'starred' ? "Listeden Kaldır" : "Gündemden Kaldır"}
+                                                                        >
+                                                                            <Trash2 size={14} strokeWidth={2.5} />
+                                                                        </button>
+                                                                    )}
+
+                                                                    {activeTab === 'history' && (
+                                                                        <button
+                                                                            onClick={(e) => handleUndoRead(String(item.id), e)}
+                                                                            className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 border border-neutral-300 dark:border-neutral-600 text-[9px] font-bold uppercase bg-white dark:bg-neutral-800 text-neutral-500 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all rounded"
+                                                                        >
+                                                                            <RotateCcw size={10} />
+                                                                            Geri Al
+                                                                        </button>
+                                                                    )}
+                                                                </article>
+                                                            );
+                                                        })}
+                                                    </motion.div>
+                                                </AnimatePresence>
 
                                                 {/* Load More Button */}
                                                 {hasMoreItems && (

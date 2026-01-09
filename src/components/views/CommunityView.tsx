@@ -162,7 +162,13 @@ export default function CommunityView() {
                       </h3>
                       <div className="space-y-4">
                         {popularEvents.length > 0 ? popularEvents.map(event => (
-                          <div key={event.id} onClick={() => router.push(`/events/${event.id}`)} className="group cursor-pointer">
+                          <motion.div
+                            key={event.id}
+                            onClick={() => router.push(`/events/${event.id}`)}
+                            className="group cursor-pointer"
+                            whileHover={{ scale: 1.02, x: 5 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
                             <div className="flex justify-between items-start mb-1 gap-2">
                               <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:underline decoration-2 underline-offset-2 transition-colors line-clamp-2 leading-tight py-1">
                                 {event.title}
@@ -182,7 +188,7 @@ export default function CommunityView() {
                               </div>
                               <ArrowRight size={14} className="text-neutral-900 dark:text-white group-hover:translate-x-1 transition-all" />
                             </div>
-                          </div>
+                          </motion.div>
                         )) : (
                           <div className="text-sm text-neutral-500 italic text-center py-4">
                             Yaklaşan etkinlik yok.
@@ -201,7 +207,17 @@ export default function CommunityView() {
                   Etkinlikler & Kulüpler
                 </h3>
 
-                <EventList events={filteredEvents} />
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedCategory}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <EventList events={filteredEvents} />
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </motion.div>

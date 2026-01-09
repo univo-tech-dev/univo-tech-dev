@@ -742,210 +742,220 @@ export default function VoiceView() {
                                     ) : voices.length === 0 ? (
                                         <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
                                     ) : (
-                                        voices.map((voice) => {
-                                            const reactions = voice.reactions || [];
-                                            const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
-                                            const likeCount = reactions.filter(r => r.reaction_type === 'like').length;
-                                            const dislikeCount = reactions.filter(r => r.reaction_type === 'dislike').length;
-                                            const netVote = likeCount - dislikeCount;
+                                        <AnimatePresence mode="wait">
+                                            <motion.div
+                                                key={activeTagFilter || 'all'}
+                                                initial={{ opacity: 0, x: 20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: -20 }}
+                                                transition={{ duration: 0.3 }}
+                                            >
+                                                {voices.map((voice) => {
+                                                    const reactions = voice.reactions || [];
+                                                    const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
+                                                    const likeCount = reactions.filter(r => r.reaction_type === 'like').length;
+                                                    const dislikeCount = reactions.filter(r => r.reaction_type === 'dislike').length;
+                                                    const netVote = likeCount - dislikeCount;
 
-                                            return (
-                                                <article key={voice.id} className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}>
-                                                    {voice.is_editors_choice && (
-                                                        <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-600 text-yellow-900 dark:text-yellow-100 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
-                                                            <Award size={12} className="text-yellow-900 dark:text-yellow-100" />
-                                                            Editörün Seçimi
-                                                        </div>
-                                                    )}
-
-                                                    <div className="flex gap-4 items-start">
-                                                        <div
-                                                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
-                                                            style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
-                                                        >
-                                                            {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
-                                                        </div>
-
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                                {voice.is_anonymous ? (
-                                                                    <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">
-                                                                        {voice.user.nickname || 'Rumuzlu Öğrenci'}
-                                                                    </span>
-                                                                ) : (
-                                                                    <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
-                                                                        {voice.user.full_name}
-                                                                    </Link>
-                                                                )}
-                                                                {(voice.user.department || voice.user.class_year) && (
-                                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
-                                                                        {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
-                                                                    </span>
-                                                                )}
-                                                                <div className="ml-auto relative">
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setActiveMenu(activeMenu === voice.id ? null : voice.id);
-                                                                        }}
-                                                                        className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                                                    >
-                                                                        <MoreVertical size={16} />
-                                                                    </button>
-                                                                    {activeMenu === voice.id && (
-                                                                        <>
-                                                                            <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
-                                                                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
-                                                                                {user && voice.user_id === user.id ? (
-                                                                                    <>
-                                                                                        <button
-                                                                                            onClick={() => {
-                                                                                                startEdit(voice);
-                                                                                                setActiveMenu(null);
-                                                                                            }}
-                                                                                            className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
-                                                                                        >
-                                                                                            <Edit2 size={14} />
-                                                                                            Düzenle
-                                                                                        </button>
-                                                                                        <button
-                                                                                            onClick={() => {
-                                                                                                handleDelete(voice.id);
-                                                                                                setActiveMenu(null);
-                                                                                            }}
-                                                                                            className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
-                                                                                        >
-                                                                                            <Trash2 size={14} />
-                                                                                            Sil
-                                                                                        </button>
-                                                                                    </>
-                                                                                ) : !voice.is_anonymous ? (
-                                                                                    <FriendButton
-                                                                                        targetUserId={voice.user_id}
-                                                                                        variant="menu-item"
-                                                                                    />
-                                                                                ) : null}
-                                                                            </div>
-                                                                        </>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-
-                                                            {editingId === voice.id ? (
-                                                                <form onSubmit={handleUpdate} className="mb-4">
-                                                                    <textarea
-                                                                        className="w-full p-2 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white font-serif rounded-sm focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors"
-                                                                        rows={3}
-                                                                        value={editContent}
-                                                                        onChange={e => setEditContent(e.target.value)}
-                                                                    />
-                                                                    <div className="flex justify-end gap-2 mt-2">
-                                                                        <button type="button" onClick={() => setEditingId(null)} className="text-xs font-bold uppercase text-neutral-500 hover:text-black dark:hover:text-white">İptal</button>
-                                                                        <button type="submit" className="text-xs font-bold uppercase bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-sm">Kaydet</button>
-                                                                    </div>
-                                                                </form>
-                                                            ) : (
-                                                                <div className="mb-4 group/content relative">
-                                                                    <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
-                                                                        {renderContentWithTags(voice.content)}
-                                                                    </p>
+                                                    return (
+                                                        <article key={voice.id} className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}>
+                                                            {voice.is_editors_choice && (
+                                                                <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-600 text-yellow-900 dark:text-yellow-100 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+                                                                    <Award size={12} className="text-yellow-900 dark:text-yellow-100" />
+                                                                    Editörün Seçimi
                                                                 </div>
                                                             )}
 
-                                                            <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
-                                                                <div className="flex items-center gap-6">
-                                                                    <div className="flex items-center gap-1">
-                                                                        <button
-                                                                            onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
-                                                                            className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
-                                                                            title="Yükselt"
-                                                                        >
-                                                                            <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
-                                                                        </button>
-                                                                        <span className={`text-sm font-bold w-6 text-center ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
-                                                                            {netVote}
-                                                                        </span>
-                                                                        <button
-                                                                            onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
-                                                                            className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
-                                                                            title="Düşür"
-                                                                        >
-                                                                            <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
-                                                                        </button>
-                                                                    </div>
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
-                                                                        className={`flex items-center gap-2 group transition-colors ${activeCommentBox === voice.id ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500 hover:text-blue-500'}`}
-                                                                    >
-                                                                        <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20">
-                                                                            <MessageSquare size={18} />
-                                                                        </div>
-                                                                        <span className="text-sm font-medium">{voice.comments.length > 0 ? voice.comments.length : ''}</span>
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
-                                                                            toast.success('Link kopyalandı!');
-                                                                        }}
-                                                                        className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors"
-                                                                    >
-                                                                        <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20">
-                                                                            <Share2 size={18} />
-                                                                        </div>
-                                                                    </button>
+                                                            <div className="flex gap-4 items-start">
+                                                                <div
+                                                                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
+                                                                    style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
+                                                                >
+                                                                    {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
                                                                 </div>
-                                                                <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
-                                                                    {formatRelativeTime(voice.created_at)}
-                                                                </span>
-                                                            </div>
 
-                                                            {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
-                                                                <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
-                                                                    <div className="space-y-4 mb-4">
-                                                                        {voice.comments.map(comment => (
-                                                                            <div key={comment.id} className="flex gap-3">
-                                                                                <div className="w-8 h-8 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center text-xs font-bold text-neutral-500 dark:text-neutral-400">
-                                                                                    {comment.user.charAt(0)}
-                                                                                </div>
-                                                                                <div className="flex-1 bg-neutral-50 dark:bg-neutral-900 rounded-2xl rounded-tl-none p-3">
-                                                                                    <div className="flex justify-between items-baseline mb-1">
-                                                                                        <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
-                                                                                            {comment.user}
-                                                                                        </Link>
-                                                                                        <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{formatRelativeTime(comment.created_at)}</span>
-                                                                                    </div>
-                                                                                    <p className="text-sm text-neutral-700 dark:text-neutral-300">{comment.content}</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
-                                                                    </div>
-                                                                    {activeCommentBox === voice.id && (
-                                                                        <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
-                                                                            <input
-                                                                                type="text"
-                                                                                placeholder="Yorumunu yaz..."
-                                                                                className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-[#C8102E] font-serif dark:text-white transition-colors"
-                                                                                value={newComment}
-                                                                                onChange={(e) => setNewComment(e.target.value)}
-                                                                                autoFocus
-                                                                            />
+                                                                <div className="flex-1">
+                                                                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                                        {voice.is_anonymous ? (
+                                                                            <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">
+                                                                                {voice.user.nickname || 'Rumuzlu Öğrenci'}
+                                                                            </span>
+                                                                        ) : (
+                                                                            <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
+                                                                                {voice.user.full_name}
+                                                                            </Link>
+                                                                        )}
+                                                                        {(voice.user.department || voice.user.class_year) && (
+                                                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
+                                                                                {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
+                                                                            </span>
+                                                                        )}
+                                                                        <div className="ml-auto relative">
                                                                             <button
-                                                                                type="submit"
-                                                                                disabled={!newComment.trim() || isCommenting}
-                                                                                className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setActiveMenu(activeMenu === voice.id ? null : voice.id);
+                                                                                }}
+                                                                                className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
                                                                             >
-                                                                                {isCommenting ? '...' : <Send size={14} />}
+                                                                                <MoreVertical size={16} />
                                                                             </button>
+                                                                            {activeMenu === voice.id && (
+                                                                                <>
+                                                                                    <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
+                                                                                    <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
+                                                                                        {user && voice.user_id === user.id ? (
+                                                                                            <>
+                                                                                                <button
+                                                                                                    onClick={() => {
+                                                                                                        startEdit(voice);
+                                                                                                        setActiveMenu(null);
+                                                                                                    }}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
+                                                                                                >
+                                                                                                    <Edit2 size={14} />
+                                                                                                    Düzenle
+                                                                                                </button>
+                                                                                                <button
+                                                                                                    onClick={() => {
+                                                                                                        handleDelete(voice.id);
+                                                                                                        setActiveMenu(null);
+                                                                                                    }}
+                                                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                                                                                >
+                                                                                                    <Trash2 size={14} />
+                                                                                                    Sil
+                                                                                                </button>
+                                                                                            </>
+                                                                                        ) : !voice.is_anonymous ? (
+                                                                                            <FriendButton
+                                                                                                targetUserId={voice.user_id}
+                                                                                                variant="menu-item"
+                                                                                            />
+                                                                                        ) : null}
+                                                                                    </div>
+                                                                                </>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {editingId === voice.id ? (
+                                                                        <form onSubmit={handleUpdate} className="mb-4">
+                                                                            <textarea
+                                                                                className="w-full p-2 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white font-serif rounded-sm focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors"
+                                                                                rows={3}
+                                                                                value={editContent}
+                                                                                onChange={e => setEditContent(e.target.value)}
+                                                                            />
+                                                                            <div className="flex justify-end gap-2 mt-2">
+                                                                                <button type="button" onClick={() => setEditingId(null)} className="text-xs font-bold uppercase text-neutral-500 hover:text-black dark:hover:text-white">İptal</button>
+                                                                                <button type="submit" className="text-xs font-bold uppercase bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-sm">Kaydet</button>
+                                                                            </div>
                                                                         </form>
+                                                                    ) : (
+                                                                        <div className="mb-4 group/content relative">
+                                                                            <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
+                                                                                {renderContentWithTags(voice.content)}
+                                                                            </p>
+                                                                        </div>
+                                                                    )}
+
+                                                                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
+                                                                        <div className="flex items-center gap-6">
+                                                                            <div className="flex items-center gap-1">
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
+                                                                                    className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
+                                                                                    title="Yükselt"
+                                                                                >
+                                                                                    <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
+                                                                                </button>
+                                                                                <span className={`text-sm font-bold w-6 text-center ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                                                                                    {netVote}
+                                                                                </span>
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
+                                                                                    className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
+                                                                                    title="Düşür"
+                                                                                >
+                                                                                    <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
+                                                                                </button>
+                                                                            </div>
+                                                                            <button
+                                                                                onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
+                                                                                className={`flex items-center gap-2 group transition-colors ${activeCommentBox === voice.id ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500 hover:text-blue-500'}`}
+                                                                            >
+                                                                                <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20">
+                                                                                    <MessageSquare size={18} />
+                                                                                </div>
+                                                                                <span className="text-sm font-medium">{voice.comments.length > 0 ? voice.comments.length : ''}</span>
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
+                                                                                    toast.success('Link kopyalandı!');
+                                                                                }}
+                                                                                className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors"
+                                                                            >
+                                                                                <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20">
+                                                                                    <Share2 size={18} />
+                                                                                </div>
+                                                                            </button>
+                                                                        </div>
+                                                                        <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
+                                                                            {formatRelativeTime(voice.created_at)}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
+                                                                        <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
+                                                                            <div className="space-y-4 mb-4">
+                                                                                {voice.comments.map(comment => (
+                                                                                    <div key={comment.id} className="flex gap-3">
+                                                                                        <div className="w-8 h-8 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center text-xs font-bold text-neutral-500 dark:text-neutral-400">
+                                                                                            {comment.user.charAt(0)}
+                                                                                        </div>
+                                                                                        <div className="flex-1 bg-neutral-50 dark:bg-neutral-900 rounded-2xl rounded-tl-none p-3">
+                                                                                            <div className="flex justify-between items-baseline mb-1">
+                                                                                                <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
+                                                                                                    {comment.user}
+                                                                                                </Link>
+                                                                                                <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{formatRelativeTime(comment.created_at)}</span>
+                                                                                            </div>
+                                                                                            <p className="text-sm text-neutral-700 dark:text-neutral-300">{comment.content}</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+                                                                            {activeCommentBox === voice.id && (
+                                                                                <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        placeholder="Yorumunu yaz..."
+                                                                                        className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-[#C8102E] font-serif dark:text-white transition-colors"
+                                                                                        value={newComment}
+                                                                                        onChange={(e) => setNewComment(e.target.value)}
+                                                                                        autoFocus
+                                                                                    />
+                                                                                    <button
+                                                                                        type="submit"
+                                                                                        disabled={!newComment.trim() || isCommenting}
+                                                                                        className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+                                                                                    >
+                                                                                        {isCommenting ? '...' : <Send size={14} />}
+                                                                                    </button>
+                                                                                </form>
+                                                                            )}
+                                                                        </div>
                                                                     )}
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </article>
-                                            );
-                                        })
+                                                            </div>
+                                                        </article>
+                                                    );
+                                                })}
+                                            </motion.div>
+                                        </AnimatePresence>
                                     )}
                                 </div>
                             </div>
@@ -1095,66 +1105,71 @@ export default function VoiceView() {
                                 </div>
                             </div>
                         </div>
+
+
+
                     </motion.div>
                 )}
             </AnimatePresence>
 
             {/* Poll Voters Modal */}
-            {showVotersModal && (
-                <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowVotersModal(false)} />
-                    <div className="relative w-full max-w-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xl overflow-hidden animate-in zoom-in duration-200 rounded-xl">
-                        <div className="flex justify-between items-center p-6 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/50">
-                            <h3 className="text-xl font-bold font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
-                                <Users size={24} className="text-primary" />
-                                Oy Kullananlar
-                            </h3>
-                            <button onClick={() => setShowVotersModal(false)} className="hover:text-primary transition-colors p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded">
-                                <X size={24} />
-                            </button>
-                        </div>
-                        <div className="px-6 py-4 bg-white dark:bg-neutral-900 border-b-2 border-neutral-100 dark:border-neutral-800">
-                            <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
-                                {activePoll?.options.map((option, idx) => {
-                                    const count = voters.filter(v => v.option_index === idx).length;
-                                    const isActive = selectedVoterOption === idx;
-                                    return (
-                                        <button
-                                            key={idx}
-                                            onClick={() => setSelectedVoterOption(idx)}
-                                            style={isActive ? { backgroundColor: 'var(--primary-color, #C8102E)', borderColor: 'var(--primary-color, #C8102E)' } : {}}
-                                            className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all flex items-center gap-2 border-2 ${isActive ? 'text-white' : 'bg-white text-neutral-600 border-neutral-200 hover:border-black dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700'}`}
-                                        >
-                                            {option} <span className="opacity-70">({count})</span>
-                                        </button>
-                                    );
-                                })}
+            {
+                showVotersModal && (
+                    <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowVotersModal(false)} />
+                        <div className="relative w-full max-w-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-xl overflow-hidden animate-in zoom-in duration-200 rounded-xl">
+                            <div className="flex justify-between items-center p-6 border-b border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/50">
+                                <h3 className="text-xl font-bold font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
+                                    <Users size={24} className="text-primary" />
+                                    Oy Kullananlar
+                                </h3>
+                                <button onClick={() => setShowVotersModal(false)} className="hover:text-primary transition-colors p-1 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded">
+                                    <X size={24} />
+                                </button>
+                            </div>
+                            <div className="px-6 py-4 bg-white dark:bg-neutral-900 border-b-2 border-neutral-100 dark:border-neutral-800">
+                                <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
+                                    {activePoll?.options.map((option, idx) => {
+                                        const count = voters.filter(v => v.option_index === idx).length;
+                                        const isActive = selectedVoterOption === idx;
+                                        return (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedVoterOption(idx)}
+                                                style={isActive ? { backgroundColor: 'var(--primary-color, #C8102E)', borderColor: 'var(--primary-color, #C8102E)' } : {}}
+                                                className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all flex items-center gap-2 border-2 ${isActive ? 'text-white' : 'bg-white text-neutral-600 border-neutral-200 hover:border-black dark:bg-neutral-800 dark:text-neutral-300 dark:border-neutral-700'}`}
+                                            >
+                                                {option} <span className="opacity-70">({count})</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            <div className="p-6 max-h-[50vh] overflow-y-auto bg-neutral-50/50 dark:bg-neutral-900/50">
+                                {isLoadingVoters ? (
+                                    <div className="text-center">Yükleniyor...</div>
+                                ) : voters.length === 0 ? (
+                                    <div className="text-center italic">Henüz veri yok.</div>
+                                ) : (
+                                    <div className="flex flex-col gap-3">
+                                        {voters.filter(v => v.option_index === selectedVoterOption).map(voter => (
+                                            <Link key={voter.user_id} href={`/profile/${voter.user_id}`} className="flex items-center gap-3 p-3 bg-white dark:bg-[#0a0a0a] rounded border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-black dark:hover:border-neutral-500 transition-colors">
+                                                <div
+                                                    className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase"
+                                                    style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                                >
+                                                    {voter.display_name.charAt(0)}
+                                                </div>
+                                                <span className="font-bold text-black dark:text-white">{voter.display_name}</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className="p-6 max-h-[50vh] overflow-y-auto bg-neutral-50/50 dark:bg-neutral-900/50">
-                            {isLoadingVoters ? (
-                                <div className="text-center">Yükleniyor...</div>
-                            ) : voters.length === 0 ? (
-                                <div className="text-center italic">Henüz veri yok.</div>
-                            ) : (
-                                <div className="flex flex-col gap-3">
-                                    {voters.filter(v => v.option_index === selectedVoterOption).map(voter => (
-                                        <Link key={voter.user_id} href={`/profile/${voter.user_id}`} className="flex items-center gap-3 p-3 bg-white dark:bg-[#0a0a0a] rounded border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-black dark:hover:border-neutral-500 transition-colors">
-                                            <div
-                                                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase"
-                                                style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
-                                            >
-                                                {voter.display_name.charAt(0)}
-                                            </div>
-                                            <span className="font-bold text-black dark:text-white">{voter.display_name}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
