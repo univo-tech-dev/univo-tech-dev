@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
-import { Rocket } from 'lucide-react';
+import { Rocket, ChevronDown, Check } from 'lucide-react';
 
 export default function SettingsPage() {
     const { user, profile } = useAuth();
@@ -17,9 +17,6 @@ export default function SettingsPage() {
     const [saving, setSaving] = useState(false);
 
     const isAdmin = user?.email === ADMIN_EMAIL || profile?.full_name === ADMIN_NAME;
-
-    // Form inputs state (optional, can use FormData, but state is easier for validation if needed)
-    // We'll use FormData in handleSubmit for simplicity with defaultValues
 
     const fetchCommunity = async () => {
         if (!user) return;
@@ -31,7 +28,7 @@ export default function SettingsPage() {
 
     useEffect(() => {
         fetchCommunity();
-    }, [user]);
+    }, [user?.id]); // Only refresh if ID changes (fixes loop)
 
     const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -63,12 +60,18 @@ export default function SettingsPage() {
         }
     };
 
-    if (loading) return <div>Yükleniyor...</div>;
+    if (loading) {
+       return (
+            <div className="min-h-screen flex items-center justify-center">
+                 <div className="w-8 h-8 border-4 border-[#C8102E] border-t-transparent rounded-full animate-spin"></div>
+            </div>
+       )
+    }
 
     if (!community) {
         return (
             <div className="max-w-2xl mx-auto py-12">
-                <h1 className="text-3xl font-black font-serif mb-8 text-center">Hoş Geldiniz</h1>
+                <h1 className="text-3xl font-black font-serif mb-8 text-center dark:text-white">Hoş Geldiniz</h1>
                 
                 <div className="grid gap-8">
                     {/* Manual Creation */}
@@ -81,13 +84,13 @@ export default function SettingsPage() {
                         </h3>
                         {isAdmin ? (
                             <>
-                                <p className="text-neutral-600 mb-6 text-sm">
+                                <p className="text-neutral-600 dark:text-neutral-400 mb-6 text-sm">
                                     Kendi topluluğunuzu sıfırdan kurun ve yönetmeye başlayın.
                                 </p>
                                 <CreateCommunityForm userId={user?.id || ''} onComplete={(data) => setCommunity(data)} />
                             </>
                         ) : (
-                            <p className="text-neutral-600 text-sm italic">
+                            <p className="text-neutral-600 dark:text-neutral-500 text-sm italic">
                                 Sadece sistem yöneticisi topluluk oluşturabilir.
                             </p>
                         )}
@@ -131,17 +134,11 @@ export default function SettingsPage() {
 
                     <div>
                         <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Kategori</label>
-                        <select 
-                            name="category"
-                            defaultValue={community?.category || 'Sanat'}
-                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif hover:border-[#C8102E] focus:border-[#C8102E] outline-none transition-colors appearance-none bg-white dark:bg-neutral-800 dark:text-white"
-                        >
-                            <option value="Sanat">Sanat</option>
-                            <option value="Spor">Spor</option>
-                            <option value="Teknoloji">Teknoloji</option>
-                            <option value="Girişimcilik">Girişimcilik</option>
-                            <option value="Sosyal">Sosyal</option>
-                        </select>
+                        <CustomSelect 
+                            name="category" 
+                            defaultValue={community?.category || 'Sanat'} 
+                            options={['Sanat', 'Spor', 'Teknoloji', 'Girişimcilik', 'Sosyal']}
+                        />
                     </div>
 
                     <div>
@@ -188,6 +185,66 @@ export default function SettingsPage() {
     );
 }
 
+// Custom Select Component to avoid Blue Hover issues
+function CustomSelect({ name, defaultValue, options }: { name: string, defaultValue: string, options: string[] }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [selected, setSelected] = useState(defaultValue);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Close on click outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    const handleSelect = (option: string) => {
+        setSelected(option);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="relative font-serif" ref={containerRef}>
+            {/* Hidden input for form submission */}
+            <input type="hidden" name={name} value={selected} />
+            
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className={`w-full text-left p-3 border-2 flex items-center justify-between transition-colors outline-none bg-white dark:bg-neutral-800 dark:text-white
+                    ${isOpen ? 'border-[#C8102E]' : 'border-neutral-300 dark:border-neutral-700 hover:border-[#C8102E]'}
+                `}
+            >
+                <span>{selected}</span>
+                <ChevronDown size={18} className={`transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#C8102E]' : 'text-neutral-400'}`} />
+            </button>
+
+            {isOpen && (
+                <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-neutral-900 border-2 border-neutral-200 dark:border-neutral-700 shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100 max-h-60 overflow-y-auto">
+                    {options.map((option) => (
+                        <button
+                            key={option}
+                            type="button"
+                            onClick={() => handleSelect(option)}
+                            className="w-full text-left px-4 py-3 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 last:border-0
+                                hover:border-l-4 hover:border-l-[#C8102E] hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all group"
+                        >
+                            <span className={`group-hover:text-[#C8102E] group-hover:font-bold dark:text-white transition-colors ${selected === option ? 'font-bold text-[#C8102E]' : 'text-neutral-600'}`}>
+                                {option}
+                            </span>
+                            {selected === option && <Check size={16} className="text-[#C8102E]" />}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 function CreateCommunityForm({ userId, onComplete }: { userId: string, onComplete: (data: any) => void }) {
     const [loading, setLoading] = useState(false);
 
@@ -224,13 +281,11 @@ function CreateCommunityForm({ userId, onComplete }: { userId: string, onComplet
             </div>
              <div>
                 <label className="block font-bold text-sm mb-1">Kategori</label>
-                <select name="category" className="w-full border-2 border-neutral-200 dark:border-neutral-700 p-2 hover:border-[#C8102E] focus:border-[#C8102E] outline-none bg-white dark:bg-neutral-800 dark:text-white transition-colors">
-                    <option value="Sanat">Sanat</option>
-                    <option value="Spor">Spor</option>
-                    <option value="Teknoloji">Teknoloji</option>
-                    <option value="Girişimcilik">Girişimcilik</option>
-                    <option value="Sosyal">Sosyal</option>
-                </select>
+                <CustomSelect 
+                    name="category" 
+                    defaultValue="Sanat" 
+                    options={['Sanat', 'Spor', 'Teknoloji', 'Girişimcilik', 'Sosyal']}
+                />
             </div>
              <div>
                 <label className="block font-bold text-sm mb-1">Kısa Açıklama</label>
@@ -251,8 +306,6 @@ function InitializeDemoButton({ userId, onComplete }: { userId: string, onComple
         setLoading(true);
         console.log("Starting initialization for user:", userId);
         try {
-            // 1. Create Community
-            console.log("Creating community...");
             const { data, error } = await supabase.from('communities').insert({
                 name: 'UniVo Sanat Topluluğu',
                 category: 'Sanat',
@@ -261,24 +314,13 @@ function InitializeDemoButton({ userId, onComplete }: { userId: string, onComple
                 admin_id: userId
             }).select();
 
-            if (error) {
-                console.error("Community creation error:", error);
-                throw error;
-            }
-
+            if (error) throw error;
             const comm = data?.[0];
             if (!comm) throw new Error("Community created but no data returned.");
 
-            // 2. Seed Data
-            console.log("Seeding events for community:", comm.id);
             await seedEvents(comm.id);
-            
             toast.success("Topluluk ve veriler oluşturuldu!");
-            console.log("Initialization complete. Updating Parent State directly...");
-            
-            // DIRECT FIX: Pass the created object to parent
             onComplete(comm); 
-            
         } catch (e: any) {
             console.error("Initialization failed:", e);
             toast.error("Hata: " + e.message);
@@ -300,7 +342,6 @@ function InitializeDemoButton({ userId, onComplete }: { userId: string, onComple
 }
 
 async function seedEvents(communityId: string) {
-    // 1. Clean up existing events to prevent duplicates (Spam fix)
     console.log("Cleaning up old events...");
     await supabase.from('events').delete().eq('community_id', communityId);
 
@@ -311,32 +352,23 @@ async function seedEvents(communityId: string) {
     ];
 
     for (const pEvent of pastEvents) {
-        // Simple insert, duplicates might be allowed by schema but that's fine for demo
-        const { data: eventData, error } = await supabase.from('events').insert({
+        const { error } = await supabase.from('events').insert({
             title: pEvent.title,
             category: 'workshop',
             description: 'Örnek etkinlik açıklaması.',
-            excerpt: 'Kısa açıklama',
             date: pEvent.date, 
             time: '14:00',
             location: pEvent.location,
             community_id: communityId
         }).select().single();
-
-        if (error) {
-            console.error('Seed error:', error);
-            throw error;
-        }
+        if (error) console.error('Seed error:', error);
     }
-
-    // Seed Follower (Self)
     const { data: userData } = await supabase.auth.getUser();
     if (userData.user) {
-         // Ignore error if already following
          await supabase.from('community_followers').insert({
              community_id: communityId,
              user_id: userData.user.id
-         }).select();
+         });
     }
 }
 
@@ -354,8 +386,6 @@ function DemoDataLoader({ communityId }: { communityId: string }) {
         try {
             await seedEvents(communityId);
             toast.success('Demo verileri sıfırlandı!');
-            // We can optionally refresh, but user complaints about 'nothing happening' often mean they expect visual confirmation or redirect.
-            // An alert is good enough for 'Load Data', or we could reload.
             router.refresh(); 
         } catch (e: any) {
             console.error("Load data error:", e);

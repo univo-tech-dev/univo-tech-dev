@@ -194,7 +194,7 @@ export default function LoginPage() {
                                 {uni.enabled ? (
                                     <ArrowRight size={20} className="text-neutral-400 group-hover:text-[var(--primary-color)] transition-colors" />
                                 ) : (
-                                    <span className="text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-2 py-1 rounded">Yakında</span>
+                                    <span className="text-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-2 py-1 rounded shrink-0 whitespace-nowrap">Yakında</span>
                                 )}
                             </button>
                         ))}

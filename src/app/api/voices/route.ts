@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { toTitleCase } from '@/lib/utils';
 
 export async function GET(request: Request) {
   try {
@@ -66,13 +67,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const toTitleCase = (str: string) => {
-      if (!str) return str;
-      return str.split(' ').map(word => {
-        if (!word) return word;
-        return word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR');
-      }).join(' ');
-    };
+
 
     const formattedData = (data as any[] || []).map((voice: any) => {
       const likes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'like').length;
