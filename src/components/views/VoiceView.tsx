@@ -890,11 +890,12 @@ export default function VoiceView() {
                                 onTagFilterChange={setActiveTagFilter}
                                 activeUsers={activeUsers}
                                 issueNumber={issueNumber}
+                                onVotersClick={fetchVoters}
                             />
 
                             <div className="hidden lg:flex lg:flex-col lg:gap-8 lg:pr-2">
                                 {/* Desktop Poll - Newspaper Theme */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-xl shadow-sm">
+                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
                                     <div className="flex items-center justify-between border-b-2 border-black dark:border-neutral-600 pb-2 mb-4">
                                         <h3 className="text-lg font-black font-serif uppercase tracking-tight dark:text-white">
                                             Haftanın Anketi
@@ -943,13 +944,20 @@ export default function VoiceView() {
                                                     );
                                                 })}
                                             </div>
-                                            {userVote !== null && <div className="text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium font-serif">{totalVotes} oy kullanıldı</div>}
+                                            {userVote !== null && (
+                                                <button 
+                                                    onClick={fetchVoters}
+                                                    className="w-full text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium font-serif hover:text-primary hover:underline transition-colors block"
+                                                >
+                                                    {totalVotes} oy kullanıldı
+                                                </button>
+                                            )}
                                         </>
                                     )}
                                 </div>
 
                                 {/* Trending Topics (Desktop) - Newspaper Theme */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-xl shadow-sm">
+                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
                                     <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
                                         <TrendingUp size={20} style={{ color: 'var(--primary-color, #C8102E)' }} />
                                         Kampüste Gündem
@@ -983,7 +991,7 @@ export default function VoiceView() {
                                 </div>
 
                                 {/* Campus Pulse (Desktop) - Newspaper Theme */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-xl shadow-sm">
+                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
                                     <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight dark:text-white text-center">
                                         Kampüs Nabzı
                                     </h3>

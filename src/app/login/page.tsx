@@ -81,9 +81,12 @@ export default function LoginPage() {
         setStep('login');
     };
 
+    const [isTakingLong, setIsTakingLong] = useState(false);
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setIsTakingLong(false);
 
         if (!acceptedTerms) {
             setError('Devam etmek için aydınlatma metnini onaylamalısınız.');
@@ -91,10 +94,16 @@ export default function LoginPage() {
         }
 
         setIsLoading(true);
+        
+        // Timer for slow connection message
+        const timer = setTimeout(() => {
+            setIsTakingLong(true);
+        }, 8000); // 8 seconds
 
         try {
             // For now, only ODTÜ is supported
             const result = await signInWithMetu(username, password);
+            clearTimeout(timer);
 
             if (result.success) {
                 const welcomeName = (result.studentInfo?.fullName || 'Öğrenci')
@@ -110,9 +119,11 @@ export default function LoginPage() {
                 throw new Error(result.error || 'Giriş başarısız.');
             }
         } catch (err: any) {
+            clearTimeout(timer);
             console.error(err);
             setError(err.message || 'Bir hata oluştu. Lütfen bilgilerinizi kontrol edin.');
             setIsLoading(false);
+            setIsTakingLong(false);
         }
     };
 
@@ -290,7 +301,7 @@ export default function LoginPage() {
                             {isLoading ? (
                                 <>
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Bağlanılıyor...
+                                    {isTakingLong ? "Bağlanmak normalden uzun sürüyor..." : "Bağlanılıyor..."}
                                 </>
                             ) : (
                                 <>
