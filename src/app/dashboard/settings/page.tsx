@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
+import { Rocket } from 'lucide-react';
 
 export default function SettingsPage() {
     const { user, profile } = useAuth();
@@ -72,8 +73,11 @@ export default function SettingsPage() {
                 <div className="grid gap-8">
                     {/* Manual Creation */}
                     <div className="bg-white dark:bg-neutral-900 p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)]">
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2 dark:text-white">
-                             🚀 {isAdmin ? 'Yeni Topluluk Oluştur' : 'Erişim Kısıtlı'}
+                        <h3 className="text-xl font-bold mb-4 flex items-center gap-3 dark:text-white">
+                             <div className="w-10 h-10 rounded-full border-2 border-[#C8102E] flex items-center justify-center text-neutral-900 dark:text-white bg-transparent">
+                                <Rocket size={20} />
+                             </div>
+                             {isAdmin ? 'Yeni Topluluk Oluştur' : 'Erişim Kısıtlı'}
                         </h3>
                         {isAdmin ? (
                             <>
@@ -121,7 +125,7 @@ export default function SettingsPage() {
                             name="name"
                             type="text" 
                             defaultValue={community?.name}
-                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif hover:border-[#C8102E] focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
                         />
                     </div>
 
@@ -130,7 +134,7 @@ export default function SettingsPage() {
                         <select 
                             name="category"
                             defaultValue={community?.category || 'Sanat'}
-                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white outline-none transition-colors appearance-none bg-white dark:bg-neutral-800 dark:text-white"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif hover:border-[#C8102E] focus:border-[#C8102E] outline-none transition-colors appearance-none bg-white dark:bg-neutral-800 dark:text-white"
                         >
                             <option value="Sanat">Sanat</option>
                             <option value="Spor">Spor</option>
@@ -146,7 +150,7 @@ export default function SettingsPage() {
                             name="description"
                             rows={4}
                             defaultValue={community?.description}
-                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif hover:border-[#C8102E] focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
                         />
                     </div>
 
@@ -156,7 +160,7 @@ export default function SettingsPage() {
                             name="logo_url"
                             type="text" 
                             defaultValue={community?.logo_url}
-                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif focus:border-black dark:focus:border-white bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
+                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif hover:border-[#C8102E] focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
                         />
                     </div>
 
@@ -216,11 +220,11 @@ function CreateCommunityForm({ userId, onComplete }: { userId: string, onComplet
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label className="block font-bold text-sm mb-1">Topluluk Adı</label>
-                <input required name="name" type="text" placeholder="Örn: Dağcılık Kulübü" className="w-full border-2 border-neutral-200 p-2 focus:border-black outline-none transition-colors" />
+                <input required name="name" type="text" placeholder="Örn: Dağcılık Kulübü" className="w-full border-2 border-neutral-200 dark:border-neutral-700 p-2 hover:border-[#C8102E] focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors" />
             </div>
              <div>
                 <label className="block font-bold text-sm mb-1">Kategori</label>
-                <select name="category" className="w-full border-2 border-neutral-200 p-2 focus:border-black outline-none bg-white transition-colors">
+                <select name="category" className="w-full border-2 border-neutral-200 dark:border-neutral-700 p-2 hover:border-[#C8102E] focus:border-[#C8102E] outline-none bg-white dark:bg-neutral-800 dark:text-white transition-colors">
                     <option value="Sanat">Sanat</option>
                     <option value="Spor">Spor</option>
                     <option value="Teknoloji">Teknoloji</option>
@@ -230,7 +234,7 @@ function CreateCommunityForm({ userId, onComplete }: { userId: string, onComplet
             </div>
              <div>
                 <label className="block font-bold text-sm mb-1">Kısa Açıklama</label>
-                <textarea required name="description" rows={2} placeholder="Topluluğunuzu anlatan kısa bir yazı..." className="w-full border-2 border-neutral-200 p-2 focus:border-black outline-none transition-colors" />
+                <textarea required name="description" rows={2} placeholder="Topluluğunuzu anlatan kısa bir yazı..." className="w-full border-2 border-neutral-200 dark:border-neutral-700 p-2 hover:border-[#C8102E] focus:border-[#C8102E] bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors" />
             </div>
             <button disabled={loading} type="submit" className="w-full bg-[#C8102E] text-white font-bold uppercase py-3 hover:bg-[#a60d26] transition-colors shadow-lg">
                 {loading ? 'Oluşturuluyor...' : 'Topluluğu Kur'}

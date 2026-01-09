@@ -16,9 +16,28 @@ export default function GlobalSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const handleToggle = () => setIsVisible(prev => !prev);
+    const handleToggle = () => {
+        setIsVisible(prev => {
+            if (!prev) {
+                window.history.pushState({ searchOpen: true }, '');
+                return true;
+            }
+            if (window.history.state?.searchOpen) window.history.back();
+            return false;
+        });
+    };
+    
+    const handlePopState = () => {
+        setIsVisible(false);
+    };
+
     window.addEventListener('univo-search-toggle', handleToggle);
-    return () => window.removeEventListener('univo-search-toggle', handleToggle);
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+        window.removeEventListener('univo-search-toggle', handleToggle);
+        window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   useEffect(() => {
@@ -27,7 +46,13 @@ export default function GlobalSearch() {
     }
   }, [isVisible]);
 
-  const onClose = () => setIsVisible(false);
+  const onClose = () => {
+      if (window.history.state?.searchOpen) {
+           window.history.back();
+      } else {
+           setIsVisible(false);
+      }
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

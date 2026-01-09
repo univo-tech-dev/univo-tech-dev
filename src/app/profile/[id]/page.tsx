@@ -99,8 +99,9 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         longPressTriggered.current = false;
         timerRef.current = setTimeout(() => {
             longPressTriggered.current = true;
-            if (isOwnProfile) {
-                setShowChangePhotoModal(true);
+            // Long press for any profile (if avatar exists) opens lightbox
+            if (profile?.avatar_url) {
+                setIsLightboxOpen(true);
             }
         }, 500); // 500ms for long press
     };
@@ -111,9 +112,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             timerRef.current = null;
         }
 
-        // If not long press, open lightbox (only if avatar exists)
-        if (!longPressTriggered.current && profile?.avatar_url) {
-            setIsLightboxOpen(true);
+        // If not long press
+        if (!longPressTriggered.current) {
+             // If Owner -> Change Photo Modal
+             if (user?.id && profile?.id && user.id === profile.id) {
+                 setShowChangePhotoModal(true);
+             } 
+             // Else -> Open Lightbox (only if avatar exists)
+             else if (profile?.avatar_url) {
+                 setIsLightboxOpen(true);
+             }
         }
     };
 

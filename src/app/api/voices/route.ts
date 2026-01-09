@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       .from('campus_voices')
       .select(`
         *,
-        profiles:user_id (full_name, nickname, department, avatar_url, student_id),
+        profiles:user_id (full_name, nickname, department, avatar_url, student_id, class_year),
         voice_reactions (user_id, reaction_type),
         voice_comments (id, content, created_at, user_id, user:user_id (full_name))
       `)
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         .from('campus_voices')
         .select(`
           *,
-          profiles:user_id (full_name, department, avatar_url, student_id),
+          profiles:user_id (full_name, department, avatar_url, student_id, class_year),
           voice_reactions (user_id, reaction_type),
           voice_comments (id, content, created_at, user_id, user:user_id (full_name))
         `)

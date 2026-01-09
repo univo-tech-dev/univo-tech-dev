@@ -26,6 +26,7 @@ interface Voice {
         nickname?: string;
         department: string;
         avatar_url?: string;
+        class_year?: string;
     };
     counts: {
         likes: number;
@@ -751,9 +752,9 @@ export default function VoiceView() {
                                                                     {voice.user.full_name}
                                                                 </Link>
                                                             )}
-                                                            {voice.user.department && (
-                                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1">
-                                                                    {voice.user.department}
+                                                            {(voice.user.department || voice.user.class_year) && (
+                                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
+                                                                    {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
                                                                 </span>
                                                             )}
                                                             <div className="ml-auto relative">
