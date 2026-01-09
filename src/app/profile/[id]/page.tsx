@@ -114,13 +114,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
         // If not long press
         if (!longPressTriggered.current) {
-             // If Owner -> Change Photo Modal
-             if (user?.id && profile?.id && user.id === profile.id) {
-                 setShowChangePhotoModal(true);
-             } 
-             // Else -> Open Lightbox (only if avatar exists)
-             else if (profile?.avatar_url) {
+             // Always Open Lightbox on main click (even for owner)
+             if (profile?.avatar_url) {
                  setIsLightboxOpen(true);
+             }
+             // If no avatar and owner, maybe trigger edit? 
+             // Letting the user explicitly use the camera button is safer as per request.
+             else if (user?.id && profile?.id && user.id === profile.id && !profile.avatar_url) {
+                  setShowChangePhotoModal(true);
              }
         }
     };
@@ -686,7 +687,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             </div>
                         )}
 
-                    <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group transition-colors !mt-3">
+                    <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group/card transition-colors !mt-3">
                         <div className="h-32 w-full absolute top-0 left-0 opacity-20" style={{ backgroundImage: 'radial-gradient(currentColor 2px, transparent 2px)', backgroundSize: '20px 20px', color: 'var(--primary-color)' }} />
 
                         {/* Mobile Actions: Settings (Left) & Notifications (Right) */}
@@ -694,19 +695,19 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
                         <div className="pt-12 px-6 pb-6 text-center relative z-10">
                             <div
-                                className={`w-28 h-28 mx-auto relative group/avatar transition-transform active:scale-95 ${profile.avatar_url ? 'cursor-zoom-in' : ''} ${isOwnProfile ? 'cursor-pointer' : ''}`}
+                                className={`w-28 h-28 mx-auto relative group/avatar rounded-full transition-transform active:scale-95 ${profile.avatar_url ? 'cursor-zoom-in' : ''} ${isOwnProfile ? 'cursor-pointer' : ''}`}
                                 onMouseDown={handlePressStart}
                                 onMouseUp={handlePressEnd}
                                 onTouchStart={handlePressStart}
                                 onTouchEnd={handlePressEnd}
-                                onMouseLeave={handlePressEnd} // Cancel if drag out
+                                onMouseLeave={handlePressEnd}
                             >
                                 <div className="w-full h-full rounded-full p-1 border-2 border-neutral-100 dark:border-neutral-700 shadow-sm bg-transparent overflow-hidden select-none">
                                     {profile.avatar_url ? (
                                         <img
                                             src={profile.avatar_url}
                                             alt={profile.full_name}
-                                            className="w-full h-full rounded-full object-cover pointer-events-none" // prevent img drag
+                                            className="w-full h-full rounded-full object-cover pointer-events-none"
                                         />
                                     ) : (
                                         <div className="w-full h-full rounded-full flex items-center justify-center text-white text-3xl font-bold bg-primary" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
@@ -727,20 +728,20 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     />
                                 )}
 
-                                {/* Desktop: Click to Edit Overlay */}
+                                {/* Desktop: Discrete Edit Button (Always Visible or Hover) */}
                                 {isOwnProfile && !isUploading && (
-                                    <div 
+                                    <button
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             setShowChangePhotoModal(true);
                                         }}
-                                        className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] rounded-full opacity-0 group-hover/avatar:opacity-100 transition-all duration-300 cursor-pointer z-10"
+                                        className="absolute bottom-0 right-0 p-2 bg-neutral-900/80 dark:bg-white/90 backdrop-blur-sm rounded-full text-white dark:text-black shadow-lg hover:scale-110 transition-all duration-200 z-20 group-hover/avatar:opacity-100 opacity-0 md:opacity-100"
                                     >
-                                        <Camera size={28} className="text-white drop-shadow-md" />
-                                    </div>
+                                        <Camera size={14} strokeWidth={2.5} />
+                                    </button>
                                 )}
 
-                                {/* Status Indicator (Optional) */}
+                                {/* Status Indicator */}
                                 {isUploading && (
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full z-20">
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
