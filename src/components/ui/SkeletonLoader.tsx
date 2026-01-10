@@ -5,12 +5,13 @@ const SkeletonLoader = ({ className = '', width, height }: { className?: string,
       className={`relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800/80 rounded-md ${className} animate-pulse`}
       style={{ width, height }}
     >
-        {/* Striped Background Animation */}
+        {/* Shimmer Beam Effect */ }
       <div 
         className="absolute inset-0 animate-shimmer"
         style={{
-            backgroundImage: 'linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent)',
-            backgroundSize: '40px 40px'
+            backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+            backgroundSize: '200% 100%',
+            backgroundRepeat: 'no-repeat'
         }}
       ></div>
     </div>

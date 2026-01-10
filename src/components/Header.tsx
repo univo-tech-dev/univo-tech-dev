@@ -304,7 +304,7 @@ function HeaderContent() {
 
       {/* Mobile Bottom Navigation - Moved outside header to prevent transform issues */}
       {/* Mobile Bottom Navigation - Shows on mobile only (below lg) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] w-full overflow-hidden">
         <div className="flex items-center justify-center h-16 w-full px-2">
           <ul className="grid grid-cols-5 gap-0 w-full h-full max-w-md mx-auto">
             {loading ? (
@@ -313,7 +313,7 @@ function HeaderContent() {
                     <li key={`skel-${i}`} className="flex justify-center items-center h-full">
                         <div className="flex flex-col items-center justify-center w-full h-full gap-1">
                             <SkeletonLoader width={24} height={24} className="rounded-full" />
-                            <SkeletonLoader width={30} height={8} className="rounded-sm" />
+                            <SkeletonLoader width={40} height={8} className="rounded-sm" />
                         </div>
                     </li>
                 ))
