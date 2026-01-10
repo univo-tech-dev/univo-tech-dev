@@ -936,7 +936,7 @@ export default function OfficialView() {
                                                                             {item.title}
                                                                         </h4>
 
-                                                                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                                                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                                                             <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
                                                                                 {item.summary || 'Detaylar için bağlantıya tıklayınız.'}
                                                                             </p>

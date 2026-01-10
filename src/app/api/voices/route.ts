@@ -170,14 +170,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Content is required' }, { status: 400 });
     }
 
-    // Daily Limit Check
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // 1-Minute Limit Check
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
     const { count, error: limitError } = await supabase
       .from('campus_voices')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
-      .gte('created_at', today.toISOString());
+      .gte('created_at', oneMinuteAgo.toISOString());
 
     if (limitError) {
       console.error('Limit check error:', limitError);
@@ -185,7 +184,7 @@ export async function POST(request: Request) {
     }
 
     if (count && count >= 1) {
-      return NextResponse.json({ error: 'Bugünlük paylaşım hakkınız doldu. Yarın tekrar bekleriz!' }, { status: 429 });
+      return NextResponse.json({ error: 'Çok hızlı gidiyorsun! Lütfen 1 dakika bekle.' }, { status: 429 });
     }
 
     const { data, error } = await supabase

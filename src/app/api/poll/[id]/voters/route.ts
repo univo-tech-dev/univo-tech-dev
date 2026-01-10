@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       .from('poll_votes')
       .select(`
         option_index,
-        profiles:user_id!inner (id, full_name, nickname, privacy_settings, is_archived)
+        profiles:user_id!inner (id, full_name, nickname, privacy_settings, is_archived, avatar_url)
       `)
       .eq('poll_id', pollId)
       .eq('profiles.is_archived', false) as any;
@@ -27,7 +27,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             .from('poll_votes')
             .select(`
                 option_index,
-                profiles:user_id!inner (id, full_name, privacy_settings, is_archived)
+                profiles:user_id!inner (id, full_name, privacy_settings, is_archived, avatar_url)
             `)
             .eq('poll_id', pollId)
             .eq('profiles.is_archived', false) as any;
@@ -56,7 +56,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         return {
           option_index: v.option_index,
           user_id: p.id,
-          display_name: toTitleCase(displayName)
+          display_name: toTitleCase(displayName),
+          avatar_url: p.avatar_url
         };
       })
       .filter(Boolean);

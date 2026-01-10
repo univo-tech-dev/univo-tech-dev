@@ -1249,12 +1249,16 @@ export default function VoiceView() {
                                     <div className="flex flex-col gap-3">
                                         {voters.filter(v => v.option_index === selectedVoterOption).map(voter => (
                                             <Link key={voter.user_id} href={`/profile/${voter.user_id}`} className="flex items-center gap-3 p-3 bg-white dark:bg-[#0a0a0a] rounded border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-black dark:hover:border-neutral-500 transition-colors">
-                                                <div
-                                                    className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase"
-                                                    style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
-                                                >
-                                                    {voter.display_name.charAt(0)}
-                                                </div>
+                                                {voter.avatar_url ? (
+                                                    <img src={voter.avatar_url} alt={voter.display_name} className="w-8 h-8 rounded-full object-cover border border-neutral-200" />
+                                                ) : (
+                                                    <div
+                                                        className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase text-xs"
+                                                        style={{ backgroundColor: `hsl(${(voter.display_name.length) * 50 % 360}, 70%, 50%)` }}
+                                                    >
+                                                        {voter.display_name.charAt(0)}
+                                                    </div>
+                                                )}
                                                 <span className="font-bold text-black dark:text-white">{voter.display_name}</span>
                                             </Link>
                                         ))}

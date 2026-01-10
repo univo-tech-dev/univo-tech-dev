@@ -57,6 +57,12 @@ export default function AnnouncementComments({ announcementId }: { announcementI
             </h3>
 
             {/* Comment List */}
+            {!user ? (
+                 <div className="bg-neutral-50 border border-dashed border-neutral-300 rounded p-6 text-center mb-6">
+                     <p className="text-neutral-600 mb-2">Yorumları görmek ve paylaşmak için giriş yapmalısınız.</p>
+                     <a href="/login" className="text-sm font-bold text-[var(--primary-color)] hover:underline uppercase">Giriş Yap</a>
+                 </div>
+            ) : (
             <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                 {loading ? (
                     <div className="text-neutral-500 text-sm">Yükleniyor...</div>
@@ -71,8 +77,8 @@ export default function AnnouncementComments({ announcementId }: { announcementI
                                 />
                             ) : (
                                 <div 
-                                    className="w-8 h-8 rounded-full border border-neutral-200 mt-1 bg-primary text-white flex items-center justify-center font-bold text-xs shrink-0"
-                                    style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                    className="w-8 h-8 rounded-full border border-neutral-200 mt-1 text-white flex items-center justify-center font-bold text-xs shrink-0"
+                                    style={{ backgroundColor: `hsl(${(comment.profiles?.full_name?.length || 0) * 50 % 360}, 70%, 50%)` }}
                                 >
                                     {(comment.profiles?.full_name || 'U').charAt(0)}
                                 </div>
@@ -102,6 +108,7 @@ export default function AnnouncementComments({ announcementId }: { announcementI
                     </div>
                 )}
             </div>
+            )}
 
             {/* Comment Form */}
             {user ? (
