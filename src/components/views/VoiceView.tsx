@@ -1014,7 +1014,7 @@ export default function VoiceView() {
                                                                                         <div 
                                                                                             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden shrink-0 border border-neutral-200 dark:border-neutral-700"
                                                                                             style={!comment.user_avatar ? { 
-                                                                                                backgroundColor: `hsla(350, 85%, ${40 + ((comment.user?.length || 0) % 5) * 10}%, 1)`
+                                                                                                backgroundColor: `rgba(var(--primary-rgb), ${0.8 + ((comment.user?.length || 0) % 3) * 0.1})`
                                                                                             } : undefined}
                                                                                         >
                                                                                             {comment.user_avatar ? (

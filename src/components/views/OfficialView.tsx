@@ -903,7 +903,7 @@ export default function OfficialView() {
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="flex-1 pr-2 sm:pr-32 w-full min-w-0">
+                                                                    <div className="flex-1 pr-2 sm:pr-32 w-full min-w-0 break-words">
                                                                         <div className="flex items-center gap-2 mb-1">
                                                                             <div className={`transition-colors duration-300 flex items-center justify-center ${item.type === 'event' ? 'text-blue-600' :
                                                                                 item.type === 'email' ? 'text-amber-600' :
