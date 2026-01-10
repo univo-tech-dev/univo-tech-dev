@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/Türkçe-Switch_to_Turkish-E30A17?style=for-the-badge&logo=google-translate&logoColor=white" alt="Switch to Turkish">
   </a>
   <a href="README.md">
-    <img src="https://img.shields.io/badge/English-Active-gray?style=for-the-badge&logo=google-translate&logoColor=white" alt="English">
+    <img src="https://img.shields.io/badge/English-Active-2ea44f?style=for-the-badge&logo=google-translate&logoColor=white" alt="English">
   </a>
 </p>
 
