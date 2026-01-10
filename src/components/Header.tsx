@@ -158,7 +158,7 @@ function HeaderContent() {
 
 
 
-      <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
+      <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-transform duration-200 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
         <div className="w-full px-4 md:container md:mx-auto">
           <div className="flex items-center justify-between h-16 max-w-full relative">
 
@@ -311,7 +311,7 @@ function HeaderContent() {
       {/* Mobile Bottom Navigation - Moved outside header to prevent transform issues */}
       {/* Mobile Bottom Navigation - Shows on mobile only (below lg) */}
       <nav 
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] w-full overflow-hidden transition-all duration-300 transform translate-z-0"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] w-full overflow-hidden transform translate-z-0"
         style={{ 
           transform: 'translate3d(0,0,0)', 
           willChange: 'transform',
@@ -347,7 +347,7 @@ function HeaderContent() {
                               {item.label}
                             </span>
                             {/* Animated Underline */}
-                            <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                            <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-[width,opacity] duration-200 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
                           </Link>
                         </li>
                       );
@@ -357,7 +357,7 @@ function HeaderContent() {
                     <li className="flex justify-center items-center h-full">
                       <button
                         onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
-                        className="relative flex flex-col items-center justify-center w-full h-full gap-0.5 text-neutral-400 dark:text-neutral-500 active:scale-95 transition-all"
+                        className="relative flex flex-col items-center justify-center w-full h-full gap-0.5 text-neutral-400 dark:text-neutral-500 active:scale-95 transition-colors duration-200"
                       >
                         <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-1">
                           <SearchIcon size={20} />
@@ -379,7 +379,7 @@ function HeaderContent() {
                                {item.label}
                             </span>
                             {/* Animated Underline */}
-                            <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                            <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-[width,opacity] duration-200 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
                           </Link>
                         </li>
                        );
@@ -389,7 +389,7 @@ function HeaderContent() {
                     <li className="flex justify-center items-center h-full">
                       <Link
                         href={user ? `/profile/${user.id}` : '/login'}
-                        className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
+                        className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-colors duration-200 active:scale-95 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
                           }`}
                       >
                         {user ? (
@@ -431,7 +431,7 @@ function HeaderContent() {
                         <span className="text-[10px] font-bold uppercase tracking-tight text-center leading-none">
                           {user ? 'Profil' : 'Giriş'}
                         </span>
-                        <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                        <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-[width,opacity] duration-200 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
                       </Link>
                     </li>
                 </>
