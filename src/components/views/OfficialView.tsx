@@ -302,12 +302,16 @@ export default function OfficialView() {
                 
                 if (cachedMenu) {
                     setMenu(JSON.parse(cachedMenu));
-                    // setViewLoading(false); // Show cached content immediately
                 }
                 if (cachedAnn) {
                     const parsed = JSON.parse(cachedAnn);
                     setAnnouncements(parsed.foodAnnouncements || []);
                     setCampusNews(parsed.campusAnnouncements || []);
+                }
+
+                // If we have any cached content, release the skeleton early to improve perceived performance
+                if (cachedMenu || cachedAnn) {
+                    setViewLoading(false);
                 }
 
                 // Fetch Fresh Data in Background

@@ -52,7 +52,7 @@ interface EventAttendance {
 
 export default function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    const { user, refreshProfile } = useAuth();
+    const { user, refreshProfile, setViewLoading, loading: showSkeleton } = useAuth();
     const router = useRouter();
     const [profile, setProfile] = useState<Profile | null>(null);
     const [upcomingEvents, setUpcomingEvents] = useState<EventAttendance[]>([]);
@@ -134,6 +134,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     };
 
     const fetchProfileData = async () => {
+        setViewLoading(true);
         try {
             let resolvedId = id;
 
@@ -422,6 +423,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             toast.error('Profil yüklenirken bir hata oluştu');
         } finally {
             setLoading(false);
+            setViewLoading(false);
         }
     };
 
@@ -578,7 +580,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         }
     };
 
-    if (loading) {
+    if (showSkeleton) {
         return <ProfileSkeleton />;
     }
 
