@@ -643,7 +643,7 @@ export default function VoiceView() {
             {/* Newspaper Header - Static on mobile */}
             <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 relative">
                 <div className="flex flex-col items-center justify-center gap-4">
-                    <h2 className="text-3xl md:text-6xl font-black font-serif uppercase tracking-tight mb-0 text-black dark:text-white flex items-center justify-center gap-4">
+                    <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-0 text-black dark:text-white flex items-center justify-center gap-4">
                         Kampüsün Sesi
                     </h2>
 
@@ -1013,7 +1013,9 @@ export default function VoiceView() {
                                                                                     <div key={comment.id} className="flex gap-3">
                                                                                         <div 
                                                                                             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden shrink-0 border border-neutral-200 dark:border-neutral-700"
-                                                                                            style={{ backgroundColor: comment.user_theme || '#999' }}
+                                                                                            style={!comment.user_avatar ? { 
+                                                                                                backgroundColor: `hsla(350, 85%, ${40 + ((comment.user?.length || 0) % 5) * 10}%, 1)`
+                                                                                            } : undefined}
                                                                                         >
                                                                                             {comment.user_avatar ? (
                                                                                                 <img src={comment.user_avatar} alt={comment.user} className="w-full h-full object-cover" />

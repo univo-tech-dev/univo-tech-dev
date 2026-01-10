@@ -175,7 +175,7 @@ export default function CommunityView() {
 
       <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
         <div className="flex flex-col items-center justify-center gap-4">
-          <h2 className="text-[1.35rem] md:text-6xl font-black font-serif uppercase tracking-tighter text-black dark:text-white whitespace-nowrap leading-none">Topluluk Meydanı</h2>
+          <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">Topluluk Meydanı</h2>
 
           {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
           <div className="flex items-center gap-3">
