@@ -419,7 +419,11 @@ export default function VoiceView() {
         e.preventDefault();
         if (!editingId || !editContent.trim()) return;
         const vId = editingId;
-        setVoices(prev => prev.map(v => v.id === vId ? { ...v, content: editContent } : v));
+        
+        // Extract hashtags
+        const extractedTags = Array.from(new Set(editContent.match(/#[a-zA-ZçğıöşüÇĞİÖŞÜ0-9]+/g) || [])).map(t => t.toLowerCase());
+
+        setVoices(prev => prev.map(v => v.id === vId ? { ...v, content: editContent, tags: extractedTags } : v));
         setEditingId(null);
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -430,10 +434,15 @@ export default function VoiceView() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.access_token}`
                 },
-                body: JSON.stringify({ content: editContent })
+                body: JSON.stringify({ 
+                    content: editContent,
+                    tags: extractedTags
+                })
             });
             if (!res.ok) throw new Error('Update failed');
             toast.success('Gönderi güncellendi.');
+            // Refresh to update Kampüste Gündem and other lists
+            fetchVoices();
         } catch (e) {
             console.error(e);
             toast.error('Güncelleme başarısız.');

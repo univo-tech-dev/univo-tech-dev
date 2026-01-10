@@ -111,30 +111,42 @@ export async function PUT(
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
-    const { content } = body;
+    const { content, tags } = body;
 
     if (!content || !content.trim()) {
         return NextResponse.json({ error: 'Content required' }, { status: 400 });
     }
 
     // Verify ownership
-    const { data: voice } = await supabase
+    const { data: voice, error: fetchError } = await supabase
         .from('campus_voices')
         .select('user_id')
         .eq('id', id)
         .single();
 
-    if (!voice || voice.user_id !== user.id) {
+    if (fetchError || !voice) {
+        console.error('Update: Post not found or fetch error:', fetchError);
+        return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+
+    if (voice.user_id !== user.id) {
+        console.error('Update: Forbidden. User:', user.id, 'Owner:', voice.user_id);
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Update
-    const { error } = await supabase
+    const { error: updateError } = await supabase
         .from('campus_voices')
-        .update({ content: content.substring(0, 280) }) // Enforce length limit
+        .update({ 
+            content: content.substring(0, 280),
+            tags: tags || []
+        }) // Enforce length limit and update tags
         .eq('id', id);
 
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (updateError) {
+        console.error('Update: Supabase error:', updateError);
+        return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
 
