@@ -13,7 +13,7 @@ import VoiceStatsWidget from './VoiceStatsWidget';
 import { motion, AnimatePresence } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-const VoiceViewSkeleton = dynamic(() => import('../skeletons/VoiceViewSkeleton'), { ssr: false });
+const VoiceViewSkeleton = dynamic(() => import('../skeletons/VoiceViewSkeleton').then(mod => mod.VoiceViewSkeleton), { ssr: false });
 
 // Interfaces
 interface Voice {

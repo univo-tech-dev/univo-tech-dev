@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import NotificationCenter from '../NotificationCenter';
 import dynamic from 'next/dynamic';
 
-const OfficialViewSkeleton = dynamic(() => import('../skeletons/OfficialViewSkeleton'), { ssr: false });
+const OfficialViewSkeleton = dynamic(() => import('../skeletons/OfficialViewSkeleton').then(mod => mod.OfficialViewSkeleton), { ssr: false });
 
 export default function OfficialView() {
     const { user } = useAuth();

@@ -12,7 +12,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import dynamic from 'next/dynamic';
 
-const CommunityViewSkeleton = dynamic(() => import('../skeletons/CommunityViewSkeleton'), { ssr: false });
+const CommunityViewSkeleton = dynamic(() => import('../skeletons/CommunityViewSkeleton').then(mod => mod.CommunityViewSkeleton), { ssr: false });
 
 export default function CommunityView() {
   const router = useRouter();
