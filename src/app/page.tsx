@@ -23,7 +23,7 @@ function HomeContent() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] transition-colors duration-300">
+    <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] transition-colors duration-300 overflow-x-hidden">
       {renderView()}
     </div>
   );
@@ -32,7 +32,7 @@ function HomeContent() {
 export default function HomePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a]">
+      <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] overflow-x-hidden">
         <div className="container mx-auto px-4 pt-8 pb-32 relative">
              <div className="relative border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 min-h-[240px]">
                  <div className="flex flex-col items-center justify-center gap-4">
