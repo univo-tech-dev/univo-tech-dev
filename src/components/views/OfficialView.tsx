@@ -931,7 +931,7 @@ export default function OfficialView() {
                                                                             )}
                                                                         </div>
 
-                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words line-clamp-2 ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
+                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white line-clamp-2'}`}>
                                                                             {item.title}
                                                                         </h4>
 
