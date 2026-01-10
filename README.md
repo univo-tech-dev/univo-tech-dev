@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+# 🏛️ UNIVO
+### *Kampüsün Dijital Kalbi | The Digital Heart of Campus*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Status](https://img.shields.io/badge/Status-v1.0.1_Release-blue?style=for-the-badge&logo=context-dependent)](https://github.com/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<p align="center">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
+  <!-- (Placeholder for actual demo GIF if available in future) -->
+</p>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Sürüm Notları: v1.0.0 → v1.0.1
+**📅 11 Ocak 2026**
 
-## Learn More
+Bu sabahki majör güncelleme ile **Univo** çok daha stabil, hızlı ve kullanıcı dostu hale geldi. İşte **v1.0.1** ile gelen yenilikler:
 
-To learn more about Next.js, take a look at the following resources:
+### ✨ Öne Çıkan Değişiklikler
+- **🎨 Kristal Netliğinde UI (Header Sync):**
+    - PC başlığındaki (Header) ve sayfa gövdesi arasındaki milisaniyelik gecikme **tamamen yok edildi**.
+    - Artık sayfa yüklenirken "beyaz flash" veya kayma olmuyor; `HeaderSkeleton` ve `!transition-none` optimizasyonları ile yağ gibi akan bir deneyim.
+- **📝 Sorunsuz Post Düzenleme:**
+    - Gönderilerinizi ve **#hashtaginizi** artık güvenle düzenleyebilirsiniz.
+    - Sunucu tabanlı doğrulama sistemi eklendi: Sizin ekranınızda gördüğünüz, veritabanına giren veriyle birebir aynı.
+- **⚡ Akıllı Gündem (Smart Agenda):**
+    - Bir postu güncellediğinizde "Kampüste Gündem" (Sidebar) kartları anında, sayfa yenilenmesine gerek kalmadan kendini günceller.
+- **🧹 Proje Temizliği:**
+    - Kök dizindeki onlarca geçici dosya ve log temizlendi. SQL dosyaları `database/` altına, eski assetler `archive/` altına taşındı.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🛠️ Teknik İyileştirmeler (Changelog)
+> **v1.0.1**
+> * `fix(ui)`: PC Header geçiş animasyonları kaldırılarak senkronizasyon sağlandı.
+> * `feat(skeleton)`: `HeaderSkeleton`, `VoiceViewSkeleton`, `CommunityViewSkeleton` bileşenleri eklendi.
+> * `fix(api)`: `PUT /api/voices/[id]` endpoint'inden `.single()` kaldırılarak "Cannot coerce..." hatası çözüldü.
+> * `fix(frontend)`: `VoiceView` içinde edit sonrası anlık state güncellemesi (Optimistic Update -> Server Confirmation).
+> * `chore`: Proje dosya yapısı temizlendi, gereksiz `.sql` ve loglar ayrıştırıldı.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🌟 Temel Özellikler
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 📢 Kampüsün Sesi (Voices)
+Öğrencilerin anonim veya açık kimlikle fikirlerini paylaştığı özgür alan.
+- **Anonim Mod:** Kimliğinizi gizleyerek tartışmalara katılın.
+- **Hashtag Desteği:** `#vize`, `#festival` gibi etiketlerle gündemi belirleyin.
+- **Moderasyon:** Güvenli bir kampüs ortamı için otomatik ve manuel filtreler.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 🏘️ Topluluk Meydanı (Community)
+Kulüpler, topluluklar ve etkinliklerin buluşma noktası.
+- **Etkinlik Kartları:** Tarih, yer ve detayları içeren şık kartlar.
+- **Rozet Sistemi:** Katıldığınız etkinliklerle profilinizi "Topluluk Yıldızı"na dönüştürün.
+- **Kategoriler:** Müzik, Bilim, Spor... İlgi alanınıza göre filtreleyin.
+
+### 🏛️ Resmi Gündem (Official Agenda)
+Üniversitemizden en son duyurular, yemekhane menüsü ve resmi haberler.
+- **Yemek Menüsü:** Günün menüsünü fotoğraflı ve kalorili görün.
+- **Akademik Takvim:** Kritik tarihleri asla kaçırmayın.
+- **Önbellek (Caching):** İnternetiniz yavaş olsa bile son görüntülenen duyurulara anında erişin.
+
+---
+
+## 💻 Tech Stack
+Bu proje modern web teknolojilerinin en güncel sürümleriyle inşa edilmiştir.
+
+| Alan | Teknoloji | Notlar |
+| :--- | :--- | :--- |
+| **Frontend** | [Next.js 15 (App Router)](https://nextjs.org) | Server Components & Suspense |
+| **Dil** | [TypeScript](https://www.typescriptlang.org/) | Tip güvenliği ve ölçeklenebilirlik |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Utility-first design & animate-shimmer |
+| **Backend / DB** | [Supabase](https://supabase.com/) | PostgreSQL, Auth, Realtime, Storage |
+| **State** | React Hooks & Context | Lightweight client state management |
+
+---
+
+## 🚀 Kurulum (Local Development)
+
+Projeyi kendi bilgisayarınızda çalıştırmak için:
+
+1.  **Repoyu Klonlayın:**
+    ```bash
+    git clone https://github.com/keremdogan1/univo-mvp.git
+    cd univo-mvp
+    ```
+
+2.  **Bağımlılıkları Yükleyin:**
+    ```bash
+    npm install
+    # veya
+    bun install
+    ```
+
+3.  **Çevresel Değişkenler (.env.local):**
+    Proje kök dizininde `.env.local` oluşturun ve Supabase anahtarlarınızı girin:
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    ```
+
+4.  **Uygulamayı Başlatın:**
+    ```bash
+    npm run dev
+    ```
+    Tarayıcınızda `http://localhost:3000` adresine gidin.
+
+---
+
+<p align="center">
+  <i>Developed with ❤️ by Antigravity Team for METU Students.</i>
+</p>
+</div>
