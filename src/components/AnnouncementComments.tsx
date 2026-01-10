@@ -81,7 +81,7 @@ export default function AnnouncementComments({ announcementId }: { announcementI
                                     <div 
                                         className="w-8 h-8 rounded-full border border-neutral-200 mt-1 text-white flex items-center justify-center font-bold text-xs shrink-0"
                                         style={{ 
-                                            backgroundColor: `rgba(var(--primary-rgb), ${0.8 + ((comment.profiles?.full_name?.length || 0) % 3) * 0.1})`
+                                            backgroundColor: 'var(--primary-color)'
                                         }}
                                     >
                                         {(comment.profiles?.full_name || 'U').charAt(0)}

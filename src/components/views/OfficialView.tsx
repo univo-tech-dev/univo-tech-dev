@@ -708,7 +708,7 @@ export default function OfficialView() {
                     >
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Main Column */}
-                            <div className="lg:col-span-2 space-y-8 min-w-0">
+                            <div className="lg:col-span-2 space-y-8 min-w-0 overflow-x-hidden">
 
                                 {/* Pinned Announcement - Newspaper Theme */}
                                 {news[0] && (
@@ -836,7 +836,7 @@ export default function OfficialView() {
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: -20 }}
                                                         transition={{ duration: 0.3 }}
-                                                        className="flex flex-col gap-4 sm:gap-6"
+                                                        className="flex flex-col gap-4 sm:gap-6 w-full max-w-full overflow-x-hidden"
                                                     >
                                                         {paginatedItems.map((item: any, index: number) => {
                                                             const isExpanded = expandedId === item.id;
