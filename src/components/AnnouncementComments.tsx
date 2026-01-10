@@ -78,7 +78,18 @@ export default function AnnouncementComments({ announcementId }: { announcementI
                             ) : (
                                 <div 
                                     className="w-8 h-8 rounded-full border border-neutral-200 mt-1 text-white flex items-center justify-center font-bold text-xs shrink-0"
-                                    style={{ backgroundColor: `hsl(${(comment.profiles?.full_name?.length || 0) * 50 % 360}, 70%, 50%)` }}
+                                    style={{ 
+                                        backgroundColor: [
+                                            '#C8102E', // Metu Red
+                                            '#059669', // Emerald 600
+                                            '#2563EB', // Blue 600
+                                            '#D97706', // Amber 600
+                                            '#7C3AED', // Violet 600
+                                            '#DB2777', // Pink 600
+                                            '#4B5563', // Gray 600
+                                            '#F97316'  // Orange 500
+                                        ][(comment.profiles?.full_name?.length || 0) % 8]
+                                    }}
                                 >
                                     {(comment.profiles?.full_name || 'U').charAt(0)}
                                 </div>

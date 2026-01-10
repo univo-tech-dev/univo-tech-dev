@@ -1254,7 +1254,18 @@ export default function VoiceView() {
                                                 ) : (
                                                     <div
                                                         className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase text-xs"
-                                                        style={{ backgroundColor: `hsl(${(voter.display_name.length) * 50 % 360}, 70%, 50%)` }}
+                                                        style={{ 
+                                                            backgroundColor: [
+                                                                '#C8102E', // Metu Red
+                                                                '#059669', // Emerald 600
+                                                                '#2563EB', // Blue 600
+                                                                '#D97706', // Amber 600
+                                                                '#7C3AED', // Violet 600
+                                                                '#DB2777', // Pink 600
+                                                                '#4B5563', // Gray 600
+                                                                '#F97316'  // Orange 500
+                                                            ][(voter.display_name.length) % 8]
+                                                        }}
                                                     >
                                                         {voter.display_name.charAt(0)}
                                                     </div>
