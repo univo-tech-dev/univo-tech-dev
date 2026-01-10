@@ -272,16 +272,25 @@ function HeaderContent() {
 
               {/* Mobile Header Actions (Search) */}
               <div className="flex lg:hidden items-center gap-2">
-                {/* Mobile Notification Center */}
-                <NotificationCenter />
-
-                <button
-                  onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
-                  className="p-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all"
-                >
-                  <SearchIcon size={24} />
-                </button>
-                {/* AuthButton removed from mobile header */}
+                 {loading ? (
+                    <div className="flex items-center gap-2">
+                        <SkeletonLoader width={32} height={32} className="rounded-full" />
+                        <SkeletonLoader width={32} height={32} className="rounded-full" />
+                    </div>
+                 ) : (
+                    <>
+                        {/* Mobile Notification Center */}
+                        <NotificationCenter />
+        
+                        <button
+                          onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
+                          className="p-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all"
+                        >
+                          <SearchIcon size={24} />
+                        </button>
+                    </>
+                 )}
+                 {/* AuthButton removed from mobile header */}
               </div>
             </div>
           </div>
@@ -293,107 +302,121 @@ function HeaderContent() {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-center h-16 w-full px-2">
           <ul className="grid grid-cols-5 gap-0 w-full h-full max-w-md mx-auto">
-            {navItems.slice(0, 2).map((item) => {
-              const isActive = pathname === '/' && currentView === item.id;
-              return (
-                <li key={item.id} className="flex justify-center items-center h-full">
-                  <Link
-                    href={item.href}
-                    className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${isActive ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
-                      }`}
-                  >
-                    <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
-                    <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
-                      {item.label}
-                    </span>
-                    {/* Animated Underline */}
-                    <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
-                  </Link>
-                </li>
-              );
-            })}
-
-            {/* Middle: Search Button */}
-            <li className="flex justify-center items-center h-full">
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
-                className="relative flex flex-col items-center justify-center w-full h-full gap-0.5 text-neutral-400 dark:text-neutral-500 active:scale-95 transition-all"
-              >
-                <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-1">
-                  <SearchIcon size={20} />
-                </div>
-              </button>
-            </li>
-
-            {navItems.slice(2).map((item) => {
-               const isActive = pathname === '/' && currentView === item.id;
-               return (
-                <li key={item.id} className="flex justify-center items-center h-full">
-                  <Link
-                    href={item.href}
-                    className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${isActive ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
-                      }`}
-                  >
-                    <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
-                    <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
-                       {item.label}
-                    </span>
-                    {/* Animated Underline */}
-                    <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
-                  </Link>
-                </li>
-               );
-            })}
-
-            {/* Profile Link (4th item) */}
-            <li className="flex justify-center items-center h-full">
-              <Link
-                href={user ? `/profile/${user.id}` : '/login'}
-                className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
-                  }`}
-              >
-                {user ? (
-                  <div className="relative">
-                    {profile?.avatar_url ? (
-                      <div className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${pathname?.startsWith('/profile') ? 'border-[var(--primary-color,#C8102E)]' : 'border-transparent'}`}>
-                        <Image
-                          src={profile.avatar_url}
-                          alt="Profile"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs bg-[var(--primary-color,#C8102E)] shadow-sm">
-                        {(profile?.full_name || 'U').charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    
-                    {/* Notification Dot - Shows only when unreadCount > 0 */}
-                    {unreadCount > 0 && (
-                       <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 z-50">
-                          <span 
-                            className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                            style={{ backgroundColor: 'var(--primary-color)' }}
-                          ></span>
-                          <span 
-                            className="relative inline-flex rounded-full h-2.5 w-2.5 ring-2 ring-white dark:ring-black"
-                            style={{ backgroundColor: 'var(--primary-color)' }}
-                          ></span>
-                       </span>
-                    )}
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <User size={22} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
-                  </div>
-                )}
-                <span className="text-[10px] font-bold uppercase tracking-tight text-center leading-none">
-                  {user ? 'Profil' : 'Giriş'}
-                </span>
-                <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
-              </Link>
-            </li>
+            {loading ? (
+                // 5 Skeleton Items for Bottom Nav
+                Array.from({ length: 5 }).map((_, i) => (
+                    <li key={`skel-${i}`} className="flex justify-center items-center h-full">
+                        <div className="flex flex-col items-center justify-center w-full h-full gap-1">
+                            <SkeletonLoader width={24} height={24} className="rounded-full" />
+                            <SkeletonLoader width={30} height={8} className="rounded-sm" />
+                        </div>
+                    </li>
+                ))
+            ) : (
+                <>
+                    {navItems.slice(0, 2).map((item) => {
+                      const isActive = pathname === '/' && currentView === item.id;
+                      return (
+                        <li key={item.id} className="flex justify-center items-center h-full">
+                          <Link
+                            href={item.href}
+                            className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${isActive ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
+                              }`}
+                          >
+                            <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
+                            <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
+                              {item.label}
+                            </span>
+                            {/* Animated Underline */}
+                            <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+        
+                    {/* Middle: Search Button */}
+                    <li className="flex justify-center items-center h-full">
+                      <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('univo-search-toggle'))}
+                        className="relative flex flex-col items-center justify-center w-full h-full gap-0.5 text-neutral-400 dark:text-neutral-500 active:scale-95 transition-all"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-1">
+                          <SearchIcon size={20} />
+                        </div>
+                      </button>
+                    </li>
+        
+                    {navItems.slice(2).map((item) => {
+                       const isActive = pathname === '/' && currentView === item.id;
+                       return (
+                        <li key={item.id} className="flex justify-center items-center h-full">
+                          <Link
+                            href={item.href}
+                            className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${isActive ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
+                              }`}
+                          >
+                            <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
+                            <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
+                               {item.label}
+                            </span>
+                            {/* Animated Underline */}
+                            <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                          </Link>
+                        </li>
+                       );
+                    })}
+        
+                    {/* Profile Link (4th item) */}
+                    <li className="flex justify-center items-center h-full">
+                      <Link
+                        href={user ? `/profile/${user.id}` : '/login'}
+                        className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
+                          }`}
+                      >
+                        {user ? (
+                          <div className="relative">
+                            {profile?.avatar_url ? (
+                              <div className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${pathname?.startsWith('/profile') ? 'border-[var(--primary-color,#C8102E)]' : 'border-transparent'}`}>
+                                <Image
+                                  src={profile.avatar_url}
+                                  alt="Profile"
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs bg-[var(--primary-color,#C8102E)] shadow-sm">
+                                {(profile?.full_name || 'U').charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                            
+                            {/* Notification Dot - Shows only when unreadCount > 0 */}
+                            {unreadCount > 0 && (
+                               <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 z-50">
+                                  <span 
+                                    className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                                    style={{ backgroundColor: 'var(--primary-color)' }}
+                                  ></span>
+                                  <span 
+                                    className="relative inline-flex rounded-full h-2.5 w-2.5 ring-2 ring-white dark:ring-black"
+                                    style={{ backgroundColor: 'var(--primary-color)' }}
+                                  ></span>
+                               </span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="relative">
+                            <User size={22} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
+                          </div>
+                        )}
+                        <span className="text-[10px] font-bold uppercase tracking-tight text-center leading-none">
+                          {user ? 'Profil' : 'Giriş'}
+                        </span>
+                        <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+                      </Link>
+                    </li>
+                </>
+            )}
           </ul>
         </div>
       </nav>
