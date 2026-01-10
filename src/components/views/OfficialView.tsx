@@ -618,7 +618,7 @@ export default function OfficialView() {
     const hasMoreItems = displayedItems.length > displayLimit;
 
     return (
-        <div className="container mx-auto px-4 pt-8 pb-32 relative">
+        <div className="container mx-auto px-4 pt-8 pb-32 relative overflow-x-hidden">
             {/* Newspaper Header - Static on mobile */}
             <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
                 <div className="flex flex-col items-center justify-center gap-4">
@@ -712,7 +712,7 @@ export default function OfficialView() {
 
                                 {/* Pinned Announcement - Newspaper Theme */}
                                 {news[0] && (
-                                    <div className="border-4 border-black dark:border-neutral-600 p-4 sm:p-6 bg-neutral-50 dark:bg-[#0a0a0a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative mt-4 z-10 rounded-none transition-colors group">
+                                    <div className="border-4 border-black dark:border-neutral-600 p-4 sm:p-6 bg-neutral-50 dark:bg-[#0a0a0a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative mt-4 z-10 rounded-none transition-colors group w-full max-w-full">
                                         <div
                                             className="absolute -top-3 left-6 text-white px-3 py-1 text-xs font-black uppercase tracking-wider -rotate-1 shadow-sm z-20 border-2 border-black dark:border-white"
                                             style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
@@ -842,10 +842,10 @@ export default function OfficialView() {
                                                             const isRead = readIds.includes(String(item.id));
 
                                                             return (
-                                                                <article
+                                    <article
                                                                     key={index}
                                                                     onClick={() => setExpandedId(isExpanded ? null : item.id)}
-                                                                    className={`flex flex-col sm:flex-row gap-2 sm:gap-4 items-start p-3 sm:p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group min-w-0 overflow-hidden rounded-xl
+                                                                    className={`flex flex-col sm:flex-row gap-2 sm:gap-4 items-start p-3 sm:p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group w-full max-w-full overflow-hidden rounded-xl
                                 ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}
                                 ${isRead && (activeTab !== 'history' && activeTab !== 'starred') ? 'hidden' : ''} 
                                 ${isRead ? 'opacity-75 grayscale' : ''}
