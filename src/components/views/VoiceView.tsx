@@ -159,7 +159,7 @@ export default function VoiceView() {
 
     // Poll Voters State
     const [showVotersModal, setShowVotersModal] = useState(false);
-    const [voters, setVoters] = useState<{ user_id: string, display_name: string, option_index: number }[]>([]);
+    const [voters, setVoters] = useState<{ user_id: string, display_name: string, option_index: number, avatar_url?: string }[]>([]);
     const [isLoadingVoters, setIsLoadingVoters] = useState(false);
     const [selectedVoterOption, setSelectedVoterOption] = useState(0);
 
