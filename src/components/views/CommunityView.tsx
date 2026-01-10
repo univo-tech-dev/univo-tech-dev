@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { mockEvents } from '@/data/mockEvents';
 import NotificationCenter from '../NotificationCenter';
+import { useAuth } from '@/contexts/AuthContext';
 import { EventCategory } from '@/types';
 import CategoryFilter from '../CategoryFilter';
 import EventList from '../EventList';
@@ -85,13 +86,14 @@ const CommunityViewSkeleton = () => {
 
 export default function CommunityView() {
   const router = useRouter();
+  const { setViewLoading, loading: showSkeleton } = useAuth();
   const [isGlobalMode, setIsGlobalMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [popularEvents, setPopularEvents] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setViewLoading(true);
     const fetchPopularEvents = async () => {
       const today = new Date().toISOString().split('T')[0];
       const { data } = await supabase
@@ -147,12 +149,12 @@ export default function CommunityView() {
         } else {
              setEvents(mockEvents);
         }
-        setLoading(false);
+        setViewLoading(false);
     };
     fetchAllEvents();
-  }, []);
+  }, [setViewLoading]);
 
-  if (loading) {
+  if (showSkeleton) {
     return <CommunityViewSkeleton />;
   }
 

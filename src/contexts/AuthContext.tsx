@@ -29,6 +29,9 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   signInWithMetu: (username: string, password: string) => Promise<MetuLoginResult>;
+  setViewLoading: (loading: boolean) => void;
+  isGlobalLoading: boolean;
+  authLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -38,6 +41,9 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   refreshProfile: async () => {},
   signInWithMetu: async () => ({ success: false, error: 'Not implemented' }),
+  setViewLoading: () => {},
+  isGlobalLoading: true,
+  authLoading: true,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -45,7 +51,17 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isViewLoading, setIsViewLoading] = useState(true);
+  const [forceLoading, setForceLoading] = useState(true);
+
+  // setViewLoading helper for components to register their load state
+  const setViewLoading = (loading: boolean) => {
+    setIsViewLoading(loading);
+  };
+
+  // Unified loading signal
+  const isGlobalLoading = authLoading || isViewLoading || forceLoading;
 
   const fetchProfile = async (userId: string) => {
     try {
@@ -116,6 +132,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const startTime = Date.now();
     const MIN_LOADING_TIME = 300; // Minimum time to show skeleton (ms)
 
+    // Force delay timer
+    const forceTimer = setTimeout(() => setForceLoading(false), MIN_LOADING_TIME);
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -123,10 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         fetchProfile(session.user.id);
       }
       
-      // Ensure minimum loading time for skeleton visibility
-      const elapsed = Date.now() - startTime;
-      const remainingTime = Math.max(0, MIN_LOADING_TIME - elapsed);
-      setTimeout(() => setLoading(false), remainingTime);
+      setAuthLoading(false);
     });
 
     // Listen for auth changes
@@ -139,17 +155,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setProfile(null);
       }
-      setLoading(false);
+      setAuthLoading(false);
     });
 
     // Safety timeout: Ensure loading state is cleared after 2.5s regardless of Supabase response
     const timeout = setTimeout(() => {
-        setLoading(false);
-    }, 2500);
+        setAuthLoading(false);
+        setForceLoading(false);
+        setIsViewLoading(false);
+    }, 3000); // 3s safety timeout
+
 
     return () => {
         subscription.unsubscribe();
         clearTimeout(timeout);
+        clearTimeout(forceTimer);
     };
   }, []);
 
@@ -160,7 +180,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile, signInWithMetu }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      profile, 
+      loading: isGlobalLoading, // Map global state to the legacy 'loading' name for easier migration
+      isGlobalLoading,
+      authLoading,
+      signOut, 
+      refreshProfile, 
+      signInWithMetu,
+      setViewLoading
+    }}>
       {children}
     </AuthContext.Provider>
   );

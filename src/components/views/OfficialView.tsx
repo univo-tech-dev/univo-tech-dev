@@ -77,7 +77,7 @@ const OfficialViewSkeleton = () => {
 };
 
 export default function OfficialView() {
-    const { user } = useAuth();
+    const { user, setViewLoading, loading: showSkeleton } = useAuth();
     const [isGlobalMode, setIsGlobalMode] = React.useState(false);
     const news = [
         {
@@ -115,7 +115,6 @@ export default function OfficialView() {
         dinner: any[];
     }>({ breakfast: [], lunch: [], dinner: [] });
     const [announcements, setAnnouncements] = React.useState<any[]>([]);
-    const [loadingMenu, setLoadingMenu] = React.useState(true);
     const [expandedId, setExpandedId] = React.useState<string | number | null>(null);
 
     // Fetch Campus News (Library, Sports, OIDB)
@@ -294,7 +293,8 @@ export default function OfficialView() {
     };
 
     React.useEffect(() => {
-        async function fetchData() {
+        setViewLoading(true);
+        const fetchData = async () => {
             try {
                 // Check for Cache FIRST
                 const cachedMenu = localStorage.getItem('univo_cached_menu');
@@ -302,7 +302,7 @@ export default function OfficialView() {
                 
                 if (cachedMenu) {
                     setMenu(JSON.parse(cachedMenu));
-                    setLoadingMenu(false); // Show cached content immediately
+                    // setViewLoading(false); // Show cached content immediately
                 }
                 if (cachedAnn) {
                     const parsed = JSON.parse(cachedAnn);
@@ -348,13 +348,13 @@ export default function OfficialView() {
             } catch (e) {
                 console.error('Data loading failed', e);
             } finally {
-                setLoadingMenu(false);
+                setViewLoading(false);
             }
-        }
+        };
         fetchData();
-    }, [user]);
+    }, [setViewLoading, user]);
 
-    if (loadingMenu) {
+    if (showSkeleton) {
         return <OfficialViewSkeleton />;
     }
 
@@ -1062,7 +1062,7 @@ export default function OfficialView() {
                                     <h4 className="text-lg font-black font-serif uppercase tracking-tight mb-4 flex items-center gap-2 border-b-2 border-black dark:border-neutral-600 pb-2 text-neutral-900 dark:text-white">
                                         Günün Menüsü
                                     </h4>
-                                    {loadingMenu ? (
+                                    {false ? (
                                         <div className="text-center text-sm text-neutral-500 py-4">Menü Yükleniyor...</div>
                                     ) : (
                                         <div className="space-y-6">

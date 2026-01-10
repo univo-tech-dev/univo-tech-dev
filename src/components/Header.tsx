@@ -41,15 +41,8 @@ function HeaderContent() {
   const [unreadCount, setUnreadCount] = useState(0);
 
 
-  // Force skeleton for minimum 300ms to hide color transitions
-  const [forceLoading, setForceLoading] = useState(true);
-  useEffect(() => {
-    const timer = setTimeout(() => setForceLoading(false), 300);
-    return () => clearTimeout(timer);
-  }, []);
-  
-  // Combined loading: show skeleton if EITHER auth is loading OR we're in force-loading period
-  const showSkeleton = loading || forceLoading;
+  // No longer needed: centralized in AuthContext
+  const showSkeleton = loading;
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);

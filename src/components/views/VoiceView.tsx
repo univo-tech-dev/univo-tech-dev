@@ -128,14 +128,13 @@ interface Voice {
 const INITIAL_TAGS = ['#kampüs', '#yemekhane', '#kütüphane', '#ulaşım', '#sınav', '#etkinlik', '#spor'];
 
 export default function VoiceView() {
-    const { user } = useAuth();
+    const { user, setViewLoading, loading: showSkeleton } = useAuth();
     const router = useRouter();
     const [voices, setVoices] = useState<Voice[]>([]);
     const [isGlobalMode, setIsGlobalMode] = useState(false);
 
     const [newStatus, setNewStatus] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
     const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
     const [newComment, setNewComment] = useState('');
@@ -168,7 +167,8 @@ export default function VoiceView() {
     }, [activeTagFilter]);
 
     const fetchVoices = async () => {
-        setIsLoading(true);
+        // Only set view loading if we don't have voices yet (initial load)
+        if (voices.length === 0) setViewLoading(true);
         try {
             let url = '/api/voices';
             if (activeTagFilter) {
@@ -202,7 +202,7 @@ export default function VoiceView() {
         } catch (e) {
             console.error('Failed to fetch voices', e);
         } finally {
-            setIsLoading(false);
+            setViewLoading(false);
         }
     };
 
@@ -634,7 +634,7 @@ export default function VoiceView() {
         }
     };
 
-    if (isLoading) {
+    if (showSkeleton) {
         return <VoiceViewSkeleton />;
     }
 
@@ -825,9 +825,7 @@ export default function VoiceView() {
                                 )}
 
                                 <div className="space-y-6">
-                                    {isLoading ? (
-                                        <div className="text-center py-12 text-neutral-400 animate-pulse">Yükleniyor...</div>
-                                    ) : voices.length === 0 ? (
+                                    {voices.length === 0 && !showSkeleton ? (
                                         <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
                                     ) : (
                                         <AnimatePresence mode="wait">
