@@ -135,7 +135,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Safety timeout: Ensure loading state is cleared after 2.5s regardless of Supabase response
+    const timeout = setTimeout(() => {
+        setLoading(false);
+    }, 2500);
+
+    return () => {
+        subscription.unsubscribe();
+        clearTimeout(timeout);
+    };
   }, []);
 
   const signOut = async () => {

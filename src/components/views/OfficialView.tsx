@@ -719,7 +719,7 @@ export default function OfficialView() {
                                         >
                                             Önemli Duyuru
                                         </div>
-                                        <h3 className="text-lg sm:text-xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white mt-2 break-words font-serif uppercase tracking-tight line-clamp-2">
+                                        <h3 className="text-lg sm:text-xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white mt-2 break-words font-serif uppercase tracking-tight">
                                             <Megaphone size={20} className="text-black dark:text-white shrink-0" />
                                             {news[0].title}
                                         </h3>
@@ -931,7 +931,7 @@ export default function OfficialView() {
                                                                             )}
                                                                         </div>
 
-                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white line-clamp-2'}`}>
+                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
                                                                             {item.title}
                                                                         </h4>
 
