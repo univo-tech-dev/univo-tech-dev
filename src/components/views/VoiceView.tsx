@@ -439,7 +439,11 @@ export default function VoiceView() {
                     tags: extractedTags
                 })
             });
-            if (!res.ok) throw new Error('Update failed');
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'Update failed');
+            }
             
             const data = await res.json();
             if (data.voice) {
@@ -454,9 +458,9 @@ export default function VoiceView() {
             toast.success('Gönderi güncellendi.');
             // Refresh to update Kampüste Gündem and other lists
             await fetchVoices();
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            toast.error('Güncelleme başarısız.');
+            toast.error(`Güncelleme başarısız: ${e.message}`);
             fetchVoices();
         }
     };
