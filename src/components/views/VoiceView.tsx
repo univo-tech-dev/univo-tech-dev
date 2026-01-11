@@ -139,6 +139,11 @@ export default function VoiceView() {
     const [newStatus, setNewStatus] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
 
+    const [expandedVoices, setExpandedVoices] = useState<Record<string, boolean>>({});
+    const toggleVoiceComments = (voiceId: string) => {
+        setExpandedVoices(prev => ({ ...prev, [voiceId]: !prev[voiceId] }));
+    };
+
     const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
     const [newComment, setNewComment] = useState('');
     const [replyingTo, setReplyingTo] = useState<string | null>(null); // New state for reply
@@ -1078,7 +1083,7 @@ export default function VoiceView() {
                                                                         </div>
                                                                     )}
 
-                                                                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
+                                                                        <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900 flex-wrap gap-y-2 relative">
                                                                         <div className="flex items-center gap-6">
                                                                             <div className="flex items-center gap-1">
                                                                                 <button
@@ -1099,15 +1104,16 @@ export default function VoiceView() {
                                                                                     <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
                                                                                 </button>
                                                                             </div>
+                                                                            
+                                                                            {/* Yanıtla Button - Replaces Bubble Icon */}
                                                                             <button
                                                                                 onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
-                                                                                className={`flex items-center gap-2 group transition-colors ${activeCommentBox === voice.id ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500 hover:text-blue-500'}`}
+                                                                                className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
                                                                             >
-                                                                                <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20">
-                                                                                    <MessageSquare size={18} />
-                                                                                </div>
-                                                                                <span className="text-sm font-medium">{voice.comments.length > 0 ? voice.comments.length : ''}</span>
+                                                                                <MessageSquare size={14} className={activeCommentBox === voice.id ? 'fill-current' : ''} />
+                                                                                Yanıtla
                                                                             </button>
+
                                                                             <button
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
@@ -1121,22 +1127,49 @@ export default function VoiceView() {
                                                                                 </div>
                                                                             </button>
                                                                         </div>
-                                                                        <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
+                                                                        <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium ml-auto">
                                                                             {formatRelativeTime(voice.created_at)}
                                                                         </span>
                                                                     </div>
+                                                                    
+                                                                    {/* Post-Level Show Comments Toggle - YouTube Style */}
+                                                                    {voice.comments.length > 0 && (
+                                                                        <div className="mt-2">
+                                                                             <button 
+                                                                                onClick={(e) => { e.stopPropagation(); toggleVoiceComments(voice.id); }}
+                                                                                className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1.5 rounded-md transition-colors w-full sm:w-auto justify-start"
+                                                                            >
+                                                                                {expandedVoices[voice.id] ? (
+                                                                                    <>
+                                                                                        <div className="flex items-center justify-center w-4 h-4 mr-1">
+                                                                                            <ChevronUp size={14} />
+                                                                                        </div>
+                                                                                        Yorumları gizle
+                                                                                    </>
+                                                                                ) : (
+                                                                                    <>
+                                                                                        <div className="flex items-center justify-center w-4 h-4 mr-1">
+                                                                                            <ChevronDown size={14} />
+                                                                                        </div>
+                                                                                        {voice.comments.length} yorumu göster
+                                                                                    </>
+                                                                                )}
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
 
-                                                                    {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
+                                                                    {(activeCommentBox === voice.id || (voice.comments.length > 0 && expandedVoices[voice.id])) && (
                                                                         <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
-                                                                            {!user ? (
+                                                                            {!user && activeCommentBox === voice.id ? (
                                                                                 <div className="bg-neutral-50 dark:bg-neutral-900 border border-dashed border-neutral-300 dark:border-neutral-700 rounded p-4 text-center">
                                                                                     <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-2">Yorumları görmek için giriş yapmalısınız.</p>
                                                                                     <Link href="/login" className="text-sm font-bold hover:underline uppercase" style={{ color: 'var(--primary-color)' }}>Giriş Yap</Link>
                                                                                 </div>
                                                                             ) : (
                                                                             <>
-                                                                            <div className="space-y-4 mb-4 pl-1">
-                                                                                {(() => {
+                                                                            {expandedVoices[voice.id] && (
+                                                                                <div className="space-y-4 mb-4 pl-1">
+                                                                                    {(() => {
                                                                                     // 1. Prepare comments with user reaction state
                                                                                     const preparedComments = voice.comments.map(c => ({
                                                                                         ...c,
@@ -1317,6 +1350,7 @@ export default function VoiceView() {
                                                                                     return roots.map(root => <CommentItem key={root.id} comment={root} />);
                                                                                 })()}
                                                                             </div>
+                                                                            )}
                                                                             {activeCommentBox === voice.id && (
                                                                                 <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
                                                                                     <input
