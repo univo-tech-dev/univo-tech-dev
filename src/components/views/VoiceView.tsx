@@ -1330,10 +1330,10 @@ export default function VoiceView() {
                                                                                                             <div className="mt-4">
                                                                                                                 {comment.children.map((child: any, idx: number) => (
                                                                                                                     <div key={child.id} className="relative pb-4 last:pb-0">
-                                                                                                                        {/* Rail - Vertical Line from Parent (12px for last to stop before curve corner) */}
+                                                                                                                        {/* Rail - Vertical Line from Parent (10px for last to stop at curve corner) */}
                                                                                                                         <div 
                                                                                                                             className="absolute top-0 -left-[1.75rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
-                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '12px' : '100%' }}
+                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '10px' : '100%' }}
                                                                                                                         />
                                                                                                                         
                                                                                                                         {/* Curve Connector - Connects Rail to Avatar (16px = 32px avatar / 2) */}
