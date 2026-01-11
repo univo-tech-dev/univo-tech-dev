@@ -1100,20 +1100,20 @@ export default function VoiceView() {
 
                                                                         <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900 flex-wrap gap-y-2 relative">
                                                                         <div className="flex items-center gap-6">
-                                                                            <div className="flex items-center gap-1">
+                                                                            <div className="flex items-center gap-1 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1.5 py-1 border border-neutral-100 dark:border-neutral-800">
                                                                                 <button
                                                                                     onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
-                                                                                    className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
+                                                                                    className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${myReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
                                                                                     title="Yükselt"
                                                                                 >
                                                                                     <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
                                                                                 </button>
-                                                                                <span className={`text-sm font-bold w-6 text-center ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                                                                                <span className={`text-sm font-bold min-w-[1.5rem] text-center ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
                                                                                     {netVote}
                                                                                 </span>
                                                                                 <button
                                                                                     onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
-                                                                                    className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
+                                                                                    className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${myReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-600'}`}
                                                                                     title="Düşür"
                                                                                 >
                                                                                     <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
