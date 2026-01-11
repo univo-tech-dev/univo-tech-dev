@@ -129,7 +129,7 @@ export default function VoiceView() {
                         id,
                         content,
                         created_at,
-                        user:profiles!user_id(full_name, avatar_url),
+                        user:profiles(full_name, avatar_url),
                         user_id,
                         parent_id,
                         reactions:comment_reactions(user_id, reaction_type)
