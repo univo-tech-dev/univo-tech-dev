@@ -27,14 +27,14 @@
 ---
 
 ## 🚀 Sürüm Notları: v1.0.1 → v1.0.2
-**📅 11 Ocak 2026 (Gece)**
+**📅 11 Ocak 2026**
 
 Bu güncelleme; tam kararlılık, sosyal özellikler ve görsel mükemmeliyet üzerine odaklanmaktadır.
 
 ### ✨ Öne Çıkan Değişiklikler
 - **🔍 Kapsamlı Encoding Denetimi (%100 Temiz):**
     - Kritik tüm dosyalarda (`VoiceView.tsx`, `CommentSystem.tsx`, `VoiceStatsWidget.tsx`) satır satır manuel denetim uygulandı.
-    - Tüm "Minecraft dili" (karakter bozulması) kalıntıları tamamen temizlendi.
+    - Tüm karakter bozulması kalıntıları tamamen temizlendi.
 - **👥 Sosyal Entegrasyon & Profil Erişimi:**
     - Paylaşımların ve yorumların 3 nokta menüsüne **"Arkadaş Ekle"** ve **"Profili Gör"** butonları eklendi.
     - Standart Sosyal UI: Profil ziyaret butonu, uygulama genelindeki sosyal aksiyon butonlarıyla estetik olarak eşitlendi.
@@ -54,7 +54,7 @@ Bu güncelleme; tam kararlılık, sosyal özellikler ve görsel mükemmeliyet ü
 
 
 ## 🚀 Sürüm Notları: v1.0.0 → v1.0.1
-**📅 11 Ocak 2026**
+**📅 10 Ocak 2026**
 
 Bugünkü güncellemeyle **Univo** çok daha stabil, hızlı ve kullanıcı dostu hale geldi. İşte **v1.0.1** ile gelen yenilikler:
 
@@ -81,7 +81,7 @@ Bugünkü güncellemeyle **Univo** çok daha stabil, hızlı ve kullanıcı dost
 ---
 
 ## 🎉 İlk Sürüm: v1.0.0 (MVP)
-**📅 10 Ocak 2026**
+**📅 9 Ocak 2026**
 
 Univo'nun doğuşu. Kampüs deneyimini dijitalleştiren ilk kararlı sürüm.
 
