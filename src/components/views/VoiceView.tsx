@@ -1118,7 +1118,7 @@ export default function VoiceView() {
                                                                             {/* Yanıtla Button - Text Only */}
                                                                             <button
                                                                                 onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
-                                                                                className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
+                                                                                className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
                                                                             >
                                                                                 YANITLA
                                                                             </button>
@@ -1280,32 +1280,33 @@ export default function VoiceView() {
                                                                                                         </div>
                                                                                                         
                                                                                                         {/* Reply Form */}
-                                                                                                        {isReplying && (
-                                                                                                            <div className="mt-3 ml-2 relative">
-                                                                                                                <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
-                                                                                                                <form onSubmit={(e) => {
-                                                                                                                    e.preventDefault();
-                                                                                                                    handleCommentSubmit(e, voice.id, comment.id, replyContent);
-                                                                                                                    setReplyContent(''); 
-                                                                                                                    setReplyingTo(null);
-                                                                                                                }} className="flex gap-2 animate-in fade-in slide-in-from-top-1 relative z-10">
-                                                                                                                    <input
-                                                                                                                        autoFocus
-                                                                                                                        value={replyContent}
-                                                                                                                        onChange={(e) => setReplyContent(e.target.value)}
-                                                                                                                        placeholder={`@${comment.user} yanıt ver...`}
-                                                                                                                        className="flex-1 px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-700 rounded-lg focus:border-black dark:focus:border-white outline-none bg-white dark:bg-neutral-800 dark:text-white shadow-sm"
-                                                                                                                    />
-                                                                                                                    <button 
-                                                                                                                        type="submit"
-                                                                                                                        disabled={isCommenting || !replyContent.trim()}
-                                                                                                                        className="bg-black dark:bg-white text-white dark:text-black p-2 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50"
-                                                                                                                    >
-                                                                                                                        <Send size={16} />
-                                                                                                                    </button>
-                                                                                                                </form>
-                                                                                                            </div>
-                                                                                                        )}
+                                                                                                           {isReplying && (
+                                                                                <div className="mt-3 ml-2 relative">
+                                                                                    <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                    <form onSubmit={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        handleCommentSubmit(e, voice.id, comment.id, replyContent);
+                                                                                        setReplyContent(''); 
+                                                                                        setReplyingTo(null);
+                                                                                    }} className="flex gap-2 animate-in fade-in slide-in-from-top-1 relative z-10 pt-2">
+                                                                                        <input
+                                                                                            type="text"
+                                                                                            autoFocus
+                                                                                            value={replyContent}
+                                                                                            onChange={(e) => setReplyContent(e.target.value)}
+                                                                                            placeholder={`@${comment.user} yanıt ver...`}
+                                                                                            className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors"
+                                                                                        />
+                                                                                        <button 
+                                                                                            type="submit"
+                                                                                            disabled={isCommenting || !replyContent.trim()}
+                                                                                            className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+                                                                                        >
+                                                                                            <Send size={14} />
+                                                                                        </button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            )}
 
                                                                                                         {/* Recursion - Children Render */}
                                                                                                         {hasChildren && (
@@ -1334,9 +1335,9 @@ export default function VoiceView() {
                                                                                         <>
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map(root => <CommentItem key={root.id} comment={root} />)}
                                                                                             {roots.length > (visibleCommentsCount[voice.id] || 10) && (
-                                                                                                <button 
+                                                                                                    <button 
                                                                                                     onClick={() => loadMoreComments(voice.id)}
-                                                                                                    className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-full transition-colors mt-4 mx-auto uppercase"
+                                                                                                    className="flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 px-3 py-1.5 rounded-full transition-colors mt-4 mx-auto uppercase"
                                                                                                 >
                                                                                                     <div className="flex items-center justify-center w-4 h-4">
                                                                                                         <ChevronDown size={14} />
