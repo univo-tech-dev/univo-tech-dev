@@ -1006,9 +1006,9 @@ export default function VoiceView() {
                                                                             voice.user.full_name?.charAt(0)
                                                                         )}
                                                                     </div>
-                                                                    {/* Post Owner Spine - Connects to all root comments */}
+                                                                    {/* Post Owner Connector - Fixed height, connects to first comment curve */}
                                                                     {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 z-0" />
+                                                                        <div className="w-[2px] h-16 bg-neutral-200 dark:bg-neutral-800 z-0" />
                                                                     )}
 
                                                                 </div>
@@ -1231,12 +1231,7 @@ export default function VoiceView() {
                                                                                                             )}
                                                                                                         </div>
                                                                                                         
-                                                                                                        {/* Vertical Thread Line - Only visible if children exist 
-                                                                                                            Removed hover effect as requested.
-                                                                                                        */}
-                                                                                                        {hasChildren && (
-                                                                                                            <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 transition-colors" />
-                                                                                                        )}
+                                                                                                        {/* Vertical Thread Line - Only if children exist (now handled by child rails) */}
                                                                                                     </div>
 
                                                                                                     {/* Content Column */}
