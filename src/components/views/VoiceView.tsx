@@ -1006,13 +1006,7 @@ export default function VoiceView() {
                                                                             voice.user.full_name?.charAt(0)
                                                                         )}
                                                                     </div>
-                                                                    {/* Post Owner Tail - Connects to first root comment. 
-                                                                        Height 32px (h-8) bridges the gap: 16px mt-4 + 16px pt-4 = 32px.
-                                                                        Left centered at 1.25rem - 1px.
-                                                                    */}
-                                                                    {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="absolute top-10 bottom-0 left-1/2 -translate-x-1/2 w-[2px] bg-neutral-200 dark:bg-neutral-800 z-0" />
-                                                                    )}
+                                                                    {/* No Post Owner Spine - each Root Comment has isolated curve */}
 
                                                                 </div>
 
@@ -1359,14 +1353,8 @@ export default function VoiceView() {
                                                                                         <>
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map((root, idx) => (
                                                                                                 <div key={root.id} className="relative pb-4 first:pt-4">
-                                                                                                    {/* Rail - Vertical Line from Prior Sibling / Post Owner */}
-                                                                                                    <div 
-                                                                                                        className="absolute top-0 -left-[2.25rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
-                                                                                                        style={{ height: idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) ? '17px' : '100%' }}
-                                                                                                    />
-
-                                                                                                    {/* Curve Connector - Connects Rail to Avatar */}
-                                                                                                    <div className="absolute top-0 -left-[2.25rem] w-[2.25rem] h-[18px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                    {/* Curve Connector ONLY - No vertical rail between roots */}
+                                                                                                    <div className="absolute top-4 -left-[2.25rem] w-[2.25rem] h-[18px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                     
                                                                                                     <CommentItem comment={root} />
                                                                                                 </div>
