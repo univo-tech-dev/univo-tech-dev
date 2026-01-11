@@ -130,6 +130,135 @@ interface Voice {
 
 const INITIAL_TAGS = ['#kampüs', '#yemekhane', '#kütüphane', '#ulaşım', '#sınav', '#etkinlik', '#spor'];
 
+// ThreadConnector: Geometry-based line using refs
+const ThreadConnector = ({ 
+    containerRef, 
+    startRef, 
+    endRefs,
+    offsetX = 0
+}: { 
+    containerRef: React.RefObject<HTMLDivElement | null>;
+    startRef: React.RefObject<HTMLDivElement | null>;
+    endRefs: React.RefObject<(HTMLDivElement | null)[]>;
+    offsetX?: number;
+}) => {
+    const [geometry, setGeometry] = useState({ startY: 0, endY: 0, visible: false });
+    
+    useEffect(() => {
+        const calculate = () => {
+            if (!containerRef.current || !startRef.current) return;
+            
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const startRect = startRef.current.getBoundingClientRect();
+            const startCenterY = startRect.top + startRect.height / 2 - containerRect.top;
+            
+            const endElements = endRefs.current?.filter(el => el !== null) || [];
+            if (endElements.length === 0) {
+                setGeometry({ startY: 0, endY: 0, visible: false });
+                return;
+            }
+            
+            const lastEnd = endElements[endElements.length - 1];
+            if (!lastEnd) return;
+            
+            const endRect = lastEnd.getBoundingClientRect();
+            const endCenterY = endRect.top + endRect.height / 2 - containerRect.top;
+            
+            setGeometry({ 
+                startY: startCenterY, 
+                endY: endCenterY,
+                visible: true
+            });
+        };
+        
+        const timer = setTimeout(calculate, 100);
+        const observer = new ResizeObserver(calculate);
+        if (containerRef.current) observer.observe(containerRef.current);
+        
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+        };
+    }, [containerRef, startRef, endRefs]);
+    
+    if (!geometry.visible || geometry.endY <= geometry.startY) return null;
+    
+    return (
+        <div 
+            className="absolute w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-all duration-300 pointer-events-none z-10"
+            style={{ 
+                left: offsetX,
+                top: geometry.startY, 
+                height: geometry.endY - geometry.startY 
+            }}
+        />
+    );
+};
+
+// BranchConnector: L-shaped curve from vertical line to avatar
+const BranchConnector = ({
+    containerRef,
+    avatarRef,
+    offsetX = 0
+}: {
+    containerRef: React.RefObject<HTMLDivElement | null>;
+    avatarRef: React.RefObject<HTMLDivElement | null>;
+    offsetX?: number;
+}) => {
+    const [geometry, setGeometry] = useState({ y: 0, width: 0, visible: false });
+    
+    useEffect(() => {
+        const calculate = () => {
+            if (!containerRef.current || !avatarRef.current) return;
+            
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const avatarRect = avatarRef.current.getBoundingClientRect();
+            
+            const avatarCenterY = avatarRect.top + avatarRect.height / 2 - containerRect.top;
+            const avatarCenterX = avatarRect.left + avatarRect.width / 2 - containerRect.left;
+            
+            setGeometry({
+                y: avatarCenterY - 16, 
+                width: avatarCenterX - (containerRect.left + offsetX) + containerRect.left - containerRect.left, // Normalized
+                visible: true
+            });
+            
+            // Re-calculate based on relative offset
+            const railX = offsetX;
+            const branchWidth = avatarCenterX - (containerRect.left + railX);
+            
+            setGeometry({
+                y: avatarCenterY - 16,
+                width: branchWidth,
+                visible: true
+            });
+        };
+        
+        const timer = setTimeout(calculate, 100);
+        const observer = new ResizeObserver(calculate);
+        if (containerRef.current) observer.observe(containerRef.current);
+        
+        return () => {
+            clearTimeout(timer);
+            observer.disconnect();
+        };
+    }, [containerRef, avatarRef, offsetX]);
+    
+    if (!geometry.visible || geometry.width <= 0) return null;
+    
+    return (
+        <div 
+            className="absolute border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl pointer-events-none z-10"
+            style={{ 
+                left: offsetX,
+                top: geometry.y, 
+                width: geometry.width,
+                height: 16
+            }}
+        />
+    );
+};
+
 export default function VoiceView() {
     const { user, setViewLoading, loading: showSkeleton } = useAuth();
     const router = useRouter();
@@ -141,6 +270,9 @@ export default function VoiceView() {
 
     const [expandedVoices, setExpandedVoices] = useState<Record<string, boolean>>({});
     const [visibleCommentsCount, setVisibleCommentsCount] = useState<Record<string, number>>({}); // Pagination state
+
+    const postOwnerAvatarRefs = useRef<Record<string, HTMLDivElement | null>>({});
+    const containerRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
     const toggleVoiceComments = (voiceId: string) => {
         setExpandedVoices(prev => ({ ...prev, [voiceId]: !prev[voiceId] }));
@@ -991,6 +1123,7 @@ export default function VoiceView() {
                                                             <div className="flex gap-4 items-stretch">
                                                                 <div className="flex flex-col items-center shrink-0 relative">
                                                                     <div
+                                                                        ref={el => { postOwnerAvatarRefs.current[voice.id] = el; }}
                                                                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-white dark:bg-[#0a0a0a]'}`}
                                                                         style={(!voice.is_anonymous && !voice.user.avatar_url && !(voice.user_id === user?.id && user?.user_metadata?.avatar_url)) ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
                                                                     >
@@ -1006,10 +1139,7 @@ export default function VoiceView() {
                                                                             voice.user.full_name?.charAt(0)
                                                                         )}
                                                                     </div>
-                                                                    {/* Post Owner Connector - h-56 bridges to first comment */}
-                                                                    {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="w-[2px] h-56 bg-neutral-200 dark:bg-neutral-800 z-0" />
-                                                                    )}
+                                                                    {/* Post Owner Connector - Now handled by geometry-driven RootThreadContainer */}
 
                                                                 </div>
 
@@ -1185,7 +1315,7 @@ export default function VoiceView() {
                                                                             <>
                                                                             {expandedVoices[voice.id] && (
                                                                                 <div className="space-y-0 mb-4 pl-0">
-                                                                                    {(() => {
+                                                                                                                                                                        {(() => {
                                                                                     // 1. Prepare comments with user reaction state
                                                                                     const preparedComments = voice.comments.map(c => ({
                                                                                         ...c,
@@ -1209,16 +1339,46 @@ export default function VoiceView() {
                                                                                     roots.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
                                                                                     // 3. Recursive Component
-                                                                                    const CommentItem = ({ comment, depth = 0 }: { comment: any, depth?: number }) => {
+                                                                                    const CommentItem = ({ 
+                                                                                        comment, 
+                                                                                        depth = 0,
+                                                                                        containerRef,
+                                                                                        offsetX = 0,
+                                                                                        onAvatarRef
+                                                                                    }: { 
+                                                                                        comment: any;
+                                                                                        depth?: number;
+                                                                                        containerRef?: React.RefObject<HTMLDivElement | null>;
+                                                                                        offsetX?: number;
+                                                                                        onAvatarRef?: (el: HTMLDivElement | null) => void;
+                                                                                    }) => {
                                                                                         const isReplying = replyingTo === comment.id;
                                                                                         const hasChildren = comment.children && comment.children.length > 0;
+                                                                                        const avatarRef = useRef<HTMLDivElement>(null);
+                                                                                        const childContainerRef = useRef<HTMLDivElement>(null);
+                                                                                        const childAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+                                                                                        // Report avatar ref to parent for geometry calculation
+                                                                                        useEffect(() => {
+                                                                                            if (onAvatarRef) onAvatarRef(avatarRef.current);
+                                                                                        }, [onAvatarRef]);
                                                                                         
                                                                                         return (
-                                                                                            <div className={`flex flex-col relative`}>
+                                                                                            <div className="flex flex-col relative">
                                                                                                 <div className="flex gap-3 relative group/comment">
+                                                                                                    {/* Branch line to this avatar (if within a thread) */}
+                                                                                                    {containerRef && (
+                                                                                                        <BranchConnector 
+                                                                                                            containerRef={containerRef}
+                                                                                                            avatarRef={avatarRef}
+                                                                                                            offsetX={offsetX}
+                                                                                                        />
+                                                                                                    )}
+
                                                                                                     {/* Avatar Column */}
                                                                                                     <div className="flex flex-col items-center shrink-0">
                                                                                                         <div 
+                                                                                                            ref={avatarRef}
                                                                                                             className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden border border-neutral-200 dark:border-neutral-700 z-20 shrink-0 bg-white dark:bg-[#0a0a0a]"
                                                                                                             style={!comment.user_avatar ? { 
                                                                                                                 backgroundColor: 'var(--primary-color)'
@@ -1230,17 +1390,12 @@ export default function VoiceView() {
                                                                                                                 comment.user.charAt(0)
                                                                                                             )}
                                                                                                         </div>
-                                                                                                        
-                                                                                                        {/* Parent-child bridge - h-28 to fully reach children container */}
-                                                                                                        {hasChildren && (
-                                                                                                            <div className="w-[2px] h-28 bg-neutral-200 dark:bg-neutral-800 transition-colors" />
-                                                                                                        )}
                                                                                                     </div>
 
                                                                                                     {/* Content Column */}
                                                                                                     <div className="flex-1 min-w-0">
-                                                                                                        {/* Comment Card - Updated styling to match VoiceCard (rounded-xl, padding) */}
-                                                                                                        <div className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm relative">
+                                                                                                        {/* Comment Card */}
+                                                                                                        <div className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm relative z-20">
                                                                                                             
                                                                                                             <div className="flex justify-between items-baseline mb-1">
                                                                                                                 <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
@@ -1292,88 +1447,95 @@ export default function VoiceView() {
                                                                                                                     <Share2 size={16} />
                                                                                                                 </button>
                                                                                                             </div>
-                                                                                                            
-
                                                                                                         </div>
-                                                                                                        
-                                                                                                        {/* Reply Form */}
-                                                                                                           {isReplying && (
-                                                                                <div className="mt-3 ml-2 relative">
-                                                                                    <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
-                                                                                    <form onSubmit={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        handleCommentSubmit(e, voice.id, comment.id, replyContent);
-                                                                                        setReplyContent(''); 
-                                                                                        setReplyingTo(null);
-                                                                                    }} className="flex gap-2 animate-in fade-in slide-in-from-top-1 relative z-10 pt-2">
-                                                                                        <input
-                                                                                            type="text"
-                                                                                            autoFocus
-                                                                                            value={replyContent}
-                                                                                            onChange={(e) => setReplyContent(e.target.value)}
-                                                                                            placeholder={`@${comment.user} yanıt ver...`}
-                                                                                            className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors"
-                                                                                        />
-                                                                                        <button 
-                                                                                            type="submit"
-                                                                                            disabled={isCommenting || !replyContent.trim()}
-                                                                                            className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
-                                                                                        >
-                                                                                            <Send size={14} />
-                                                                                        </button>
-                                                                                    </form>
-                                                                                </div>
-                                                                            )}
-
-                                                                                                        {/* Recursion - Children Render */}
-                                                                                                        {hasChildren && (
-                                                                                                            <div className="mt-4">
-                                                                                                                {comment.children.map((child: any, idx: number) => (
-                                                                                                                    <div key={child.id} className="relative pb-4 last:pb-0">
-                                                                                                                        {/* Rail - Vertical Line, extends down */}
-                                                                                                                        <div 
-                                                                                                                            className="absolute top-0 w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors"
-                                                                                                                            style={{ left: '-1.75rem', height: idx === comment.children.length - 1 ? '14px' : '100%' }}
-                                                                                                                        />
-                                                                                                                        
-                                                                                                                        {/* Curve Connector - horizontal only */}
-                                                                                                                        <div 
-                                                                                                                            className="absolute border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl"
-                                                                                                                            style={{ top: '0px', left: 'calc(-1.75rem + 2px)', width: 'calc(1.75rem - 2px)', height: '16px' }}
-                                                                                                                        />
-
-                                                                                                                        <CommentItem comment={child} depth={depth + 1} />
-                                                                                                                    </div>
-                                                                                                                ))}
-                                                                                                            </div>
-                                                                                                        )}
                                                                                                     </div>
                                                                                                 </div>
+
+                                                                                                {/* Reply Form */}
+                                                                                                {isReplying && (
+                                                                                                    <div className="mt-3 ml-2 relative">
+                                                                                                        <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                        <form onSubmit={(e) => {
+                                                                                                            e.preventDefault();
+                                                                                                            handleCommentSubmit(e, voice.id, comment.id, replyContent);
+                                                                                                            setReplyContent(''); 
+                                                                                                            setReplyingTo(null);
+                                                                                                        }} className="flex gap-2 animate-in fade-in slide-in-from-top-1 relative z-10 pt-2">
+                                                                                                            <input
+                                                                                                                type="text"
+                                                                                                                autoFocus
+                                                                                                                value={replyContent}
+                                                                                                                onChange={(e) => setReplyContent(e.target.value)}
+                                                                                                                placeholder={`@${comment.user} yanıt ver...`}
+                                                                                                                className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors"
+                                                                                                            />
+                                                                                                            <button 
+                                                                                                                type="submit"
+                                                                                                                disabled={isCommenting || !replyContent.trim()}
+                                                                                                                className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+                                                                                                            >
+                                                                                                                <Send size={14} />
+                                                                                                            </button>
+                                                                                                        </form>
+                                                                                                    </div>
+                                                                                                )}
+
+                                                                                                {/* Children Render */}
+                                                                                                {hasChildren && (
+                                                                                                    <div ref={childContainerRef} className="relative mt-4 ml-7">
+                                                                                                        {/* Vertical Line for this thread level */}
+                                                                                                        <ThreadConnector 
+                                                                                                            containerRef={childContainerRef}
+                                                                                                            startRef={avatarRef}
+                                                                                                            endRefs={childAvatarRefs}
+                                                                                                            offsetX={16 - 28}
+                                                                                                        />
+                                                                                                        
+                                                                                                        {comment.children.map((child: any, idx: number) => (
+                                                                                                            <div key={child.id} className="relative mb-4 last:pb-0">
+                                                                                                                <CommentItem 
+                                                                                                                    comment={child} 
+                                                                                                                    depth={depth + 1}
+                                                                                                                    containerRef={childContainerRef}
+                                                                                                                    offsetX={16 - 28}
+                                                                                                                    onAvatarRef={el => { childAvatarRefs.current[idx] = el; }}
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                        ))}
+                                                                                                    </div>
+                                                                                                )}
                                                                                             </div>
                                                                                         );
                                                                                     };
 
+                                                                                    // Root Thread rendering
+                                                                                    const visibleRoots = roots.slice(0, visibleCommentsCount[voice.id] || 10);
+                                                                                    const rootContainerRef = useRef<HTMLDivElement>(null);
+                                                                                    const rootAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+                                                                                    
                                                                                     return (
-                                                                                        <>
-                                                                                            {roots.slice(0, visibleCommentsCount[voice.id] || 10).map((root, idx) => (
-                                                                                                <div key={root.id} className="relative pb-4 first:pt-4">
-                                                                                                    {/* Rail - Vertical Line, extends into curve area */}
-                                                                                                    <div 
-                                                                                                        className="absolute top-0 w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors"
-                                                                                                        style={{ left: '-2.25rem', height: idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) ? 'calc(1rem + 14px)' : '100%' }}
-                                                                                                    />
+                                                                                        <div ref={rootContainerRef} className="relative">
+                                                                                            {/* Main Rail from Post Owner to last root comment */}
+                                                                                            <ThreadConnector 
+                                                                                                containerRef={rootContainerRef}
+                                                                                                startRef={{ current: postOwnerAvatarRefs.current[voice.id] }}
+                                                                                                endRefs={rootAvatarRefs}
+                                                                                                offsetX={-36}
+                                                                                            />
 
-                                                                                                    {/* Curve Connector - horizontal only, rail provides vertical */}
-                                                                                                    <div 
-                                                                                                        className="absolute border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl"
-                                                                                                        style={{ top: '1rem', left: 'calc(-2.25rem + 2px)', width: 'calc(2.25rem - 2px)', height: '16px' }}
+                                                                                            {visibleRoots.map((root, idx) => (
+                                                                                                <div key={root.id} className="relative mb-4 first:mt-4">
+                                                                                                    <CommentItem 
+                                                                                                        comment={root} 
+                                                                                                        containerRef={rootContainerRef}
+                                                                                                        offsetX={-36}
+                                                                                                        onAvatarRef={el => { rootAvatarRefs.current[idx] = el; }}
                                                                                                     />
-                                                                                                    
-                                                                                                    <CommentItem comment={root} />
                                                                                                 </div>
                                                                                             ))}
+
                                                                                             {roots.length > (visibleCommentsCount[voice.id] || 10) && (
-                                                                                                    <button 
+                                                                                                <button 
                                                                                                     onClick={() => loadMoreComments(voice.id)}
                                                                                                     className="flex items-center gap-2 text-xs font-bold text-neutral-500 hover:text-black dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 px-3 py-1.5 rounded-full transition-colors mt-4 mx-auto uppercase"
                                                                                                 >
@@ -1383,9 +1545,10 @@ export default function VoiceView() {
                                                                                                     DAHA FAZLA YÜKLE ({roots.length - (visibleCommentsCount[voice.id] || 10)})
                                                                                                 </button>
                                                                                             )}
-                                                                                        </>
+                                                                                        </div>
                                                                                     );
                                                                                 })()}
+
                                                                             </div>
                                                                             )}
 
