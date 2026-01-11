@@ -45,7 +45,7 @@ export default function CreateVoiceForm({
     }
 
     return (
-        <div className="bg-neutral-50 dark:bg-transparent p-6 border border-neutral-200 dark:border-none mb-8 rounded-sm shadow-sm dark:shadow-none relative">
+        <div className="bg-white dark:bg-black/20 p-6 border-2 border-black dark:border-neutral-600 mb-8 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative">
             <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-0 dark:text-white">
                 <MessageSquare size={100} />
             </div>

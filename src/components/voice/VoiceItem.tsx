@@ -96,7 +96,7 @@ export default function VoiceItem({
 
     return (
         <article 
-            className="group relative flex flex-col sm:flex-row gap-4 p-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow dark:shadow-neutral-900/50 mb-6"
+            className="group relative flex flex-col sm:flex-row gap-4 p-6 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] transition-all mb-6 rounded-xl"
             ref={el => { containerRefs.current[voice.id] = el as HTMLDivElement | null; }}
         >
             {/* Vote Column */}
