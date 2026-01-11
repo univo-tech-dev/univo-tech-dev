@@ -1,67 +1,44 @@
-import os
+# Comprehensive Turkish character encoding fix - V2
+import re
 
-path = 'src/components/views/VoiceView.tsx'
+# Read file with UTF-8
+with open('src/components/views/VoiceView.tsx', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-with open(path, 'rb') as f:
-    raw = f.read()
+# FULL replacement map for all observed corruptions
+replacements = [
+    # Regex pattern
+    ('─ş', 'ğ'),
+    ('ÔöÇ┼ş', 'ğ'),
+    ('├ğ', 'ç'),
+    ('─▒', 'ı'),
+    ('─░', 'İ'),
+    ('├╝', 'ü'),
+    ('├£', 'Ü'),
+    ('├Â', 'ö'),
+    ('├û', 'Ö'),
+    ('┼ş', 'ş'),
+    ('┼Ş', 'Ş'),
+    ('ÔöÇ┼Ş', 'Ş'),
+    ('├ç', 'Ç'),
+    ('­şîı', '🌍'),
+]
 
-content = raw.decode('utf-8', errors='replace')
-
-# Comprehensive replacement map based on observed corruptions
-replacements = {
-    '─▒': 'ı',
-    '─░': 'İ',
-    '├ğ': 'ğ',  
-    '─ş': 'ğ',  # This can be ğ in some contexts
-    '├╝': 'ü',
-    '├£': 'Ü',
-    '├Â': 'ö',
-    '├û': 'Ö',
-    '┼ş': 'ş',
-    '┼Ş': 'Ş',
-    '├ç': 'ç',
-    '├ç': 'Ç',
-    '­şîı': '🌍',  # Globe emoji for global mode
-    'Eri┼şime Kapal─▒': 'Erişime Kapalı',
-    'S─▒n─▒rlar kalk─▒yor': 'Sınırlar kalkıyor',
-    'D├╝nyan─▒n d├Ârt bir yan─▒ndaki ├╝niversite ├Â─şrencileriyle ├ğok yak─▒nda burada bulu┼şacaks─▒n': 'Dünyanın dört bir yanındaki üniversite öğrencileriyle çok yakında burada buluşacaksın',
-    "D├£NYA G├£NDEM─░": "DÜNYA GÜNDEMİ",
-    "SERBEST K├£RS├£": "SERBEST KÜRSÜ",
-    'Oyunuz geri al─▒nd─▒': 'Oyunuz geri alındı',
-    'Oy kullanmak i├ğin giri┼ş yapmal─▒s─▒n─▒z': 'Oy kullanmak için giriş yapmalısınız',
-    'giri┼ş yapmal─▒s─▒n': 'giriş yapmalısın',
-    'Payla┼ş─▒m yapmak i├ğin': 'Paylaşım yapmak için',
-    "Ge├ğ": "Geç",
-    "├Â─şrenci": "öğrenci",
-    "├ç": "ç",
-}
-
-for bad, good in replacements.items():
+for bad, good in replacements:
     content = content.replace(bad, good)
 
-# Also fix remaining individual chars
-content = content.replace('─▒', 'ı')
-content = content.replace('─░', 'İ')
-content = content.replace('├ğ', 'ğ')
-content = content.replace('├╝', 'ü')
-content = content.replace('├£', 'Ü')
-content = content.replace('├Â', 'ö')
-content = content.replace('├û', 'Ö')
-content = content.replace('┼ş', 'ş')
-content = content.replace('┼Ş', 'Ş')
-content = content.replace('├ç', 'ç')
-
-with open(path, 'w', encoding='utf-8') as f:
+# Write back with UTF-8
+with open('src/components/views/VoiceView.tsx', 'w', encoding='utf-8', newline='\r\n') as f:
     f.write(content)
 
-print("Encoding fixed!")
-print("Checking for remaining issues...")
+print("Encoding fix V2 applied!")
 
 # Verify
-with open(path, 'r', encoding='utf-8') as f:
+with open('src/components/views/VoiceView.tsx', 'r', encoding='utf-8') as f:
     check = f.read()
-    
-issues = ['─▒', '─░', '├ğ', '├╝', '├£', '├Â', '├û', '┼ş', '┼Ş', '├ç']
+
+issues = ['─ş', '─▒', '├ğ', '├╝', '├£', '├Â', '├û', '┼ş', '┼Ş', '─░', 'ÔöÇ']
 for issue in issues:
-    if issue in check:
-        print(f"WARNING: Still found: {issue}")
+    count = check.count(issue)
+    if count > 0:
+        print(f"WARNING: Still found '{issue}' {count} times")
