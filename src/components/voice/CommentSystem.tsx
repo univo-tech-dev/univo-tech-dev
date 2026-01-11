@@ -304,11 +304,6 @@ export const CommentItem = ({
                         )}
                         
                         <div className="flex items-center gap-4 mt-3 pt-2 border-t border-neutral-100 dark:border-neutral-800/50">
-                             {/* Timestamp moved to bottom */}
-                             <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-serif">
-                                {formatRelativeTime(comment.created_at)}
-                            </span>
-
                             {/* Reactions */}
                             <div className="flex items-center gap-0.5 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1 py-0.5 border border-neutral-100 dark:border-neutral-800">
                                 <button
@@ -344,11 +339,16 @@ export const CommentItem = ({
                                     navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
                                     toast.success('Link kopyalandı!');
                                 }}
-                                className="p-1 text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors rounded-full hover:bg-neutral-50 dark:hover:bg-neutral-900 ml-auto"
+                                className="p-1 text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors rounded-full hover:bg-neutral-50 dark:hover:bg-neutral-900"
                                 title="Paylaş"
                             >
                                 <Share2 size={16} />
                             </button>
+
+                             {/* Timestamp moved to right */}
+                             <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-serif ml-auto">
+                                {formatRelativeTime(comment.created_at)}
+                            </span>
                         </div>
                     </div>
                 </div>

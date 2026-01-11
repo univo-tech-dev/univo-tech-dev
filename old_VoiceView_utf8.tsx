@@ -18,7 +18,7 @@ import CreateVoiceForm from '@/components/voice/CreateVoiceForm';
 import VoiceItem from '@/components/voice/VoiceItem';
 import VoiceStatsWidget from './VoiceStatsWidget'; // This was already separate
 
-const INITIAL_TAGS = ['#kampüs', '#yemekhane', '#kütüphane', '#ulaşım', '#sınav', '#etkinlik', '#spor'];
+const INITIAL_TAGS = ['#kamp├╝s', '#yemekhane', '#k├╝t├╝phane', '#ula┼ş─▒m', '#s─▒nav', '#etkinlik', '#spor'];
 
 export default function VoiceView() {
     const { user, setViewLoading, loading: showSkeleton } = useAuth();
@@ -80,8 +80,8 @@ export default function VoiceView() {
         // Mock Poll Data or fetch from DB
         // For MVP, using mock data as in original
         const mockPoll = {
-            question: "Kampüs yemekhanesinde vegan menü çeşitliliği artırılmalı mı?",
-            options: ["Kesinlikle Evet", "Mevcut Durum Yeterli", "Hayır, Gerek Yok", "Fikrim Yok"]
+            question: "Kamp├╝s yemekhanesinde vegan men├╝ ├ğe┼şitlili─şi art─▒r─▒lmal─▒ m─▒?",
+            options: ["Kesinlikle Evet", "Mevcut Durum Yeterli", "Hay─▒r, Gerek Yok", "Fikrim Yok"]
         };
         setActivePoll(mockPoll);
         
@@ -101,7 +101,7 @@ export default function VoiceView() {
     const handlePollVote = (index: number) => {
         if (!activePoll) return;
         if (userVote !== null) {
-            toast.error('Zaten oy kullandınız');
+            toast.error('Zaten oy kulland─▒n─▒z');
             return;
         }
 
@@ -111,6 +111,11 @@ export default function VoiceView() {
         setUserVote(index);
         localStorage.setItem('poll_vote_1', index.toString());
         toast.success('Oyunuz kaydedildi');
+    };
+
+    const fetchVoters = async () => {
+        // Mock active users
+        setActiveUsers(Math.floor(Math.random() * 500) + 1200); // 1200-1700
     };
 
     const fetchVoices = async () => {
@@ -141,7 +146,7 @@ export default function VoiceView() {
                 ...voice,
                 comments: voice.comments?.map((c: any) => ({
                     ...c,
-                    user: c.user?.full_name || 'Kullanıcı',
+                    user: c.user?.full_name || 'Kullan─▒c─▒',
                     user_avatar: c.user?.avatar_url,
                     reactions: {
                         count: (c.reactions?.filter((r: any) => r.reaction_type === 'like').length || 0) - (c.reactions?.filter((r: any) => r.reaction_type === 'dislike').length || 0)
@@ -161,7 +166,7 @@ export default function VoiceView() {
                     });
                 }
                 // Also parse content for tags if simple strings
-                const contentTags = v.content.match(/#[\wğüşıöçĞÜŞİÖÇ]+/g);
+                const contentTags = v.content.match(/#[\w─ş├╝┼ş─▒├Â├ğ─Ş├£┼Ş─░├û├ç]+/g);
                 if (contentTags) {
                     contentTags.forEach(t => {
                         if (!v.tags?.includes(t)) { // Avoid double counting if already in tags array
@@ -186,25 +191,7 @@ export default function VoiceView() {
     useEffect(() => {
         fetchVoices();
         fetchPoll();
-        
-        // Presence for Active Users
-        const presenceChannel = supabase.channel('voice_view_presence')
-            .on('presence', { event: 'sync' }, () => {
-                const state = presenceChannel.presenceState();
-                let total = 0;
-                for (const key in state) {
-                    total += state[key].length;
-                }
-                setActiveUsers(total);
-            })
-            .subscribe(async (status) => {
-                if (status === 'SUBSCRIBED') {
-                    await presenceChannel.track({
-                        user_id: user?.id || `anon-${Math.random()}`,
-                        online_at: new Date().toISOString()
-                    });
-                }
-            });
+        fetchVoters();
 
         const channel = supabase
             .channel('public:voices')
@@ -215,15 +202,14 @@ export default function VoiceView() {
             .subscribe();
 
         return () => {
-            supabase.removeChannel(presenceChannel);
             supabase.removeChannel(channel);
         };
-    }, [user]); // Added user dependency for presence tracking
+    }, []);
 
     const renderContentWithTags = (content: string) => {
         if (!content) return null;
         
-        const parts = content.split(/(#[\wğüşıöçĞÜŞİÖÇ]+)/g);
+        const parts = content.split(/(#[\w─ş├╝┼ş─▒├Â├ğ─Ş├£┼Ş─░├û├ç]+)/g);
         
         return (
             <p className="text-neutral-800 dark:text-neutral-200 mt-2 mb-3 leading-relaxed whitespace-pre-wrap font-serif text-lg">
@@ -255,7 +241,7 @@ export default function VoiceView() {
         setIsPosting(true);
         try {
             // Extract tags
-            const tags = newStatus.match(/#[\wğüşıöçĞÜŞİÖÇ]+/g) || [];
+            const tags = newStatus.match(/#[\w─ş├╝┼ş─▒├Â├ğ─Ş├£┼Ş─░├û├ç]+/g) || [];
 
             const { error } = await supabase
                 .from('campus_voices')
@@ -269,13 +255,13 @@ export default function VoiceView() {
 
             if (error) throw error;
 
-            toast.success('Sesin kampüste yankılandı!');
+            toast.success('Sesin kamp├╝ste yank─▒land─▒!');
             setNewStatus('');
             setIsAnonymous(false);
             fetchVoices();
         } catch (error) {
             console.error('Error posting voice:', error);
-            toast.error('Paylaşım yapılırken bir hata oluştu');
+            toast.error('Payla┼ş─▒m yap─▒l─▒rken bir hata olu┼ştu');
         } finally {
             setIsPosting(false);
         }
@@ -283,7 +269,7 @@ export default function VoiceView() {
 
     const handleReaction = async (voiceId: string, targetType: 'like' | 'dislike') => {
         if (!user) {
-            toast.error('Oy vermek için giriş yapmalısınız');
+            toast.error('Oy vermek i├ğin giri┼ş yapmal─▒s─▒n─▒z');
             return;
         }
 
@@ -326,7 +312,7 @@ export default function VoiceView() {
     // New Comment Handling
     const handleCommentReaction = async (e: React.MouseEvent, voiceId: string, commentId: string, type: 'like' | 'dislike') => {
         e.stopPropagation();
-        if (!user) return toast.error('Giriş yapmalısınız');
+        if (!user) return toast.error('Giri┼ş yapmal─▒s─▒n─▒z');
 
         try {
             const voice = voices.find(v => v.id === voiceId);
@@ -385,7 +371,7 @@ export default function VoiceView() {
             fetchVoices();
         } catch (error) {
             console.error('Error posting comment:', error);
-            toast.error('Yorum eklenirken bir hata oluştu');
+            toast.error('Yorum eklenirken bir hata olu┼ştu');
         } finally {
             setIsCommenting(false);
         }
@@ -438,11 +424,11 @@ export default function VoiceView() {
                 .eq('id', voiceId);
 
             if (error) throw error;
-            toast.success('Paylaşım silindi');
+            toast.success('Payla┼ş─▒m silindi');
             fetchVoices();
         } catch (error) {
             console.error('Error deleting voice:', error);
-            toast.error('Silinirken bir hata oluştu');
+            toast.error('Silinirken bir hata olu┼ştu');
         }
     };
 
@@ -462,50 +448,32 @@ export default function VoiceView() {
                 .eq('id', editingId);
 
             if (error) throw error;
-            toast.success('Paylaşım güncellendi');
+            toast.success('Payla┼ş─▒m g├╝ncellendi');
             setEditingId(null);
             fetchVoices();
         } catch (error) {
             console.error('Error updating voice:', error);
-            toast.error('Güncellenirken bir hata oluştu');
+            toast.error('G├╝ncellenirken bir hata olu┼ştu');
         }
     };
 
     const handleCommentDelete = async (commentId: string) => {
-        // Optimistic Update
-        const previousVoices = [...voices];
-        setVoices(voices.map(v => ({
-            ...v,
-            comments: v.comments.filter(c => c.id !== commentId)
-        })));
-
         try {
             const { error } = await supabase
                 .from('voice_comments')
-                .delete()
+                .delete() // Or update is_archived if comments have it? Assuming delete for now based on simplicity
                 .eq('id', commentId);
 
             if (error) throw error;
             toast.success('Yorum silindi');
-            // fetchVoices will be triggered by realtime anyway, but we can call it to be safe
-            fetchVoices(); 
+            fetchVoices();
         } catch (error) {
             console.error('Error deleting comment:', error);
-            toast.error('Yorum silinirken bir hata oluştu');
-            setVoices(previousVoices); // Revert on error
+            toast.error('Yorum silinirken bir hata olu┼ştu');
         }
     };
 
     const handleCommentUpdate = async (commentId: string, newContent: string) => {
-        // Optimistic Update
-        const previousVoices = [...voices];
-        setVoices(voices.map(v => ({
-            ...v,
-            comments: v.comments.map(c => 
-                c.id === commentId ? { ...c, content: newContent } : c
-            )
-        })));
-
         try {
             const { error } = await supabase
                 .from('voice_comments')
@@ -513,12 +481,11 @@ export default function VoiceView() {
                 .eq('id', commentId);
 
             if (error) throw error;
-            toast.success('Yorum güncellendi');
+            toast.success('Yorum g├╝ncellendi');
             fetchVoices();
         } catch (error) {
             console.error('Error updating comment:', error);
-            toast.error('Yorum güncellenirken bir hata oluştu');
-            setVoices(previousVoices); // Revert on error
+            toast.error('Yorum g├╝ncellenirken bir hata olu┼ştu');
         }
     };
 
@@ -527,7 +494,7 @@ export default function VoiceView() {
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     
-        if (diffInSeconds < 60) return 'Az önce';
+        if (diffInSeconds < 60) return 'Az ├Ânce';
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}dk`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}s`;
         if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}g`;
@@ -549,7 +516,7 @@ export default function VoiceView() {
             <div className="flex justify-between items-center mb-8 border-b border-neutral-200 dark:border-neutral-800 pb-4">
                 <div className="flex items-center gap-4">
                     <h1 className="text-4xl font-black font-serif tracking-tight text-neutral-900 dark:text-white">
-                        Kampüsün Sesi
+                        Kamp├╝s├╝n Sesi
                     </h1>
                 </div>
                 <div className="flex bg-neutral-100 dark:bg-neutral-800 p-1 rounded-full">
@@ -557,14 +524,14 @@ export default function VoiceView() {
                         onClick={() => setIsGlobalMode(false)}
                         className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${!isGlobalMode ? 'bg-white dark:bg-neutral-900 text-black dark:text-white shadow-sm' : 'text-neutral-500 hover:text-black dark:hover:text-white'}`}
                     >
-                        ODTÜ
+                        ODT├£
                     </button>
                     <button
                         onClick={() => setIsGlobalMode(true)}
                         className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${isGlobalMode ? 'bg-white dark:bg-neutral-900 text-black dark:text-white shadow-sm' : 'text-neutral-500 hover:text-black dark:hover:text-white'}`}
                     >
                         GLOBAL
-                        <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-1.5 py-0.5 rounded uppercase">Yakında</span>
+                        <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] px-1.5 py-0.5 rounded uppercase">Yak─▒nda</span>
                     </button>
                 </div>
             </div>
@@ -584,7 +551,7 @@ export default function VoiceView() {
                             <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
                             <Globe className="w-full h-full text-blue-600 dark:text-blue-400 animate-[spin_60s_linear_infinite]" strokeWidth={0.5} />
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-6xl">🌍</span>
+                                <span className="text-6xl">­şîı</span>
                             </div>
                         </div>
 
@@ -593,13 +560,13 @@ export default function VoiceView() {
                         </h2>
 
                         <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto mb-10 leading-relaxed font-serif">
-                            Sınırlar kalkıyor! Dünyanın dört bir yanındaki üniversite öğrencileriyle çok yakında burada buluşacaksın.
+                            S─▒n─▒rlar kalk─▒yor! D├╝nyan─▒n d├Ârt bir yan─▒ndaki ├╝niversite ├Â─şrencileriyle ├ğok yak─▒nda burada bulu┼şacaks─▒n.
                         </p>
 
                         <div className="flex gap-4">
                             <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
                                 <Lock size={18} />
-                                Erişime Kapalı
+                                Eri┼şime Kapal─▒
                             </span>
                         </div>
                     </motion.div>
@@ -618,7 +585,7 @@ export default function VoiceView() {
                                 <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
                                     <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
                                         <MessageSquare size={24} />
-                                        Öğrenci Kürsüsü
+                                        ├û─şrenci K├╝rs├╝s├╝
                                     </h3>
 
                                     <div className="flex items-center gap-4">
@@ -655,7 +622,7 @@ export default function VoiceView() {
 
                                 <div className="space-y-6">
                                     {voices.length === 0 && !showSkeleton ? (
-                                        <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
+                                        <div className="text-center py-12 text-neutral-500 italic font-serif">Hen├╝z bir ses yok. ─░lk sen ol!</div>
                                     ) : (
                                         <AnimatePresence mode="wait">
                                             <motion.div
@@ -723,7 +690,7 @@ export default function VoiceView() {
                                     onTagFilterChange={setActiveTagFilter}
                                     activeUsers={activeUsers}
                                     issueNumber={issueNumber}
-                                    onVotersClick={() => {}} // Active users tracked via presence
+                                    onVotersClick={fetchVoters}
                                 />
                             </div>
                         </div>
