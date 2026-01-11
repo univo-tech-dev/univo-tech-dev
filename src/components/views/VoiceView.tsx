@@ -166,7 +166,7 @@ const ThreadConnector = ({
             
             setGeometry({ 
                 startY: startCenterY, 
-                endY: endCenterY,
+                endY: endCenterY - 12,
                 visible: true
             });
         };
@@ -227,7 +227,7 @@ const BranchConnector = ({
             const branchWidth = avatarCenterX - offsetX;
             
             setGeometry({
-                y: avatarCenterY - 16,
+                y: avatarCenterY - 12,
                 width: branchWidth,
                 visible: true
             });
@@ -252,7 +252,7 @@ const BranchConnector = ({
                 left: offsetX,
                 top: geometry.y, 
                 width: geometry.width,
-                height: 16
+                height: 12
             }}
         />
     );
