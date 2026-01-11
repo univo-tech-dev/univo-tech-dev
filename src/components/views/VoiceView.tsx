@@ -989,7 +989,7 @@ export default function VoiceView() {
                                                             )}
 
                                                             <div className="flex gap-4 items-stretch">
-                                                                <div className="flex flex-col items-center shrink-0">
+                                                                <div className="flex flex-col items-center shrink-0 relative">
                                                                     <div
                                                                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-white dark:bg-[#0a0a0a]'}`}
                                                                         style={(!voice.is_anonymous && !voice.user.avatar_url && !(voice.user_id === user?.id && user?.user_metadata?.avatar_url)) ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
@@ -1011,7 +1011,7 @@ export default function VoiceView() {
                                                                         Left centered at 1.25rem - 1px.
                                                                     */}
                                                                     {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[2px] h-8 bg-neutral-200 dark:bg-neutral-800 z-0 content-['']" />
+                                                                        <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 z-0 -mt-2 mb-4" />
                                                                     )}
 
                                                                 </div>
@@ -1359,12 +1359,6 @@ export default function VoiceView() {
                                                                                         <>
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map((root, idx) => (
                                                                                                 <div key={root.id} className="relative pb-4 first:pt-4">
-                                                                                                    {/* Rail - Vertical Line from Prior Sibling / Post Owner */}
-                                                                                                    <div 
-                                                                                                        className="absolute top-0 -left-[2.25rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
-                                                                                                        style={{ height: idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) ? '17px' : '100%' }}
-                                                                                                    />
-
                                                                                                     {/* Curve Connector - Connects Rail to Avatar */}
                                                                                                     <div className="absolute top-0 -left-[2.25rem] w-[2.25rem] h-[18px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                     
