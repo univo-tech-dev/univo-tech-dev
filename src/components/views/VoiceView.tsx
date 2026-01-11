@@ -140,8 +140,17 @@ export default function VoiceView() {
     const [isAnonymous, setIsAnonymous] = useState(false);
 
     const [expandedVoices, setExpandedVoices] = useState<Record<string, boolean>>({});
+    const [visibleCommentsCount, setVisibleCommentsCount] = useState<Record<string, number>>({}); // Pagination state
+
     const toggleVoiceComments = (voiceId: string) => {
         setExpandedVoices(prev => ({ ...prev, [voiceId]: !prev[voiceId] }));
+        if (!visibleCommentsCount[voiceId]) {
+            setVisibleCommentsCount(prev => ({ ...prev, [voiceId]: 10 })); // Default show 10
+        }
+    };
+
+    const loadMoreComments = (voiceId: string) => {
+        setVisibleCommentsCount(prev => ({ ...prev, [voiceId]: (prev[voiceId] || 10) + 10 }));
     };
 
     const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
@@ -1106,12 +1115,12 @@ export default function VoiceView() {
                                                                             </div>
                                                                             
                                                                             {/* Yanıtla Button - Replaces Bubble Icon */}
+                                                                            {/* Yanıtla Button - Text Only */}
                                                                             <button
                                                                                 onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
                                                                                 className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
                                                                             >
-                                                                                <MessageSquare size={14} className={activeCommentBox === voice.id ? 'fill-current' : ''} />
-                                                                                Yanıtla
+                                                                                YANITLA
                                                                             </button>
 
                                                                             <button
@@ -1137,21 +1146,21 @@ export default function VoiceView() {
                                                                         <div className="mt-2">
                                                                              <button 
                                                                                 onClick={(e) => { e.stopPropagation(); toggleVoiceComments(voice.id); }}
-                                                                                className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1.5 rounded-md transition-colors w-full sm:w-auto justify-start"
+                                                                                className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-full transition-colors w-full sm:w-auto justify-start uppercase"
                                                                             >
                                                                                 {expandedVoices[voice.id] ? (
                                                                                     <>
                                                                                         <div className="flex items-center justify-center w-4 h-4 mr-1">
                                                                                             <ChevronUp size={14} />
                                                                                         </div>
-                                                                                        Yorumları gizle
+                                                                                        YORUMLARI GİZLE
                                                                                     </>
                                                                                 ) : (
                                                                                     <>
                                                                                         <div className="flex items-center justify-center w-4 h-4 mr-1">
                                                                                             <ChevronDown size={14} />
                                                                                         </div>
-                                                                                        {voice.comments.length} yorumu göster
+                                                                                        {voice.comments.length} YORUMU GÖSTER
                                                                                     </>
                                                                                 )}
                                                                             </button>
@@ -1264,30 +1273,30 @@ export default function VoiceView() {
                                                                                                                     onClick={() => setReplyingTo(isReplying ? null : comment.id)}
                                                                                                                     className={`flex items-center gap-1 text-xs font-bold transition-colors uppercase tracking-wide px-2 py-1 rounded-full hover:bg-neutral-50 dark:hover:bg-neutral-900 ${isReplying ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/10' : 'text-neutral-500 hover:text-blue-600'}`}
                                                                                                                 >
-                                                                                                                    Yanıtla
+                                                                                                                    YANITLA
                                                                                                                 </button>
                                                                                                             </div>
                                                                                                             
                                                                                                             {/* YouTube Style Expand Button - Moved Below Action Bar */}
                                                                                                             {hasChildren && (
-                                                                                                                <div className="pt-2"> {/* Added spacing */}
+                                                                                                                <div className="pt-2"> 
                                                                                                                     <button 
                                                                                                                         onClick={() => setIsOpen(!isOpen)}
-                                                                                                                        className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1.5 rounded-md transition-colors w-full sm:w-auto justify-start"
+                                                                                                                        className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-full transition-colors w-full sm:w-auto justify-start uppercase"
                                                                                                                     >
                                                                                                                         {isOpen ? (
                                                                                                                             <>
                                                                                                                                 <div className="flex items-center justify-center w-4 h-4 mr-1">
                                                                                                                                     <ChevronUp size={14} />
                                                                                                                                 </div>
-                                                                                                                                Yanıtları gizle
+                                                                                                                                YANITLARI GİZLE
                                                                                                                             </>
                                                                                                                         ) : (
                                                                                                                             <>
                                                                                                                                 <div className="flex items-center justify-center w-4 h-4 mr-1">
                                                                                                                                     <ChevronDown size={14} />
                                                                                                                                 </div>
-                                                                                                                                {comment.children.length} yanıtı göster
+                                                                                                                                {comment.children.length} YANIT
                                                                                                                             </>
                                                                                                                         )}
                                                                                                                     </button>
@@ -1298,7 +1307,7 @@ export default function VoiceView() {
                                                                                                         {/* Reply Form */}
                                                                                                         {isReplying && (
                                                                                                             <div className="mt-3 ml-2 relative">
-                                                                                                                <div className="absolute top-0 -left-[1.75rem] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                                <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                                 <form onSubmit={(e) => {
                                                                                                                     e.preventDefault();
                                                                                                                     handleCommentSubmit(e, voice.id, comment.id, replyContent);
@@ -1334,7 +1343,7 @@ export default function VoiceView() {
                                                                                                                             (Gap 0.75rem + AvatarHalf 1rem = 1.75rem)
                                                                                                                             We use border-l-2 and border-b-2.
                                                                                                                         */}
-                                                                                                                        <div className="absolute top-0 -left-[1.75rem] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                                        <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                                         
                                                                                                                         <CommentItem comment={child} depth={depth + 1} />
                                                                                                                     </div>
@@ -1347,7 +1356,22 @@ export default function VoiceView() {
                                                                                         );
                                                                                     };
 
-                                                                                    return roots.map(root => <CommentItem key={root.id} comment={root} />);
+                                                                                    return (
+                                                                                        <>
+                                                                                            {roots.slice(0, visibleCommentsCount[voice.id] || 10).map(root => <CommentItem key={root.id} comment={root} />)}
+                                                                                            {roots.length > (visibleCommentsCount[voice.id] || 10) && (
+                                                                                                <button 
+                                                                                                    onClick={() => loadMoreComments(voice.id)}
+                                                                                                    className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-full transition-colors mt-4 mx-auto uppercase"
+                                                                                                >
+                                                                                                    <div className="flex items-center justify-center w-4 h-4">
+                                                                                                        <ChevronDown size={14} />
+                                                                                                    </div>
+                                                                                                    DAHA FAZLA YÜKLE ({roots.length - (visibleCommentsCount[voice.id] || 10)})
+                                                                                                </button>
+                                                                                            )}
+                                                                                        </>
+                                                                                    );
                                                                                 })()}
                                                                             </div>
                                                                             )}
