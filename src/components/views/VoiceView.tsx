@@ -991,7 +991,7 @@ export default function VoiceView() {
                                                             <div className="flex gap-4 items-stretch">
                                                                 <div className="flex flex-col items-center shrink-0">
                                                                     <div
-                                                                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white'}`}
+                                                                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-white dark:bg-[#0a0a0a]'}`}
                                                                         style={(!voice.is_anonymous && !voice.user.avatar_url && !(voice.user_id === user?.id && user?.user_metadata?.avatar_url)) ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
                                                                     >
                                                                         {voice.is_anonymous ? (
@@ -1008,7 +1008,7 @@ export default function VoiceView() {
                                                                     </div>
                                                                     {/* Vertical Thread Line from Post Owner - connects to root comments */}
                                                                     {(expandedVoices[voice.id] && voice.comments.length > 0) && (
-                                                                        <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 -mb-4 transition-colors relative z-0" />
+                                                                        <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 transition-colors relative z-0" />
                                                                     )}
                                                                 </div>
 
@@ -1385,31 +1385,34 @@ export default function VoiceView() {
                                                                                 })()}
                                                                             </div>
                                                                             )}
-                                                                            {activeCommentBox === voice.id && (
-                                                                                <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        placeholder="Yorumunu yaz..."
-                                                                                        className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors"
-                                                                                        value={newComment}
-                                                                                        onChange={(e) => setNewComment(e.target.value)}
-                                                                                        autoFocus
-                                                                                    />
-                                                                                    <button
-                                                                                        type="submit"
-                                                                                        disabled={!newComment.trim() || isCommenting}
-                                                                                        className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
-                                                                                    >
-                                                                                        {isCommenting ? '...' : <Send size={14} />}
-                                                                                    </button>
-                                                                                </form>
-                                                                            )}
+
                                                                             </>
                                                                             )}
                                                                         </div>
                                                                     )}
                                                                 </div>
                                                             </div>
+                                                            {activeCommentBox === voice.id && (
+                                                                 <div className="pl-[3.5rem] pr-0 pb-4 animate-in fade-in slide-in-from-top-1">
+                                                                     <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 bg-neutral-50 dark:bg-neutral-900/50 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800">
+                                                                         <input
+                                                                             type="text"
+                                                                             placeholder="Yorumunu yaz..."
+                                                                             className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors rounded-md"
+                                                                             value={newComment}
+                                                                             onChange={(e) => setNewComment(e.target.value)}
+                                                                             autoFocus
+                                                                         />
+                                                                         <button
+                                                                             type="submit"
+                                                                             disabled={!newComment.trim() || isCommenting}
+                                                                             className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors rounded-md"
+                                                                         >
+                                                                             {isCommenting ? '...' : <Send size={14} />}
+                                                                         </button>
+                                                                     </form>
+                                                                 </div>
+                                                             )}
                                                         </article>
                                                     );
                                                 })}
