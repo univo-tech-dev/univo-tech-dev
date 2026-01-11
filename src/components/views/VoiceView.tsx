@@ -1162,93 +1162,121 @@ export default function VoiceView() {
                                                                                     // 3. Recursive Component
                                                                                     const CommentItem = ({ comment, depth = 0 }: { comment: any, depth?: number }) => {
                                                                                         const isReplying = replyingTo === comment.id;
+                                                                                        const hasChildren = comment.children && comment.children.length > 0;
                                                                                         
                                                                                         return (
-                                                                                            <div className={`flex flex-col ${depth > 0 ? 'ml-8 mt-3 border-l-2 border-neutral-100 dark:border-neutral-800 pl-4' : ''}`}>
-                                                                                                <div className="flex gap-3">
-                                                                                                    <div 
-                                                                                                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden shrink-0 border border-neutral-200 dark:border-neutral-700"
-                                                                                                        style={!comment.user_avatar ? { 
-                                                                                                            backgroundColor: 'var(--primary-color)'
-                                                                                                        } : undefined}
-                                                                                                    >
-                                                                                                        {comment.user_avatar ? (
-                                                                                                            <img src={comment.user_avatar} alt={comment.user} className="w-full h-full object-cover" />
-                                                                                                        ) : (
-                                                                                                            comment.user.charAt(0)
+                                                                                            <div className={`flex flex-col ${depth > 0 ? 'mt-4' : 'mt-4 first:mt-0'}`}>
+                                                                                                <div className="flex gap-3 relative group/comment">
+                                                                                                    {/* Thread Line Extension for Children context */}
+                                                                                                    {/* Avatar Column */}
+                                                                                                    <div className="flex flex-col items-center shrink-0">
+                                                                                                        <div 
+                                                                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden border border-neutral-200 dark:border-neutral-700 z-10"
+                                                                                                            style={!comment.user_avatar ? { 
+                                                                                                                backgroundColor: 'var(--primary-color)'
+                                                                                                            } : undefined}
+                                                                                                        >
+                                                                                                            {comment.user_avatar ? (
+                                                                                                                <img src={comment.user_avatar} alt={comment.user} className="w-full h-full object-cover" />
+                                                                                                            ) : (
+                                                                                                                comment.user.charAt(0)
+                                                                                                            )}
+                                                                                                        </div>
+                                                                                                        {/* Vertical Line for immediate children */}
+                                                                                                        {hasChildren && (
+                                                                                                            <div className="w-0.5 grow bg-neutral-200 dark:bg-neutral-800 -mb-4 mt-2 group-hover/comment:bg-neutral-300 dark:group-hover/comment:bg-neutral-700 transition-colors" />
                                                                                                         )}
                                                                                                     </div>
-                                                                                                    <div className="flex-1">
-                                                                                                        <div className="bg-neutral-50 dark:bg-neutral-900 rounded-2xl rounded-tl-none p-3 border border-neutral-100 dark:border-neutral-800">
+
+                                                                                                    {/* Content Column */}
+                                                                                                    <div className="flex-1 min-w-0">
+                                                                                                        {/* Comment Card - Post Style */}
+                                                                                                        <div className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow">
                                                                                                             <div className="flex justify-between items-baseline mb-1">
                                                                                                                 <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
                                                                                                                     {comment.user}
                                                                                                                 </Link>
                                                                                                                 <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{formatRelativeTime(comment.created_at)}</span>
                                                                                                             </div>
-                                                                                                            <p className="text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">{comment.content}</p>
-                                                                                                        </div>
-                                                                                                        
-                                                                                                        {/* Comment Actions */}
-                                                                                                        <div className="flex items-center gap-4 mt-1 ml-2">
-                                                                                                             {/* Reactions */}
-                                                                                                            <div className="flex items-center gap-1">
-                                                                                                                <button
-                                                                                                                    onClick={(e) => handleCommentReaction(e, voice.id, comment.id, 'like')}
-                                                                                                                    className={`p-1 rounded-full transition-all ${comment.user_reaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
+                                                                                                            <p className="text-sm text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap leading-relaxed">{comment.content}</p>
+                                                                                                            
+                                                                                                            {/* Actions Bar */}
+                                                                                                            <div className="flex items-center gap-4 mt-3 pt-2 border-t border-neutral-100 dark:border-neutral-800/50">
+                                                                                                                 {/* Reactions */}
+                                                                                                                <div className="flex items-center gap-0.5 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1 py-0.5 border border-neutral-100 dark:border-neutral-800">
+                                                                                                                    <button
+                                                                                                                        onClick={(e) => handleCommentReaction(e, voice.id, comment.id, 'like')}
+                                                                                                                        className={`p-1 rounded-full transition-all flex items-center justify-center w-6 h-6 hover:bg-white dark:hover:bg-black hover:shadow-sm ${comment.user_reaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
+                                                                                                                    >
+                                                                                                                        <ArrowBigUp size={16} className={comment.user_reaction === 'like' ? 'fill-current' : ''} />
+                                                                                                                    </button>
+                                                                                                                    <span className={`text-[10px] font-bold min-w-[0.5rem] text-center ${
+                                                                                                                        (comment.reactions?.count || 0) > 0 ? 'text-green-600' : 
+                                                                                                                        (comment.reactions?.count || 0) < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-500'
+                                                                                                                    }`}>
+                                                                                                                        {comment.reactions?.count || 0}
+                                                                                                                    </span>
+                                                                                                                    <button
+                                                                                                                        onClick={(e) => handleCommentReaction(e, voice.id, comment.id, 'dislike')}
+                                                                                                                        className={`p-1 rounded-full transition-all flex items-center justify-center w-6 h-6 hover:bg-white dark:hover:bg-black hover:shadow-sm ${comment.user_reaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-600'}`}
+                                                                                                                    >
+                                                                                                                        <ArrowBigUp size={16} className={`rotate-180 ${comment.user_reaction === 'dislike' ? 'fill-current' : ''}`} />
+                                                                                                                    </button>
+                                                                                                                </div>
+
+                                                                                                                <button 
+                                                                                                                    onClick={() => setReplyingTo(isReplying ? null : comment.id)}
+                                                                                                                    className={`flex items-center gap-1 text-xs font-bold transition-colors uppercase tracking-wide px-2 py-1 rounded-full hover:bg-neutral-50 dark:hover:bg-neutral-900 ${isReplying ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/10' : 'text-neutral-500 hover:text-blue-600'}`}
                                                                                                                 >
-                                                                                                                    <ArrowBigUp size={16} className={comment.user_reaction === 'like' ? 'fill-current' : ''} />
-                                                                                                                </button>
-                                                                                                                <span className={`text-xs font-bold min-w-[1rem] text-center ${
-                                                                                                                    (comment.reactions?.count || 0) > 0 ? 'text-green-600' : 
-                                                                                                                    (comment.reactions?.count || 0) < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-500'
-                                                                                                                }`}>
-                                                                                                                    {comment.reactions?.count || 0}
-                                                                                                                </span>
-                                                                                                                <button
-                                                                                                                    onClick={(e) => handleCommentReaction(e, voice.id, comment.id, 'dislike')}
-                                                                                                                    className={`p-1 rounded-full transition-all ${comment.user_reaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
-                                                                                                                >
-                                                                                                                    <ArrowBigUp size={16} className={`rotate-180 ${comment.user_reaction === 'dislike' ? 'fill-current' : ''}`} />
+                                                                                                                    Yanıtla
                                                                                                                 </button>
                                                                                                             </div>
-
-                                                                                                            <button 
-                                                                                                                onClick={() => setReplyingTo(isReplying ? null : comment.id)}
-                                                                                                                className={`flex items-center gap-1 text-xs font-bold transition-colors ${isReplying ? 'text-blue-500' : 'text-neutral-400 hover:text-blue-500'}`}
-                                                                                                            >
-                                                                                                                Yanıtla
-                                                                                                            </button>
                                                                                                         </div>
-
+                                                                                                        
                                                                                                         {/* Reply Form */}
                                                                                                         {isReplying && (
-                                                                                                            <form onSubmit={(e) => {
-                                                                                                                e.preventDefault();
-                                                                                                                handleCommentSubmit(e, voice.id, comment.id, replyContent);
-                                                                                                                setReplyContent(''); 
-                                                                                                                setReplyingTo(null);
-                                                                                                            }} className="mt-2 flex gap-2 animate-in fade-in slide-in-from-top-1">
-                                                                                                                <input
-                                                                                                                    autoFocus
-                                                                                                                    value={replyContent}
-                                                                                                                    onChange={(e) => setReplyContent(e.target.value)}
-                                                                                                                    placeholder={`@${comment.user} yanıt ver...`}
-                                                                                                                    className="flex-1 px-3 py-2 text-xs border border-neutral-200 dark:border-neutral-700 rounded-lg focus:border-black dark:focus:border-white outline-none bg-white dark:bg-neutral-800 dark:text-white"
-                                                                                                                />
-                                                                                                                <button 
-                                                                                                                    type="submit"
-                                                                                                                    disabled={isCommenting || !replyContent.trim()}
-                                                                                                                    className="bg-black dark:bg-white text-white dark:text-black p-2 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50"
-                                                                                                                >
-                                                                                                                    <Send size={12} />
-                                                                                                                </button>
-                                                                                                            </form>
+                                                                                                            <div className="mt-3 ml-2 pl-4 border-l-2 border-neutral-200 dark:border-neutral-800">
+                                                                                                                <form onSubmit={(e) => {
+                                                                                                                    e.preventDefault();
+                                                                                                                    handleCommentSubmit(e, voice.id, comment.id, replyContent);
+                                                                                                                    setReplyContent(''); 
+                                                                                                                    setReplyingTo(null);
+                                                                                                                }} className="flex gap-2 animate-in fade-in slide-in-from-top-1">
+                                                                                                                    <input
+                                                                                                                        autoFocus
+                                                                                                                        value={replyContent}
+                                                                                                                        onChange={(e) => setReplyContent(e.target.value)}
+                                                                                                                        placeholder={`@${comment.user} yanıt ver...`}
+                                                                                                                        className="flex-1 px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-700 rounded-lg focus:border-black dark:focus:border-white outline-none bg-white dark:bg-neutral-800 dark:text-white shadow-sm"
+                                                                                                                    />
+                                                                                                                    <button 
+                                                                                                                        type="submit"
+                                                                                                                        disabled={isCommenting || !replyContent.trim()}
+                                                                                                                        className="bg-black dark:bg-white text-white dark:text-black p-2 rounded-lg hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50"
+                                                                                                                    >
+                                                                                                                        <Send size={16} />
+                                                                                                                    </button>
+                                                                                                                </form>
+                                                                                                            </div>
                                                                                                         )}
 
-                                                                                                        {/* Recursion */}
-                                                                                                        {comment.children.length > 0 && (
-                                                                                                            <div className="mt-2">
+                                                                                                        {/* Recursion - Children Render */}
+                                                                                                        {hasChildren && (
+                                                                                                            <div className="mt-4 pl-0"> 
+                                                                                                                {/* Note: We used to have margin here, but now we use the Flex container of the parent. 
+                                                                                                                    Actually, to make the line continuous from the parent avatar, the children usually sit strict under the content OR deeply indented.
+                                                                                                                    
+                                                                                                                    Standard Thread Design:
+                                                                                                                    [Avatar] [Content]
+                                                                                                                     |
+                                                                                                                     |---- [Avatar] [Content]
+                                                                                                                     
+                                                                                                                    In my code:
+                                                                                                                    The vertical line is in the Avatar Column of the PARENT. 
+                                                                                                                    The children need to be INSIDE the Content Column? Or outside?
+                                                                                                                    If children are in Content Column, they are aligned with Content.
+                                                                                                                    If we want them indented, we just indent content column children.
+                                                                                                                */}
                                                                                                                 {comment.children.map((child: any) => (
                                                                                                                     <CommentItem key={child.id} comment={child} depth={depth + 1} />
                                                                                                                 ))}
