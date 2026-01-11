@@ -622,7 +622,7 @@ export default function OfficialView() {
     const hasMoreItems = displayedItems.length > displayLimit;
 
     return (
-        <div className="container mx-auto px-4 pt-8 pb-32 relative overflow-x-hidden min-h-[100dvh]">
+        <div className="container mx-auto px-4 pt-8 pb-32 relative min-h-[100dvh]">
             {/* Newspaper Header - Static on mobile */}
             <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 min-h-[240px]">
                 <div className="flex flex-col items-center justify-center gap-4">
@@ -712,7 +712,7 @@ export default function OfficialView() {
                     >
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Main Column */}
-                            <div className="lg:col-span-2 space-y-8 min-w-0 overflow-x-hidden">
+                            <div className="lg:col-span-2 space-y-8 min-w-0">
 
                                 {/* Pinned Announcement - Newspaper Theme */}
                                 {news[0] && (

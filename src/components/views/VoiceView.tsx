@@ -775,7 +775,7 @@ export default function VoiceView() {
     }
 
     return (
-        <div className="container mx-auto px-4 pt-8 pb-32 relative min-h-[100dvh] overflow-x-hidden">
+        <div className="container mx-auto px-4 pt-8 pb-32 relative min-h-[100dvh]">
             {/* Newspaper Header - Static on mobile */}
             <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 relative min-h-[240px]">
                 <div className="flex flex-col items-center justify-center gap-4">

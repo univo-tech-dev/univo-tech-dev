@@ -201,3 +201,33 @@ a:hover {
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* Custom Themed Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d4d4; /* neutral-300 */
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3; /* neutral-400 */
+}
+
+/* Dark mode scrollbar */
+html.dark ::-webkit-scrollbar-thumb {
+  background: #404040; /* neutral-700 */
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #525252; /* neutral-600 */
+}
