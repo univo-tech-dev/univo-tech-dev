@@ -1011,7 +1011,7 @@ export default function VoiceView() {
                                                                         Left centered at 1.25rem - 1px.
                                                                     */}
                                                                     {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="absolute top-10 left-[calc(1.25rem-1px)] w-[2px] h-8 bg-neutral-200 dark:bg-neutral-800 z-0 content-['']" />
+                                                                        <div className="absolute top-10 left-[1.25rem] w-[2px] h-8 bg-neutral-200 dark:bg-neutral-800 z-0 content-['']" />
                                                                     )}
 
                                                                 </div>
@@ -1332,7 +1332,7 @@ export default function VoiceView() {
 
                                                                                                         {/* Recursion - Children Render */}
                                                                                                         {hasChildren && (
-                                                                                                            <div className="mt-4 ml-6">
+                                                                                                            <div className="mt-4">
                                                                                                                 {comment.children.map((child: any, idx: number) => (
                                                                                                                     <div key={child.id} className="relative pb-4 last:pb-0">
                                                                                                                         {/* Rail - Vertical Line from Parent */}
