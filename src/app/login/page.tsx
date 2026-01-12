@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff, GraduationCap, AlertCircle, CheckCircle, ArrowRight, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { useTheme } from '@/contexts/ThemeContext';
 
 // University configurations (expandable)
 const UNIVERSITIES = [
@@ -14,7 +15,7 @@ const UNIVERSITIES = [
     name: 'ODTÜ',
     fullName: 'Orta Doğu Teknik Üniversitesi',
     color: '#C8102E',
-    logo: '/metu.png',
+    logo: '/odtu_logo.png',
     enabled: true,
     moodleUrl: 'odtuclass2025f.metu.edu.tr'
   },
@@ -23,7 +24,7 @@ const UNIVERSITIES = [
     name: 'İTÜ',
     fullName: 'İstanbul Teknik Üniversitesi',
     color: '#1D428A',
-    logo: '/universities/itu.png',
+    logo: '/universities/itu_cleaned.png',
     enabled: false,
     moodleUrl: ''
   },
@@ -32,7 +33,7 @@ const UNIVERSITIES = [
     name: 'Bilkent',
     fullName: 'Bilkent Üniversitesi',
     color: '#002D72',
-    logo: '/universities/bilkent.png',
+    logo: '/universities/bilkent_cleaned.png',
     enabled: false,
     moodleUrl: ''
   },
@@ -41,7 +42,7 @@ const UNIVERSITIES = [
     name: 'Hacettepe',
     fullName: 'Hacettepe Üniversitesi',
     color: '#D4212C',
-    logo: '/universities/hacettepe.png',
+    logo: '/universities/hacettepe_cleaned.png',
     enabled: false,
     moodleUrl: ''
   },
@@ -50,7 +51,16 @@ const UNIVERSITIES = [
     name: 'Boğaziçi',
     fullName: 'Boğaziçi Üniversitesi',
     color: '#003366',
-    logo: '/universities/bogazici.png',
+    logo: '/universities/bogazici_cleaned.png',
+    enabled: false,
+    moodleUrl: ''
+  },
+  {
+    id: 'ankara',
+    name: 'AÜ',
+    fullName: 'Ankara Üniversitesi',
+    color: '#00458e',
+    logo: '/universities/ankara_cleaned.png',
     enabled: false,
     moodleUrl: ''
   }
@@ -59,6 +69,7 @@ const UNIVERSITIES = [
 export default function LoginPage() {
     const router = useRouter();
     const { signInWithMetu } = useAuth();
+    const { resolvedTheme } = useTheme();
     
     // Step: 'select' or 'login'
     const [step, setStep] = useState<'select' | 'login'>('select');
@@ -155,8 +166,12 @@ export default function LoginPage() {
                     
                     {/* Header */}
                     <div className="p-8 text-center border-b border-neutral-100 dark:border-neutral-800">
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                            <img src="/univo-logo-transparent.png" alt="Univo" className="w-full h-full object-contain" />
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden bg-white dark:bg-neutral-800 shadow-sm border border-neutral-100 dark:border-neutral-800 p-1.5">
+                            <img 
+                                src={resolvedTheme === 'dark' ? '/univo-white-clean.png' : '/univo-black-clean.png'} 
+                                alt="Univo" 
+                                className="w-full h-full object-contain" 
+                            />
                         </div>
                         <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white">Univo'ya Giriş</h2>
                         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
@@ -179,14 +194,21 @@ export default function LoginPage() {
                                 }`}
                             >
                                 <div 
-                                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0 overflow-hidden"
+                                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
                                     style={{ backgroundColor: uni.color }}
                                 >
-                                    {uni.logo ? (
-                                        <img src={uni.logo} alt={uni.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        uni.name.charAt(0)
-                                    )}
+                                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-0.5">
+                                        {uni.logo ? (
+                                            <img src={uni.logo} alt={uni.name} className="w-full h-full object-contain" />
+                                        ) : (
+                                            <div 
+                                                className="w-full h-full flex items-center justify-center text-white font-bold text-lg"
+                                                style={{ backgroundColor: uni.color }}
+                                            >
+                                                {uni.name.charAt(0)}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="text-left flex-1">
                                     <h3 className="font-bold text-neutral-900 dark:text-white">{uni.name}</h3>
@@ -229,14 +251,21 @@ export default function LoginPage() {
                     
                     <div className="flex items-center gap-4">
                         <div 
-                            className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-xl shrink-0 overflow-hidden"
-                            style={{ backgroundColor: selectedUni?.color || 'var(--primary-color)' }}
+                            className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
+                            style={{ backgroundColor: selectedUni?.color || '#C8102E' }}
                         >
-                            {selectedUni?.logo ? (
-                                <img src={selectedUni.logo} alt={selectedUni.name} className="w-full h-full object-cover" />
-                            ) : (
-                                selectedUni?.name.charAt(0) || 'U'
-                            )}
+                            <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-0.5">
+                                {selectedUni?.logo ? (
+                                    <img src={selectedUni.logo} alt={selectedUni.name} className="w-full h-full object-contain" />
+                                ) : (
+                                    <div 
+                                        className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
+                                        style={{ backgroundColor: selectedUni?.color || '#C8102E' }}
+                                    >
+                                        {selectedUni?.name.charAt(0) || 'U'}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div>
                             <h2 className="text-xl font-bold font-serif text-neutral-900 dark:text-white">{selectedUni?.name} ile Giriş</h2>

@@ -136,10 +136,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const forceTimer = setTimeout(() => setForceLoading(false), MIN_LOADING_TIME);
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+      if (error && (error.message.includes('refresh_token') || error.message.includes('Refresh Token Not Found'))) {
+        console.warn('Stale session detected, clearing...', error);
+        await supabase.auth.signOut();
+        setUser(null);
+        setProfile(null);
+      } else {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          fetchProfile(session.user.id);
+        }
       }
       
       setAuthLoading(false);
@@ -148,11 +155,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Handle potential refresh token errors that might trigger this change
+      if (event === 'SIGNED_OUT' || (event as any) === 'TOKEN_REFRESHED' && !session) {
+          // If we're effectively signed out or a refresh failed, ensure local state is clean
+          setUser(null);
+          setProfile(null);
+      } else if (session?.user) {
+        setUser(session.user);
         fetchProfile(session.user.id);
       } else {
+        setUser(null);
         setProfile(null);
       }
       setAuthLoading(false);
