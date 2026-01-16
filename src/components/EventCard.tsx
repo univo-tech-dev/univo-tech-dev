@@ -66,11 +66,11 @@ export default function EventCard({ event, isAttending = false }: EventCardProps
             {event.community.category || event.category}
           </span>
           {isPastEvent ? (
-            <span className="bg-neutral-200 text-neutral-600 border-2 border-neutral-400 px-2 py-0.5 text-xs font-bold uppercase">
+            <span className="bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 border-2 border-neutral-400 dark:border-neutral-500 px-2 py-0.5 text-xs font-bold uppercase">
               Tamamlandı
             </span>
           ) : isAttending && (
-            <span className="bg-green-100 text-green-800 border-2 border-green-800 px-2 py-0.5 text-xs font-bold uppercase transform -rotate-2">
+            <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border-2 border-green-800 dark:border-green-600 px-2 py-0.5 text-xs font-bold uppercase transform -rotate-2">
               ✓ Katılıyorsun
             </span>
           )}

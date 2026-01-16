@@ -66,7 +66,7 @@ export default function AdminLogsPage() {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${log.action.includes('BAN') ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+                                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${log.action.includes('BAN') ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                                         }`}>
                                         {log.action}
                                     </span>
