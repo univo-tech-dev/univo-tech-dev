@@ -260,18 +260,18 @@ function VoiceItem({
                                         </>
                                     ) : (
                                         <>
-                                            <Link 
-                                                href={`/profile/${voice.user_id}`}
-                                                className="w-full text-left px-4 py-2 text-sm font-medium !text-neutral-700 dark:!text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors"
-                                            >
-                                                <User size={14} className="text-neutral-500 dark:text-neutral-400" /> Profili Gör
-                                            </Link>
                                             {!voice.is_anonymous && (
                                                 <FriendButton 
                                                     targetUserId={voice.user_id} 
                                                     variant="menu-item"
                                                 />
                                             )}
+                                            <Link 
+                                                href={`/profile/${voice.user_id}`}
+                                                className="w-full text-left px-4 py-2 text-sm font-medium !text-neutral-700 dark:!text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors"
+                                            >
+                                                <User size={14} className="text-neutral-500 dark:text-neutral-400" /> Profili Gör
+                                            </Link>
                                             <button
                                                 onClick={() => {
                                                     openReportModal({ type: 'post', id: voice.id, preview: voice.content.substring(0, 100) });

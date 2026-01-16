@@ -15,11 +15,29 @@ export async function GET(req: NextRequest) {
             .from('admin_audit_logs')
             .select('*')
             .order('created_at', { ascending: false })
-            .limit(100);
+            .limit(500);
 
         if (error) throw error;
 
-        return NextResponse.json(logs);
+        // Parse details JSON to extract target_user_name
+        const enrichedLogs = logs?.map(log => {
+            let targetUserName = null;
+            let targetUserId = null;
+            try {
+                if (log.details) {
+                    const details = typeof log.details === 'string' ? JSON.parse(log.details) : log.details;
+                    targetUserName = details.target_user_name || details.user_name || null;
+                    targetUserId = details.target_user_id || details.user_id || null;
+                }
+            } catch (e) {}
+            return {
+                ...log,
+                target_user_name: targetUserName,
+                target_user_id: targetUserId
+            };
+        }) || [];
+
+        return NextResponse.json(enrichedLogs);
     } catch (err: any) {
         console.error('Admin logs fetch error:', err);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
