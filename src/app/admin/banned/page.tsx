@@ -101,7 +101,7 @@ export default function BannedUsersPage() {
                                     <td className="px-6 py-4 text-right">
                                         <button
                                             onClick={() => handleUnban(user.id)}
-                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-neutral-200 bg-white hover:bg-neutral-50 text-neutral-700 text-xs font-bold transition-colors"
+                                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs font-bold transition-colors"
                                         >
                                             <CheckCircle size={14} className="text-green-600" /> Yasağı Kaldır
                                         </button>

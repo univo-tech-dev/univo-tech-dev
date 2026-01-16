@@ -204,8 +204,8 @@ export default function AdminPage() {
                                         <button
                                             onClick={() => user.is_banned ? handleToggleBan(user.id, true) : openBanModal(user)}
                                             className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${user.is_banned
-                                                ? 'border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                                                : 'border-red-200 text-red-600 hover:bg-red-50'
+                                                ? 'border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                                                : 'border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'
                                                 }`}
                                         >
                                             {user.is_banned ? 'Yasağı Kaldır' : 'Yasakla'}
