@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-neutral-100 dark:bg-[#0a0a0a] flex transition-colors">
       {/* Sidebar */}
       <aside className="w-64 bg-white dark:bg-neutral-900 text-black dark:text-white border-r border-neutral-200 dark:border-neutral-800 fixed top-16 bottom-0 flex flex-col overflow-y-auto z-40 transition-colors">
-        <div className="p-6 border-b border-neutral-200 dark:border-neutral-800">
+        <div className="px-4 py-5 border-b border-neutral-200 dark:border-neutral-800">
            <h1 className="text-xs font-bold font-serif text-black dark:text-white uppercase tracking-tight">
               TOPLULUK PANELİ
            </h1>
