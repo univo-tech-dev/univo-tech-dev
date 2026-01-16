@@ -60,3 +60,14 @@ export const METU_CLASSES = [
   "Mezun"
 ];
 
+export const BAN_CATEGORIES = [
+  { id: 'spam', label: 'Spam / Reklam', description: 'İstenmeyen içerik paylaşımı' },
+  { id: 'harassment', label: 'Taciz / Zorbalık', description: 'Diğer kullanıcılara karşı taciz' },
+  { id: 'hate_speech', label: 'Nefret Söylemi', description: 'Ayrımcı veya nefret içerikli söylem' },
+  { id: 'inappropriate', label: 'Uygunsuz İçerik', description: 'Müstehcen veya uygunsuz içerik' },
+  { id: 'impersonation', label: 'Kimlik Taklidi', description: 'Başka bir kişi veya kurum taklidi' },
+  { id: 'misinformation', label: 'Yanlış Bilgi', description: 'Kasıtlı yanıltıcı bilgi paylaşımı' },
+  { id: 'security', label: 'Güvenlik İhlali', description: 'Sistem güvenliğini tehdit eden davranış' },
+  { id: 'terms_violation', label: 'Kullanım Koşulları İhlali', description: 'Site kurallarının ihlali' },
+  { id: 'other', label: 'Diğer', description: 'Belirtilen kategorilere uymayan sebep' }
+];

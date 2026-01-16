@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Search, Ban, CheckCircle, MoreHorizontal, X, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { BAN_CATEGORIES } from '@/lib/constants';
 
 interface User {
     id: string;
@@ -14,6 +15,7 @@ interface User {
     created_at: string;
     email?: string;
     ban_reason?: string;
+    ban_category?: string;
     banned_by?: string;
 }
 
@@ -29,6 +31,7 @@ export default function AdminPage() {
     const [banModalOpen, setBanModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [banReason, setBanReason] = useState('');
+    const [banCategory, setBanCategory] = useState('');
 
     const fetchData = async () => {
         try {
@@ -65,27 +68,32 @@ export default function AdminPage() {
     const openBanModal = (user: User) => {
         setSelectedUser(user);
         setBanReason('');
+        setBanCategory('');
         setBanModalOpen(true);
     };
 
     const handleBanSubmit = async () => {
         if (!selectedUser) return;
+        if (!banCategory) {
+            toast.error('Lütfen bir yasaklama kategorisi seçin.');
+            return;
+        }
         if (!banReason.trim()) {
             toast.error('Lütfen bir yasaklama sebebi girin.');
             return;
         }
 
-        await handleToggleBan(selectedUser.id, false, banReason); // is_banned currently false, so we are banning
+        await handleToggleBan(selectedUser.id, false, banReason, banCategory);
         setBanModalOpen(false);
         setSelectedUser(null);
     };
 
-    const handleToggleBan = async (userId: string, currentStatus: boolean, reason?: string) => {
+    const handleToggleBan = async (userId: string, currentStatus: boolean, reason?: string, category?: string) => {
         try {
             const res = await fetch('/api/admin/actions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'toggle_ban', userId, isBanned: !currentStatus, reason: reason })
+                body: JSON.stringify({ action: 'toggle_ban', userId, isBanned: !currentStatus, reason, category })
             });
 
             if (!res.ok) throw new Error('İşlem başarısız');
@@ -98,6 +106,7 @@ export default function AdminPage() {
                 ...u,
                 is_banned: !currentStatus,
                 ban_reason: !currentStatus ? reason : undefined,
+                ban_category: !currentStatus ? category : undefined,
                 banned_by: !currentStatus ? 'Siz' : undefined
             } : u));
         } catch (err) {
@@ -221,17 +230,41 @@ export default function AdminPage() {
                                 <X size={20} />
                             </button>
                         </div>
-                        <div className="p-6">
-                            <p className="text-sm text-neutral-600 dark:text-neutral-300 mb-4">
+                        <div className="p-6 space-y-4">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-300">
                                 <span className="font-bold text-neutral-900 dark:text-white">{selectedUser.full_name}</span> adlı kullanıcıyı yasaklamak üzeresiniz.
                             </p>
-                            <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Yasaklama Sebebi</label>
-                            <textarea
-                                value={banReason}
-                                onChange={(e) => setBanReason(e.target.value)}
-                                className="w-full h-32 p-3 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
-                                placeholder="Gerekçe belirtiniz..."
-                            ></textarea>
+                            
+                            {/* Category Selection */}
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Yasaklama Kategorisi</label>
+                                <select
+                                    value={banCategory}
+                                    onChange={(e) => setBanCategory(e.target.value)}
+                                    className="w-full p-3 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-white"
+                                >
+                                    <option value="">Kategori seçin...</option>
+                                    {BAN_CATEGORIES.map((cat) => (
+                                        <option key={cat.id} value={cat.id}>{cat.label}</option>
+                                    ))}
+                                </select>
+                                {banCategory && (
+                                    <p className="text-xs text-neutral-400 mt-1">
+                                        {BAN_CATEGORIES.find(c => c.id === banCategory)?.description}
+                                    </p>
+                                )}
+                            </div>
+                            
+                            {/* Reason */}
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Açıklama / Not</label>
+                                <textarea
+                                    value={banReason}
+                                    onChange={(e) => setBanReason(e.target.value)}
+                                    className="w-full h-24 p-3 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-red-500 resize-none dark:text-white"
+                                    placeholder="Detaylı gerekçe belirtiniz..."
+                                ></textarea>
+                            </div>
                         </div>
                         <div className="p-4 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-100 dark:border-neutral-700 flex justify-end gap-3">
                             <button

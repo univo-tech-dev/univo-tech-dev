@@ -16,14 +16,15 @@ export async function POST(req: NextRequest) {
 
         // Action: Toggle Ban
         if (action === 'toggle_ban') {
-            const { userId, isBanned, reason } = body;
+            const { userId, isBanned, reason, category } = body;
 
             // 1. Update Profile
             const { error: updateError } = await supabase
                 .from('profiles')
                 .update({
                     is_banned: isBanned,
-                    ban_reason: isBanned ? reason : null, // Clear reason if unbanning
+                    ban_reason: isBanned ? reason : null,
+                    ban_category: isBanned ? category : null,
                     banned_by: isBanned ? session.adminName : null
                 })
                 .eq('id', userId);
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
                     admin_name: session.adminName,
                     action: isBanned ? 'USER_BAN' : 'USER_UNBAN',
                     target_user_id: userId,
-                    details: isBanned ? `Sebep: ${reason}` : 'Yasak kaldırıldı.'
+                    details: isBanned ? `Kategori: ${category}, Sebep: ${reason}` : 'Yasak kaldırıldı.'
                 });
 
             if (logError) console.error('Audit log error:', logError);

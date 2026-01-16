@@ -1,8 +1,22 @@
-import { toast } from 'sonner';
+'use client';
+
+import { useAuth } from '@/contexts/AuthContext';
+import BanScreen from '@/components/BanScreen';
 
 export default function MetuVerificationGuard({ children }: { children: React.ReactNode }) {
-    // GUARD DISABLED BY USER REQUEST
-    // Previously forced ODTÜ login for unverified users. 
-    // Now just renders children directly.
+    const { isBanned, banInfo, signOut } = useAuth();
+
+    // Show ban screen if user is banned
+    if (isBanned) {
+        return (
+            <BanScreen
+                banCategory={banInfo?.category}
+                banReason={banInfo?.reason}
+                bannedBy={banInfo?.bannedBy}
+                onLogout={signOut}
+            />
+        );
+    }
+
     return <>{children}</>;
 }

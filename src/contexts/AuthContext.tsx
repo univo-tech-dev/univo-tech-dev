@@ -10,6 +10,10 @@ interface Profile {
   avatar_url?: string;
   department?: string;
   student_id?: string;
+  is_banned?: boolean;
+  ban_reason?: string;
+  ban_category?: string;
+  banned_by?: string;
 }
 
 interface MetuLoginResult {
@@ -32,6 +36,8 @@ interface AuthContextType {
   setViewLoading: (loading: boolean) => void;
   isGlobalLoading: boolean;
   authLoading: boolean;
+  isBanned: boolean;
+  banInfo: { category?: string; reason?: string; bannedBy?: string } | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -44,6 +50,8 @@ const AuthContext = createContext<AuthContextType>({
   setViewLoading: () => {},
   isGlobalLoading: true,
   authLoading: true,
+  isBanned: false,
+  banInfo: null,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -192,17 +200,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(null);
   };
 
+  // Compute ban status from profile
+  const isBanned = profile?.is_banned ?? false;
+  const banInfo = isBanned ? {
+    category: profile?.ban_category,
+    reason: profile?.ban_reason,
+    bannedBy: profile?.banned_by
+  } : null;
+
   return (
     <AuthContext.Provider value={{ 
       user, 
       profile, 
-      loading: isGlobalLoading, // Map global state to the legacy 'loading' name for easier migration
+      loading: isGlobalLoading,
       isGlobalLoading,
       authLoading,
       signOut, 
       refreshProfile, 
       signInWithMetu,
-      setViewLoading
+      setViewLoading,
+      isBanned,
+      banInfo
     }}>
       {children}
     </AuthContext.Provider>
