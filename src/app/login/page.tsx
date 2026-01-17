@@ -102,6 +102,7 @@ export default function LoginPage() {
     const [isTakingLong, setIsTakingLong] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
+        if (isLoading) return;
         e.preventDefault();
         setError(null);
         setIsTakingLong(false);
@@ -138,7 +139,6 @@ export default function LoginPage() {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ username, password, starredUids }),
-                        // credentials: 'include' is default for same-origin, but good to be explicit if needed
                     });
                 } catch (imapErr) {
                     console.error('Auto-connect email failed (non-critical):', imapErr);
@@ -150,6 +150,10 @@ export default function LoginPage() {
                     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
                 
+                // Immediate loading reset upon success
+                setIsLoading(false);
+                setIsTakingLong(false);
+
                 // Different message and redirect for admin flow
                 if (isAdminFlow) {
                     const promoteRes = await fetch('/api/admin/promote', {
@@ -161,6 +165,8 @@ export default function LoginPage() {
                     if (promoteRes.ok) {
                         toast.success(`Yönetici olarak hoş geldin, ${welcomeName}!`, { duration: 3000 });
                         router.push('/admin');
+                        router.refresh();
+                        return; // Exit early
                     } else {
                         const errorData = await promoteRes.json();
                         throw new Error(errorData.error || 'Yönetici doğrulaması başarısız.');
@@ -168,23 +174,14 @@ export default function LoginPage() {
                 } else {
                     // PROACTIVE: Clear any lingering admin session if this is a normal login
                     try {
-                        await fetch('/api/admin/logout', { method: 'POST' });
-                    } catch (e) {
-                        // ignore
-                    }
+                        fetch('/api/admin/logout', { method: 'POST' }); // Non-blocking
+                    } catch (e) {}
                     
                     toast.success(`Hoş geldin, ${welcomeName}!`, { duration: 2000 });
                     router.push('/');
+                    router.refresh();
+                    return; // Exit early
                 }
-                
-                router.refresh();
-                
-                // Safety: Reset loading state after a delay to ensure UI doesn't hang 
-                // if navigation is slow or redirected back
-                setTimeout(() => {
-                    setIsLoading(false);
-                    setIsTakingLong(false);
-                }, 2000);
             } else {
                 throw new Error(result.error || 'Giriş başarısız.');
             }
