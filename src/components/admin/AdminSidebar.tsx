@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Users, Activity, Ban, Flag, Settings, LogOut } from 'lucide-react';
+import { Users, Activity, Ban, Flag, Settings, LogOut, MessageSquare } from 'lucide-react';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
 
     const menuItems = [
         { href: '/admin', label: 'Kullanıcılar', icon: Users },
-        { href: '/admin/voices', label: 'Paylaşımlar', icon: Activity },
+        { href: '/admin/voices', label: 'Paylaşımlar', icon: MessageSquare },
         { href: '/admin/logs', label: 'Admin Hareketleri', icon: Activity },
         { href: '/admin/banned', label: 'Yasaklılar', icon: Ban },
         { href: '/admin/reports', label: 'Şikayetler', icon: Flag },

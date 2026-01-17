@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { toast } from 'sonner';
-import { Search, Trash2, Ghost, User, Calendar, MessageSquare, ArrowBigUp } from 'lucide-react';
-import Link from 'next/link';
+import { Search, Trash2, Ghost, User, Calendar, MessageSquare, ArrowBigUp, Filter, ChevronDown, X } from 'lucide-react';
 import { toTitleCase } from '@/lib/utils';
 
 interface Voice {
@@ -28,6 +27,8 @@ export default function AdminVoicesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<'all' | 'anonymous' | 'public'>('all');
+    const [showFilters, setShowFilters] = useState(false);
+    const [selectedTag, setSelectedTag] = useState<string>('');
 
     const fetchVoices = async () => {
         try {
@@ -65,18 +66,24 @@ export default function AdminVoicesPage() {
         }
     };
 
-    const filteredVoices = voices.filter(v => {
-        const matchesSearch = v.content.toLowerCase().includes(search.toLowerCase()) ||
-            v.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-            v.profiles?.nickname?.toLowerCase().includes(search.toLowerCase());
-        
-        const matchesFilter = 
-            filter === 'all' ? true :
-            filter === 'anonymous' ? v.is_anonymous :
-            !v.is_anonymous;
+    const filteredVoices = useMemo(() => {
+        return voices.filter(v => {
+            const matchesSearch = v.content.toLowerCase().includes(search.toLowerCase()) ||
+                v.profiles?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+                v.profiles?.nickname?.toLowerCase().includes(search.toLowerCase());
+            
+            const matchesFilter = 
+                filter === 'all' ? true :
+                filter === 'anonymous' ? v.is_anonymous :
+                !v.is_anonymous;
 
-        return matchesSearch && matchesFilter;
-    });
+            const matchesTag = selectedTag ? v.content.toLowerCase().includes(selectedTag.toLowerCase()) : true;
+
+            return matchesSearch && matchesFilter && matchesTag;
+        });
+    }, [voices, search, filter, selectedTag]);
+
+    const activeFilterCount = [filter !== 'all', selectedTag].filter(Boolean).length;
 
     if (isLoading) {
         return (
@@ -89,62 +96,110 @@ export default function AdminVoicesPage() {
     return (
         <div className="p-8 max-w-7xl mx-auto">
             <header className="mb-8">
-                <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Paylaşımlar</h1>
-                <p className="text-neutral-500">Kampüsün Sesi içerik yönetimi</p>
+                <h1 className="text-3xl font-bold flex items-center gap-3 text-neutral-900 dark:text-white">
+                    <MessageSquare size={32} /> Paylaşımlar
+                </h1>
+                <p className="text-neutral-500 mt-2">Kampüsün Sesi içerik yönetimi</p>
             </header>
 
-            <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 space-y-4">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <h2 className="font-bold text-lg">Tüm Gönderiler</h2>
-                        <div className="relative w-full md:w-64">
-                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                            <input
-                                type="text"
-                                placeholder="İçerik veya kullanıcı ara..."
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
-                            />
-                        </div>
+            <div className="mb-6 space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative flex-1">
+                        <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                        <input
+                            type="text"
+                            placeholder="İçerik veya kullanıcı ara..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600"
+                        />
                     </div>
-                    
-                    {/* Filter Tabs */}
-                    <div className="flex flex-wrap gap-2">
-                        {[
-                            { id: 'all', label: 'Tümü' },
-                            { id: 'anonymous', label: 'Anonimler' },
-                            { id: 'public', label: 'Herkese Açık' }
-                        ].map((btn) => (
-                            <button
-                                key={btn.id}
-                                onClick={() => setFilter(btn.id as any)}
-                                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                                    filter === btn.id 
-                                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                                    : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800'
-                                }`}
-                            >
-                                {btn.label}
-                            </button>
-                        ))}
-                        
-                        {/* Divider */}
-                        <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-700 mx-1 hidden md:block" />
-                        
-                        {/* Example Tag Filters */}
-                        {['İtiraf', 'Soru', 'Gündem', 'Duyuru'].map((tag) => (
-                            <button
-                                key={tag}
-                                onClick={() => setSearch(tag)}
-                                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-neutral-100 text-neutral-400 hover:bg-black hover:text-white transition-all dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black"
-                            >
-                                #{tag}
-                            </button>
-                        ))}
-                    </div>
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-colors ${
+                            showFilters || activeFilterCount > 0 
+                                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-transparent' 
+                                : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                        }`}
+                    >
+                        <Filter size={18} />
+                        <span>Filtreler</span>
+                        {activeFilterCount > 0 && (
+                            <span className="bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                                {activeFilterCount}
+                            </span>
+                        )}
+                        <ChevronDown size={16} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                    </button>
                 </div>
 
+                {showFilters && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">
+                        <div>
+                            <label className="block text-xs font-medium text-neutral-500 mb-1.5">Gizlilik Durumu</label>
+                            <div className="flex gap-2">
+                                {[
+                                    { id: 'all', label: 'Tümü' },
+                                    { id: 'anonymous', label: 'Anonimler' },
+                                    { id: 'public', label: 'Herkese Açık' }
+                                ].map((btn) => (
+                                    <button
+                                        key={btn.id}
+                                        onClick={() => setFilter(btn.id as any)}
+                                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                            filter === btn.id 
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                        }`}
+                                    >
+                                        {btn.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-neutral-500 mb-1.5">Etiket Hızlı Filtre</label>
+                            <div className="flex flex-wrap gap-2">
+                                {['İtiraf', 'Soru', 'Gündem', 'Duyuru'].map((tag) => (
+                                    <button
+                                        key={tag}
+                                        onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
+                                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                                            selectedTag === tag
+                                            ? 'bg-primary text-white border-transparent'
+                                            : 'bg-white text-neutral-400 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                        }`}
+                                    >
+                                        #{tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {(activeFilterCount > 0) && (
+                            <div className="sm:col-span-2 flex justify-end">
+                                <button
+                                    onClick={() => {
+                                        setFilter('all');
+                                        setSearch('');
+                                        setSelectedTag('');
+                                    }}
+                                    className="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+                                >
+                                    <X size={14} /> Filtreleri Temizle
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            <div className="text-sm text-neutral-500 mb-4">
+                {filteredVoices.length} / {voices.length} paylaşım gösteriliyor
+            </div>
+
+            <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden">
                 <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
                     {filteredVoices.map((voice) => (
                         <div key={voice.id} className="p-6 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
@@ -192,4 +247,3 @@ export default function AdminVoicesPage() {
         </div>
     );
 }
-
