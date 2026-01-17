@@ -3,7 +3,22 @@ import SkeletonLoader from '../ui/SkeletonLoader';
 
 const ProfileSkeleton = () => {
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] py-12 px-4">
+        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] py-8 px-4">
+            {/* Header Skeleton */}
+            <div className="max-w-5xl mx-auto mb-8">
+                <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-4 text-center bg-neutral-50 dark:bg-[#0a0a0a] pt-4 px-4 min-h-[200px] flex flex-col justify-center">
+                    <div className="flex flex-col items-center justify-center gap-4">
+                        <SkeletonLoader width={350} height={60} className="mb-2" />
+                        <SkeletonLoader width={64} height={64} className="rounded-full" />
+                    </div>
+                    <div className="flex justify-between items-center border-t-2 border-neutral-200 dark:border-neutral-800 pt-2 mt-4 text-neutral-600 dark:text-neutral-400 h-8">
+                        <SkeletonLoader width={80} height={20} />
+                        <SkeletonLoader width={120} height={20} />
+                        <SkeletonLoader width={80} height={20} />
+                    </div>
+                </div>
+            </div>
+
             <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column Skeleton */}
                 <div className="lg:col-span-1 space-y-6">

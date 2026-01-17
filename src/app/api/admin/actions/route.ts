@@ -80,6 +80,27 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, message: 'Paylaşım silindi.' });
         }
 
+        // Action: Delete Community
+        if (action === 'delete_community') {
+            const { communityId } = body;
+
+            const { error: deleteError } = await supabase
+                .from('communities')
+                .delete()
+                .eq('id', communityId);
+
+            if (deleteError) throw deleteError;
+
+            // Audit Log
+            await supabase.from('admin_audit_logs').insert({
+                admin_name: session.adminName,
+                action: 'COMMUNITY_DELETE',
+                details: `Topluluk silindi. ID: ${communityId}`
+            });
+
+            return NextResponse.json({ success: true, message: 'Topluluk silindi.' });
+        }
+
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     } catch (err: any) {
         console.error('Admin action error:', err);

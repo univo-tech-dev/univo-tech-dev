@@ -80,6 +80,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     const longPressTriggered = useRef(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Date & Issue Logic for standardized subheader
+    const today = new Date();
+    const start = new Date(2025, 11, 29);
+    const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const diffTime = current.getTime() - start.getTime();
+    const issueNumber = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    const formattedDate = today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
     useEffect(() => {
         fetchProfileData();
     }, [id, user]);
@@ -606,7 +614,29 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     };
 
     return (
-        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] py-12 px-4 transition-colors">
+        <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] py-8 px-4 transition-colors">
+            {/* Standardized Newspaper Header */}
+            <div className="max-w-5xl mx-auto mb-8">
+                <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-4 text-center bg-neutral-50 dark:bg-[#0a0a0a] pt-4 px-4 min-h-[200px] flex flex-col justify-center">
+                    <div className="flex flex-col items-center justify-center gap-4">
+                        <h1 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">
+                            Kullanıcı Profili
+                        </h1>
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md">
+                            {profile?.avatar_url ? (
+                                <img src={profile.avatar_url} alt="Logo" className="w-full h-full object-cover" />
+                            ) : (
+                                <img src="/odtu_logo.png" alt="ODTÜ" className="w-full h-full object-cover" />
+                            )}
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 text-neutral-600 dark:text-neutral-400 h-8">
+                        <span>SAYI: {issueNumber}</span>
+                        <span className="font-bold uppercase tracking-widest">{isOwnProfile ? 'KENDİ PROFİLİN' : 'KAMPÜS SAKİNİ'}</span>
+                        <span>{formattedDate.toUpperCase()}</span>
+                    </div>
+                </div>
+            </div>
 
             {/* Lightbox Modal */}
             {isLightboxOpen && profile?.avatar_url && (
