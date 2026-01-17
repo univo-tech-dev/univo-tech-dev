@@ -105,10 +105,29 @@ export default function AdminVoicesPage() {
                     <div className="h-4 w-96 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg animate-pulse"></div>
                 </div>
                 
-                <div className="flex gap-3">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="h-48 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-100 dark:border-neutral-700"></div>
-                    ))}
+                <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="h-12 flex-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl animate-pulse"></div>
+                    <div className="h-12 w-32 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl animate-pulse"></div>
+                </div>
+
+                <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm">
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="p-6 bg-white dark:bg-neutral-800 space-y-4">
+                                <div className="flex gap-4 items-start">
+                                    <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-700 animate-pulse"></div>
+                                    <div className="flex-1 space-y-2 pt-1">
+                                        <div className="h-4 w-32 bg-neutral-100 dark:bg-neutral-700 rounded animate-pulse"></div>
+                                        <div className="h-3 w-48 bg-neutral-50 dark:bg-neutral-700/50 rounded animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2 ml-14">
+                                    <div className="h-4 w-full bg-neutral-50 dark:bg-neutral-700/50 rounded animate-pulse"></div>
+                                    <div className="h-4 w-3/4 bg-neutral-50 dark:bg-neutral-700/50 rounded animate-pulse"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         );

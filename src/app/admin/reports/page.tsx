@@ -107,15 +107,15 @@ export default function AdminReportsPage() {
 
                 <div className="flex gap-2 flex-wrap">
                     {[1, 2, 3, 4, 5].map(i => (
-                        <div key={i} className="h-10 w-24 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg animate-pulse"></div>
+                        <div key={i} className="h-10 w-28 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-100 dark:border-neutral-700 animate-pulse"></div>
                     ))}
                 </div>
 
                 <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm">
-                    <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 h-16"></div>
+                    <div className="h-12 bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 animate-pulse"></div>
                     <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                        {[1, 2, 3, 4, 5].map(i => (
-                            <div key={i} className="p-6 bg-white dark:bg-neutral-800 h-20 animate-pulse"></div>
+                        {[1, 2, 3, 4, 5, 6].map(i => (
+                            <div key={i} className="p-6 bg-white dark:bg-neutral-800 h-16 animate-pulse"></div>
                         ))}
                     </div>
                 </div>
