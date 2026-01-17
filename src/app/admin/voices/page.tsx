@@ -24,6 +24,8 @@ interface Voice {
 
 export default function AdminVoicesPage() {
     const [voices, setVoices] = useState<Voice[]>([]);
+    const [topTags, setTopTags] = useState<string[]>([]);
+    const [tagHistory, setTagHistory] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<'all' | 'anonymous' | 'public'>('all');
@@ -36,6 +38,7 @@ export default function AdminVoicesPage() {
             if (!res.ok) throw new Error('Paylaşımlar çekilemedi');
             const data = await res.json();
             setVoices(data.voices);
+            setTopTags(data.topTags || []);
         } catch (err: any) {
             toast.error('Paylaşımlar yüklenirken hata oluştu.');
         } finally {
@@ -45,7 +48,16 @@ export default function AdminVoicesPage() {
 
     useEffect(() => {
         fetchVoices();
+        // Load tag history
+        const savedHistory = localStorage.getItem('admin_tag_history');
+        if (savedHistory) setTagHistory(JSON.parse(savedHistory));
     }, []);
+
+    const addToHistory = (tag: string) => {
+        const newHistory = [tag, ...tagHistory.filter(t => t !== tag)].slice(0, 5);
+        setTagHistory(newHistory);
+        localStorage.setItem('admin_tag_history', JSON.stringify(newHistory));
+    };
 
     const handleDelete = async (voiceId: string) => {
         if (!window.confirm('Bu paylaşımı kalıcı olarak silmek istediğinize emin misiniz?')) return;
@@ -77,7 +89,7 @@ export default function AdminVoicesPage() {
                 filter === 'anonymous' ? v.is_anonymous :
                 !v.is_anonymous;
 
-            const matchesTag = selectedTag ? v.content.toLowerCase().includes(selectedTag.toLowerCase()) : true;
+            const matchesTag = selectedTag ? v.content.toLowerCase().includes(`#${selectedTag.toLowerCase()}`) : true;
 
             return matchesSearch && matchesFilter && matchesTag;
         });
@@ -87,8 +99,22 @@ export default function AdminVoicesPage() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center p-12">
-                <div className="w-8 h-8 border-4 border-black/10 border-t-black rounded-full animate-spin" />
+            <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+                <div className="space-y-4">
+                    <div className="h-10 w-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg"></div>
+                    <div className="h-4 w-64 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg"></div>
+                </div>
+                
+                <div className="flex gap-3">
+                    <div className="h-12 flex-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl"></div>
+                    <div className="h-12 w-24 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl"></div>
+                </div>
+
+                <div className="space-y-4">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-48 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-100 dark:border-neutral-700"></div>
+                    ))}
+                </div>
             </div>
         );
     }
@@ -111,6 +137,11 @@ export default function AdminVoicesPage() {
                             placeholder="İçerik veya kullanıcı ara..."
                             value={search}
                             onChange={e => setSearch(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && search.startsWith('#')) {
+                                    addToHistory(search.replace('#', ''));
+                                }
+                            }}
                             className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600"
                         />
                     </div>
@@ -134,9 +165,9 @@ export default function AdminVoicesPage() {
                 </div>
 
                 {showFilters && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">
-                        <div>
-                            <label className="block text-xs font-medium text-neutral-500 mb-1.5">Gizlilik Durumu</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Gizlilik Durumu</label>
                             <div className="flex gap-2">
                                 {[
                                     { id: 'all', label: 'Tümü' },
@@ -146,7 +177,7 @@ export default function AdminVoicesPage() {
                                     <button
                                         key={btn.id}
                                         onClick={() => setFilter(btn.id as any)}
-                                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                                             filter === btn.id 
                                             ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                             : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
@@ -158,36 +189,65 @@ export default function AdminVoicesPage() {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-xs font-medium text-neutral-500 mb-1.5">Etiket Hızlı Filtre</label>
-                            <div className="flex flex-wrap gap-2">
-                                {['İtiraf', 'Soru', 'Gündem', 'Duyuru'].map((tag) => (
-                                    <button
-                                        key={tag}
-                                        onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
-                                        className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${
-                                            selectedTag === tag
-                                            ? 'bg-primary text-white border-transparent'
-                                            : 'bg-white text-neutral-400 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
-                                        }`}
-                                    >
-                                        #{tag}
-                                    </button>
-                                ))}
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Tag Yönetimi</label>
+                            
+                            {tagHistory.length > 0 && (
+                                <div className="mb-4">
+                                    <span className="text-[10px] text-neutral-400 mb-2 block font-bold uppercase">Son Arananlar</span>
+                                    <div className="flex flex-wrap gap-2">
+                                        {tagHistory.map((tag) => (
+                                            <button
+                                                key={tag}
+                                                onClick={() => setSelectedTag(selectedTag === tag ? '' : tag)}
+                                                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                                                    selectedTag === tag
+                                                    ? 'bg-primary text-white'
+                                                    : 'bg-neutral-200 text-neutral-500 dark:bg-neutral-700 dark:text-neutral-400'
+                                                }`}
+                                            >
+                                                #{tag}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div>
+                                <span className="text-[10px] text-neutral-400 mb-2 block font-bold uppercase">Popüler Etiketler</span>
+                                <div className="flex flex-wrap gap-2">
+                                    {topTags.map((tag) => (
+                                        <button
+                                            key={tag}
+                                            onClick={() => {
+                                                setSelectedTag(selectedTag === tag ? '' : tag);
+                                                if (selectedTag !== tag) addToHistory(tag);
+                                            }}
+                                            className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${
+                                                selectedTag === tag
+                                                ? 'bg-primary text-white border-transparent'
+                                                : 'bg-white text-neutral-400 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                            }`}
+                                        >
+                                            #{tag}
+                                        </button>
+                                    ))}
+                                    {topTags.length === 0 && <span className="text-xs text-neutral-400 italic">Henüz etiket bulunmuyor.</span>}
+                                </div>
                             </div>
                         </div>
 
                         {(activeFilterCount > 0) && (
-                            <div className="sm:col-span-2 flex justify-end">
+                            <div className="sm:col-span-2 flex justify-end pt-4 border-t border-neutral-200 dark:border-neutral-700">
                                 <button
                                     onClick={() => {
                                         setFilter('all');
                                         setSearch('');
                                         setSelectedTag('');
                                     }}
-                                    className="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+                                    className="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 font-bold"
                                 >
-                                    <X size={14} /> Filtreleri Temizle
+                                    <X size={14} strokeWidth={3} /> Filtreleri Temizle
                                 </button>
                             </div>
                         )}
@@ -195,7 +255,7 @@ export default function AdminVoicesPage() {
                 )}
             </div>
 
-            <div className="text-sm text-neutral-500 mb-4">
+            <div className="text-sm text-neutral-500 mb-4 px-1">
                 {filteredVoices.length} / {voices.length} paylaşım gösteriliyor
             </div>
 

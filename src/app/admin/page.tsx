@@ -123,8 +123,26 @@ export default function AdminPage() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center p-12">
-                <div className="w-8 h-8 border-4 border-black/10 border-t-black rounded-full animate-spin" />
+            <div className="p-8 max-w-7xl mx-auto space-y-8">
+                <div className="animate-pulse space-y-4">
+                    <div className="h-10 w-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg"></div>
+                    <div className="h-4 w-64 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg"></div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="h-24 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl animate-pulse"></div>
+                    ))}
+                </div>
+
+                <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm">
+                    <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 h-16 animate-pulse"></div>
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="p-6 bg-white dark:bg-neutral-800 h-20 animate-pulse"></div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }

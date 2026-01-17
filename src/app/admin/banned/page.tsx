@@ -18,6 +18,7 @@ interface User {
 export default function BannedUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [search, setSearch] = useState('');
 
     const fetchBannedUsers = async () => {
         try {
@@ -55,7 +56,31 @@ export default function BannedUsersPage() {
         }
     };
 
-    if (isLoading) return <div className="p-8">Yükleniyor...</div>;
+    const filteredUsers = users.filter(u => 
+        u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+        u.student_id?.toLowerCase().includes(search.toLowerCase()) ||
+        u.email?.toLowerCase().includes(search.toLowerCase())
+    );
+
+    if (isLoading) {
+        return (
+            <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+                <div className="space-y-4">
+                    <div className="h-10 w-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg"></div>
+                    <div className="h-4 w-64 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg"></div>
+                </div>
+                
+                <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm">
+                    <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 h-16 animate-pulse"></div>
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="p-6 bg-white dark:bg-neutral-800 h-16 animate-pulse"></div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
@@ -67,6 +92,20 @@ export default function BannedUsersPage() {
             </header>
 
             <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden">
+                <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between gap-4">
+                    <h2 className="font-bold text-lg">Tüm Yasaklılar</h2>
+                    <div className="relative w-64">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                        <input
+                            type="text"
+                            placeholder="Kullanıcı ara..."
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
+                        />
+                    </div>
+                </div>
+
                 <table className="w-full text-sm text-left">
                     <thead className="bg-neutral-50 dark:bg-neutral-900 text-neutral-500 font-medium border-b border-neutral-200 dark:border-neutral-700">
                         <tr>
@@ -77,14 +116,14 @@ export default function BannedUsersPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                        {users.length === 0 ? (
+                        {filteredUsers.length === 0 ? (
                             <tr>
-                                <td colSpan={4} className="px-6 py-8 text-center text-neutral-500">
-                                    Henüz yasaklı kullanıcı yok.
+                                <td colSpan={4} className="px-6 py-8 text-center text-neutral-500 italic">
+                                    {search ? 'Aramanızla eşleşen kullanıcı bulunamadı.' : 'Henüz yasaklı kullanıcı yok.'}
                                 </td>
                             </tr>
                         ) : (
-                            users.map((user) => (
+                            filteredUsers.map((user) => (
                                 <tr key={user.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50">
                                     <td className="px-6 py-4">
                                         <div className="font-medium text-neutral-900 dark:text-white">{user.full_name}</div>

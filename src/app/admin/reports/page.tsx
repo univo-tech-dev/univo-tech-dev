@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Flag, Clock, AlertTriangle, CheckCircle, XCircle, ExternalLink, Eye } from 'lucide-react';
+import { Flag, Clock, AlertTriangle, CheckCircle, XCircle, ExternalLink, Eye, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { REPORT_CATEGORIES } from '@/lib/constants';
 import Link from 'next/link';
@@ -26,6 +26,7 @@ export default function AdminReportsPage() {
     const [reports, setReports] = useState<Report[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'pending' | 'reviewed' | 'resolved' | 'dismissed'>('pending');
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         fetchReports();
@@ -80,12 +81,38 @@ export default function AdminReportsPage() {
         }
     };
 
-    const filteredReports = filter === 'all' ? reports : reports.filter(r => r.status === filter);
+    const filteredReports = reports.filter(r => {
+        const matchesStatus = filter === 'all' ? true : r.status === filter;
+        const matchesSearch = 
+            r.reason?.toLowerCase().includes(search.toLowerCase()) ||
+            r.reporter?.full_name?.toLowerCase().includes(search.toLowerCase()) ||
+            getCategoryLabel(r.category).toLowerCase().includes(search.toLowerCase());
+        
+        return matchesStatus && matchesSearch;
+    });
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center p-12">
-                <div className="w-8 h-8 border-4 border-black/10 dark:border-white/10 border-t-black dark:border-t-white rounded-full animate-spin" />
+            <div className="p-8 max-w-7xl mx-auto space-y-8 animate-pulse">
+                <div className="space-y-4">
+                    <div className="h-10 w-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg"></div>
+                    <div className="h-4 w-64 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg"></div>
+                </div>
+                
+                <div className="flex gap-2 flex-wrap">
+                    {[1, 2, 3, 4, 5].map(i => (
+                        <div key={i} className="h-10 w-24 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg"></div>
+                    ))}
+                </div>
+
+                <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm">
+                    <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 h-16 animate-pulse"></div>
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="p-6 bg-white dark:bg-neutral-800 h-16 animate-pulse"></div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
@@ -99,26 +126,40 @@ export default function AdminReportsPage() {
                 <p className="text-neutral-500 mt-2">Kullanıcılar tarafından bildirilen içerikler</p>
             </header>
 
-            {/* Filter Tabs */}
-            <div className="flex gap-2 mb-6 flex-wrap">
-                {(['all', 'pending', 'reviewed', 'resolved', 'dismissed'] as const).map((f) => (
-                    <button
-                        key={f}
-                        onClick={() => setFilter(f)}
-                        className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                            filter === f
-                                ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                        }`}
-                    >
-                        {f === 'all' ? 'Tümü' : f === 'pending' ? 'Bekleyenler' : f === 'reviewed' ? 'İncelenenler' : f === 'resolved' ? 'Çözülenler' : 'Reddedilenler'}
-                        {f !== 'all' && (
-                            <span className="ml-2 text-xs opacity-70">
-                                ({reports.filter(r => r.status === f).length})
-                            </span>
-                        )}
-                    </button>
-                ))}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                {/* Filter Tabs */}
+                <div className="flex gap-2 flex-wrap">
+                    {(['all', 'pending', 'reviewed', 'resolved', 'dismissed'] as const).map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f)}
+                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                filter === f
+                                    ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
+                                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                            }`}
+                        >
+                            {f === 'all' ? 'Tümü' : f === 'pending' ? 'Bekleyenler' : f === 'reviewed' ? 'İncelenenler' : f === 'resolved' ? 'Çözülenler' : 'Reddedilenler'}
+                            {f !== 'all' && (
+                                <span className="ml-2 text-xs opacity-70">
+                                    ({reports.filter(r => r.status === f).length})
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Search */}
+                <div className="relative w-full md:w-64">
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                    <input
+                        type="text"
+                        placeholder="Şikayetlerde ara..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="w-full pl-9 pr-4 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                </div>
             </div>
 
             {/* Reports Table */}
@@ -126,7 +167,7 @@ export default function AdminReportsPage() {
                 {filteredReports.length === 0 ? (
                     <div className="p-12 text-center text-neutral-500">
                         <Flag size={48} className="mx-auto mb-4 opacity-30" />
-                        <p>Bu kategoride şikayet bulunmuyor.</p>
+                        <p>{search ? 'Aramanızla eşleşen şikayet bulunamadı.' : 'Bu kategoride şikayet bulunmuyor.'}</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
