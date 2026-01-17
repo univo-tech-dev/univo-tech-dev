@@ -88,11 +88,11 @@ export default function AdminLogsPage() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-            <header className="mb-6">
+            <header className="mb-8">
                 <h1 className="text-3xl font-bold flex items-center gap-3 text-neutral-900 dark:text-white">
-                    <Activity /> Admin Hareketleri
+                    <Activity size={32} className="text-primary" /> Admin Hareketleri
                 </h1>
-                <p className="text-neutral-500 mt-2">Sistemdeki tüm yönetici işlemleri</p>
+                <p className="text-neutral-500 mt-1">Sistemdeki tüm yönetici işlemleri</p>
             </header>
 
             {/* Search & Filter Bar */}

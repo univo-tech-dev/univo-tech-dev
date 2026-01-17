@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Settings, Save, Shield, Power, Globe, Bell } from 'lucide-react';
+import { Settings, Save, Shield, Power, Globe, Bell, AlertTriangle, X } from 'lucide-react';
 
 interface SystemSetting {
     key: string;
@@ -19,6 +19,8 @@ export default function AdminSettingsPage() {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [maintenanceModalOpen, setMaintenanceModalOpen] = useState(false);
+    const [confirmText, setConfirmText] = useState('');
 
     useEffect(() => {
         fetchSettings();
@@ -104,7 +106,13 @@ export default function AdminSettingsPage() {
                             </div>
                         </div>
                         <button
-                            onClick={() => handleSave('maintenance_mode', !settings.maintenance_mode)}
+                            onClick={() => {
+                                if (!settings.maintenance_mode) {
+                                    setMaintenanceModalOpen(true);
+                                } else {
+                                    handleSave('maintenance_mode', false);
+                                }
+                            }}
                             disabled={isSaving}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${settings.maintenance_mode ? 'bg-red-600' : 'bg-neutral-200 dark:bg-neutral-700'}`}
                         >
@@ -191,6 +199,69 @@ export default function AdminSettingsPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Maintenance Mode Security Modal */}
+            {maintenanceModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                    <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 duration-200">
+                        <div className="p-4 border-b border-neutral-100 dark:border-neutral-700 flex justify-between items-center bg-red-50 dark:bg-red-900/10">
+                            <h3 className="font-bold text-lg flex items-center gap-2 text-red-600">
+                                <AlertTriangle size={20} /> Bakım Modu Onayı
+                            </h3>
+                            <button 
+                                onClick={() => {
+                                    setMaintenanceModalOpen(false);
+                                    setConfirmText('');
+                                }} 
+                                className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 rounded-lg">
+                                <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+                                    DİKKAT: Bakım modunu aktif ettiğinizde site tüm kullanıcılara kapanacaktır. Yalnızca yöneticiler erişim sağlayabilecektir.
+                                </p>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">
+                                    Onaylamak için <span className="text-red-600">BAKIM</span> yazın
+                                </label>
+                                <input
+                                    type="text"
+                                    value={confirmText}
+                                    onChange={(e) => setConfirmText(e.target.value)}
+                                    placeholder="BAKIM"
+                                    className="w-full p-3 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-red-500 font-bold tracking-widest text-center uppercase"
+                                />
+                            </div>
+                        </div>
+                        <div className="p-4 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-100 dark:border-neutral-700 flex justify-end gap-3">
+                            <button
+                                onClick={() => {
+                                    setMaintenanceModalOpen(false);
+                                    setConfirmText('');
+                                }}
+                                className="px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
+                            >
+                                İptal
+                            </button>
+                            <button
+                                onClick={() => {
+                                    handleSave('maintenance_mode', true);
+                                    setMaintenanceModalOpen(false);
+                                    setConfirmText('');
+                                }}
+                                disabled={confirmText !== 'BAKIM' || isSaving}
+                                className="px-5 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors shadow-lg shadow-red-600/20"
+                            >
+                                Bakıma Al
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

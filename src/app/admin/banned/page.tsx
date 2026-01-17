@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Ban, CheckCircle, Search } from 'lucide-react';
+import { Ban, CheckCircle, Search, Filter, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface User {
@@ -19,6 +19,7 @@ export default function BannedUsersPage() {
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     const fetchBannedUsers = async () => {
         try {
@@ -86,24 +87,53 @@ export default function BannedUsersPage() {
         <div className="p-8 max-w-7xl mx-auto">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold flex items-center gap-3 text-neutral-900 dark:text-white">
-                    <Ban className="text-red-600" /> Yasaklı Kullanıcılar
+                    <Ban className="text-red-600" size={32} /> Yasaklı Kullanıcılar
                 </h1>
-                <p className="text-neutral-500 mt-2">Platformdan uzaklaştırılan kullanıcıların listesi</p>
+                <p className="text-neutral-500 mt-1">Platformdan uzaklaştırılan kullanıcıların listesi</p>
             </header>
 
+            {/* Standardized Search & Filter Bar */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                    <input
+                        type="text"
+                        placeholder="Kullanıcı ara (İsim, e-posta, ID)..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
+                    />
+                </div>
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-colors ${
+                        showFilters 
+                            ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-transparent' 
+                            : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                    }`}
+                >
+                    <Filter size={18} />
+                    <span>Filtreler</span>
+                    <ChevronDown size={16} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                </button>
+            </div>
+
+            {showFilters && (
+                <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <p className="text-sm text-neutral-500 italic">Gelişmiş filtreleme seçenekleri çok yakında.</p>
+                </div>
+            )}
+
+            {/* Banned Table Header with Counter */}
+            <div className="flex items-center justify-between mb-4 px-1">
+                <div className="text-sm font-medium text-neutral-500">
+                    {filteredUsers.length} / {users.length} yasaklı kullanıcı gösteriliyor
+                </div>
+            </div>
+
             <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between gap-4">
-                    <h2 className="font-bold text-lg">Tüm Yasaklılar</h2>
-                    <div className="relative w-64">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                        <input
-                            type="text"
-                            placeholder="Kullanıcı ara..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                    </div>
+                <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
+                    <h2 className="font-bold text-lg">Yasaklı Listesi</h2>
                 </div>
 
                 <table className="w-full text-sm text-left">

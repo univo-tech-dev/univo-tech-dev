@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { toast } from 'sonner';
-import { Search, Trash2, Users, Calendar, ArrowRight, Settings, Plus, Building2 } from 'lucide-react';
+import { Search, Trash2, Users, Calendar, ArrowRight, Settings, Plus, Building2, Filter, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
 
@@ -22,6 +22,7 @@ export default function AdminCommunitiesPage() {
     const [communities, setCommunities] = useState<Community[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     const fetchCommunities = async () => {
         try {
@@ -89,25 +90,52 @@ export default function AdminCommunitiesPage() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-            <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold text-neutral-900 dark:text-white flex items-center gap-3">
-                        <Users className="text-primary" size={32} />
-                        Topluluk Yönetimi
-                    </h1>
-                    <p className="text-neutral-500">Platformdaki tüm öğrenci topluluklarını denetle</p>
-                </div>
-                <div className="relative">
+            <header className="mb-8">
+                <h1 className="text-3xl font-bold text-neutral-900 dark:text-white flex items-center gap-3">
+                    <Users className="text-primary" size={32} />
+                    Topluluk Yönetimi
+                </h1>
+                <p className="text-neutral-500 mt-1">Platformdaki tüm öğrenci topluluklarını denetle</p>
+            </header>
+
+            {/* Standardized Search & Filter Bar */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
                     <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                     <input
                         type="text"
                         placeholder="Topluluk, kategori veya yönetici ara..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="pl-10 pr-4 py-2.5 w-full md:w-80 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
+                        className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
                     />
                 </div>
-            </header>
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-colors ${
+                        showFilters 
+                            ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-transparent' 
+                            : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                    }`}
+                >
+                    <Filter size={18} />
+                    <span>Filtreler</span>
+                    <ChevronDown size={16} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                </button>
+            </div>
+
+            {showFilters && (
+                <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <p className="text-sm text-neutral-500 italic">Gelişmiş filtreleme seçenekleri çok yakında.</p>
+                </div>
+            )}
+
+            {/* Communities Table Header with Counter */}
+            <div className="flex items-center justify-between mb-4 px-1">
+                <div className="text-sm font-medium text-neutral-500">
+                    {filteredCommunities.length} / {communities.length} topluluk gösteriliyor
+                </div>
+            </div>
 
             <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">

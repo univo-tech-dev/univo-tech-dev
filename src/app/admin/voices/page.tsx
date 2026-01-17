@@ -123,9 +123,9 @@ export default function AdminVoicesPage() {
         <div className="p-8 max-w-7xl mx-auto">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold flex items-center gap-3 text-neutral-900 dark:text-white">
-                    <MessageSquare size={32} /> Paylaşımlar
+                    <MessageSquare size={32} className="text-primary" /> Paylaşımlar
                 </h1>
-                <p className="text-neutral-500 mt-2">Kampüsün Sesi içerik yönetimi</p>
+                <p className="text-neutral-500 mt-1">Kampüsün Sesi içerik yönetimi</p>
             </header>
 
             <div className="mb-6 space-y-4">

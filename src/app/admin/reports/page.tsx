@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Flag, Clock, AlertTriangle, CheckCircle, XCircle, ExternalLink, Eye, Search } from 'lucide-react';
+import { Flag, Clock, AlertTriangle, CheckCircle, XCircle, ExternalLink, Eye, Search, Filter, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { REPORT_CATEGORIES } from '@/lib/constants';
 import Link from 'next/link';
@@ -27,6 +27,7 @@ export default function AdminReportsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'pending' | 'reviewed' | 'resolved' | 'dismissed'>('pending');
     const [search, setSearch] = useState('');
+    const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
         fetchReports();
@@ -121,44 +122,69 @@ export default function AdminReportsPage() {
         <div className="p-8 max-w-7xl mx-auto">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold flex items-center gap-3 text-neutral-900 dark:text-white">
-                    <Flag className="text-orange-500" /> Şikayetler
+                    <Flag className="text-orange-500" size={32} /> Şikayetler
                 </h1>
-                <p className="text-neutral-500 mt-2">Kullanıcılar tarafından bildirilen içerikler</p>
+                <p className="text-neutral-500 mt-1">Kullanıcılar tarafından bildirilen içerikler</p>
             </header>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                {/* Filter Tabs */}
-                <div className="flex gap-2 flex-wrap">
-                    {(['all', 'pending', 'reviewed', 'resolved', 'dismissed'] as const).map((f) => (
-                        <button
-                            key={f}
-                            onClick={() => setFilter(f)}
-                            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                                filter === f
-                                    ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900'
-                                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                            }`}
-                        >
-                            {f === 'all' ? 'Tümü' : f === 'pending' ? 'Bekleyenler' : f === 'reviewed' ? 'İncelenenler' : f === 'resolved' ? 'Çözülenler' : 'Reddedilenler'}
-                            {f !== 'all' && (
-                                <span className="ml-2 text-xs opacity-70">
-                                    ({reports.filter(r => r.status === f).length})
-                                </span>
-                            )}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Search */}
-                <div className="relative w-full md:w-64">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+            {/* Standardized Search & Filter Bar */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                     <input
                         type="text"
-                        placeholder="Şikayetlerde ara..."
+                        placeholder="Şikayetlerde ara (Kategori, not, kullanıcı)..."
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full pl-10 pr-4 py-2.5 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
                     />
+                </div>
+                <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border transition-colors ${
+                        showFilters 
+                            ? 'bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-transparent' 
+                            : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                    }`}
+                >
+                    <Filter size={18} />
+                    <span>Filtreler</span>
+                    <ChevronDown size={16} className={`transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+                </button>
+            </div>
+
+            {showFilters && (
+                <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div>
+                        <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Durum Filtresi</label>
+                        <div className="flex gap-2 flex-wrap">
+                            {(['all', 'pending', 'reviewed', 'resolved', 'dismissed'] as const).map((f) => (
+                                <button
+                                    key={f}
+                                    onClick={() => setFilter(f)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                        filter === f
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                    }`}
+                                >
+                                    {f === 'all' ? 'Tümü' : f === 'pending' ? 'Bekleyenler' : f === 'reviewed' ? 'İncelenenler' : f === 'resolved' ? 'Çözülenler' : 'Reddedilenler'}
+                                    {f !== 'all' && (
+                                        <span className="ml-1.5 opacity-60 font-mono">
+                                            {reports.filter(r => r.status === f).length}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reports Table Header with Counter */}
+            <div className="flex items-center justify-between mb-4 px-1">
+                <div className="text-sm font-medium text-neutral-500">
+                    {filteredReports.length} / {reports.length} şikayet gösteriliyor
                 </div>
             </div>
 
