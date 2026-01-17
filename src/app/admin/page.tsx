@@ -144,11 +144,6 @@ export default function AdminPage() {
                     <div className="h-12 w-32 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl animate-pulse"></div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {[1, 2, 3].map(i => (
-                        <div key={i} className="h-32 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-pulse"></div>
-                    ))}
-                </div>
                 
                 <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden shadow-sm">
                     <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 h-16"></div>
@@ -225,14 +220,6 @@ export default function AdminPage() {
                 </div>
             )}
 
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm">
-                    <h3 className="text-sm font-medium text-neutral-500 mb-2">Toplam Kullanıcı</h3>
-                    <p className="text-3xl font-bold">{stats?.totalUsers || 0}</p>
-                </div>
-                {/* Add more stats here later */}
-            </div>
 
             {/* Users Table Header with Counter */}
             <div className="flex items-center justify-between mb-4 px-1">
