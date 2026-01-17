@@ -159,7 +159,10 @@ export default function AdminCommunitiesPage() {
                                 <tr key={community.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors">
                                     <td className="px-6 py-5">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-lg bg-neutral-100 dark:bg-neutral-900 flex-shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                                            <Link 
+                                                href={`/admin/communities/${community.id}`}
+                                                className="w-12 h-12 rounded-lg bg-neutral-100 dark:bg-neutral-900 flex-shrink-0 border border-neutral-200 dark:border-neutral-700 overflow-hidden hover:opacity-80 transition-opacity"
+                                            >
                                                 {community.logo_url ? (
                                                     <img src={community.logo_url} alt={community.name} className="w-full h-full object-cover" />
                                                 ) : (
@@ -167,10 +170,10 @@ export default function AdminCommunitiesPage() {
                                                         <Building2 size={24} />
                                                     </div>
                                                 )}
-                                            </div>
+                                            </Link>
                                             <div>
                                                 <Link 
-                                                    href={`/community/${community.id}`}
+                                                    href={`/admin/communities/${community.id}`}
                                                     className="font-bold text-neutral-900 dark:text-white hover:text-primary transition-colors block"
                                                 >
                                                     {community.name}
