@@ -224,21 +224,22 @@ export const CommentItem = ({
                     {/* Comment Card */}
                     <div className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm relative z-20 hover:shadow-md transition-all">
                         
-                        <div className="flex items-center gap-1 flex-wrap">
-                            <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
-                                {comment.user}
-                            </Link>
-                            {comment.user_department && (
-                                <span className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium">
+                        <div className="flex justify-between items-start mb-1">
+                            <div className="flex items-center gap-1 flex-wrap">
+                                <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
+                                    {comment.user}
+                                </Link>
+                                {comment.user_department && (
+                                    <span className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium">
+                                        <span className="mx-1 opacity-50">|</span>
+                                        {comment.user_department} {comment.user_class && `• ${comment.user_class}`}
+                                    </span>
+                                )}
+                                <span className="text-[11px] text-neutral-400 dark:text-neutral-500 font-serif">
                                     <span className="mx-1 opacity-50">|</span>
-                                    {comment.user_department} {comment.user_class && `• ${comment.user_class}`}
+                                    {formatRelativeTime(comment.created_at)}
                                 </span>
-                            )}
-                            <span className="text-[11px] text-neutral-400 dark:text-neutral-500 font-serif">
-                                <span className="mx-1 opacity-50">|</span>
-                                {formatRelativeTime(comment.created_at)}
-                            </span>
-                        </div>
+                            </div>
                             
                              {/* 3-Dot Menu - Always visible */}
                              {user && (
