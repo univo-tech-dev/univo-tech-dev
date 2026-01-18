@@ -237,34 +237,9 @@ export default function AdminVoicesPage() {
                                         : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                     }`}
                                 >
-                                    📷 Fotoğraflılar
+                                    Fotoğraflılar
                                 </button>
                             </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Kullanıcı</label>
-                            <select
-                                value={selectedUserId || ''}
-                                onChange={(e) => setSelectedUserId(e.target.value || null)}
-                                className="w-full px-4 py-2.5 text-sm font-bold rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600"
-                            >
-                                <option value="">Tüm Kullanıcılar</option>
-                                {/* Generate unique users from voices */}
-                                {Array.from(new Map(voices.map(v => [v.user_id, v.profiles])).entries()).map(([userId, profile]) => (
-                                    <option key={userId} value={userId}>
-                                        {profile?.full_name || 'Bilinmeyen Kullanıcı'}
-                                    </option>
-                                ))}
-                            </select>
-                            {selectedUserId && (
-                                <button
-                                    onClick={() => setSelectedUserId(null)}
-                                    className="text-xs text-red-500 hover:underline"
-                                >
-                                    Kullanıcı Filtresini Temizle
-                                </button>
-                            )}
                         </div>
 
                         <div className="space-y-3">
