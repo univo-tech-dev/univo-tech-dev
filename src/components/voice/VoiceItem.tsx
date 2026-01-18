@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import VideoPlayer from '@/components/ui/VideoPlayer';
 import { ArrowBigUp, ArrowBigDown, Edit2, Trash2, MoreVertical, Share2, Filter, User, Calendar, Award, Ghost, Tag, MessageSquare, ChevronDown, ChevronUp, Camera, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -282,11 +283,12 @@ export default function VoiceItem({
                                     {voice.image_url && (
                                         <div className="rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 mb-3">
                                             {voice.image_url.match(/\.(mp4|webm|ogg|mov)$/i) ? (
-                                                <video 
-                                                    src={voice.image_url} 
-                                                    controls 
-                                                    className="w-full h-auto max-h-[500px] object-contain bg-black"
-                                                />
+                                                <div className="h-auto max-h-[500px] w-full bg-black">
+                                                    <VideoPlayer 
+                                                        src={voice.image_url} 
+                                                        className="w-full h-full max-h-[500px]"
+                                                    />
+                                                </div>
                                             ) : (
                                                 <img 
                                                     src={voice.image_url} 
