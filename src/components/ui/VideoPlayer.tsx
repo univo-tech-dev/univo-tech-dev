@@ -130,7 +130,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
     return (
         <div 
             ref={containerRef}
-            className={`relative group bg-black overflow-hidden select-none ${className}`}
+            className={`relative group bg-black overflow-hidden select-none z-0 ${className}`}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             onClick={togglePlay}
