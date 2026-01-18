@@ -13,9 +13,9 @@ export async function GET(req: NextRequest) {
 
     try {
         const { data: admins, error } = await supabase
-            .from('profiles')
-            .select('id, full_name, avatar_url, role')
-            .eq('role', 'admin');
+            .from('admin_identities')
+            .select('id, full_name:admin_name')
+            .order('admin_name');
 
         if (error) throw error;
 

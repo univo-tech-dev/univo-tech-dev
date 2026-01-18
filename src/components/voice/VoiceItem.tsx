@@ -323,13 +323,13 @@ export default function VoiceItem({
                                 </button>
                             </div>
 
-                            <button 
+                            <button
                                 onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
                                 className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
                             >
                                 YANITLA
                             </button>
-                            
+
                             <button
                                 onClick={() => {
                                     navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);

@@ -51,8 +51,13 @@ export default function AdminLogsPage() {
                 
                 if (adminsRes.ok) {
                     const adminData = await adminsRes.json();
+                    console.log('Fetched Admins:', adminData);
                     setAllAdmins(adminData);
+                } else {
+                    console.error('Failed to fetch admins');
                 }
+            } catch (error) {
+                console.error('Error fetching logs/admins:', error);
             } finally {
                 setIsLoading(false);
             }

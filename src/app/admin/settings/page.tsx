@@ -120,9 +120,11 @@ export default function AdminSettingsPage() {
                                 }
                             }}
                             disabled={isSaving}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${settings.maintenance_mode ? 'bg-red-600' : 'bg-neutral-200 dark:bg-neutral-700'}`}
+                            className="relative inline-flex items-center focus:outline-none"
                         >
-                            <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.maintenance_mode ? 'translate-x-6' : 'translate-x-1'}`} />
+                            <div className={`w-10 h-6 rounded-full transition-colors duration-200 ease-in-out ${settings.maintenance_mode ? 'bg-green-500' : 'bg-neutral-200 dark:bg-neutral-700'}`}>
+                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ease-in-out mt-1 ml-1 ${settings.maintenance_mode ? 'translate-x-4' : 'translate-x-0'}`} />
+                            </div>
                         </button>
                     </div>
                 </div>

@@ -326,24 +326,24 @@ export default function AdminVoicesPage() {
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
                                         onClick={() => setMediaFilter(mediaFilter === 'photo' ? 'all' : 'photo')}
-                                        className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                                             mediaFilter === 'photo'
                                                 ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
                                                 : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                         }`}
                                     >
-                                        <ImageIcon size={16} />
+                                        <ImageIcon size={14} />
                                         <span>Fotoğraf</span>
                                     </button>
                                     <button
                                         onClick={() => setMediaFilter(mediaFilter === 'video' ? 'all' : 'video')}
-                                        className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        className={`px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
                                             mediaFilter === 'video'
                                                 ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
                                                 : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                         }`}
                                     >
-                                        <Video size={16} />
+                                        <Video size={14} />
                                         <span>Video</span>
                                     </button>
                                 </div>
