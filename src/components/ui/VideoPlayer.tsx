@@ -215,8 +215,8 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
                     />
                     <div className="absolute inset-0 bg-white/30 rounded-full">
                         <div 
-                            className="bg-primary h-full rounded-full relative" 
-                            style={{ width: `${progress}%` }}
+                            className="h-full rounded-full relative" 
+                            style={{ width: `${progress}%`, backgroundColor: 'var(--primary-color, #C8102E)' }}
                         >
                             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-md scale-0 group-hover/progress:scale-100 transition-transform" />
                         </div>
@@ -241,7 +241,10 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
                                     step="0.1"
                                     value={isMuted ? 0 : volume}
                                     onChange={handleVolumeChange}
-                                    className="w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+                                    className="w-20 h-1 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full hover:h-1.5 transition-all"
+                                    style={{
+                                        background: `linear-gradient(to right, var(--primary-color, #C8102E) ${(isMuted ? 0 : volume) * 100}%, rgba(255,255,255,0.3) ${(isMuted ? 0 : volume) * 100}%)` 
+                                    }}
                                 />
                             </div>
                         </div>
