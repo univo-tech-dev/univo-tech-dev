@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Play, Pause, Maximize, Volume2, VolumeX, Minimize } from 'lucide-react';
+import { Play, Pause, Maximize, Volume2, VolumeX, Minimize, Settings, PictureInPicture, Check } from 'lucide-react';
 
 interface VideoPlayerProps {
     src: string;
@@ -18,6 +18,9 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
     const [isMuted, setIsMuted] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showControls, setShowControls] = useState(true);
+    const [showSettings, setShowSettings] = useState(false);
+    const [playbackRate, setPlaybackRate] = useState(1);
+    
     let controlsTimeout: NodeJS.Timeout;
 
     useEffect(() => {
@@ -37,20 +40,29 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
             setIsPlaying(false);
             setShowControls(true);
         };
+        
+        const handleRateChange = () => {
+             setPlaybackRate(video.playbackRate);
+        }
 
         video.addEventListener('timeupdate', updateProgress);
         video.addEventListener('loadedmetadata', updateDuration);
         video.addEventListener('ended', handleEnded);
+        video.addEventListener('ratechange', handleRateChange);
 
         return () => {
             video.removeEventListener('timeupdate', updateProgress);
             video.removeEventListener('loadedmetadata', updateDuration);
             video.removeEventListener('ended', handleEnded);
+            video.removeEventListener('ratechange', handleRateChange);
         };
     }, []);
 
     const togglePlay = (e?: React.MouseEvent) => {
         e?.stopPropagation();
+        // Close settings if open
+        if(showSettings) setShowSettings(false); 
+        
         if (videoRef.current) {
             if (isPlaying) {
                 videoRef.current.pause();
@@ -89,6 +101,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
 
     const toggleFullscreen = async (e: React.MouseEvent) => {
         e.stopPropagation();
+        setShowSettings(false);
         if (!containerRef.current) return;
 
         if (!document.fullscreenElement) {
@@ -110,13 +123,13 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
     const handleMouseMove = () => {
         setShowControls(true);
         clearTimeout(controlsTimeout);
-        if (isPlaying) {
+        if (isPlaying && !showSettings) {
             controlsTimeout = setTimeout(() => setShowControls(false), 2000);
         }
     };
 
     const handleMouseLeave = () => {
-        if (isPlaying) {
+        if (isPlaying && !showSettings) {
             setShowControls(false);
         }
     };
@@ -125,6 +138,24 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+    // New Features
+    const handleSpeedChange = (rate: number) => {
+        if (videoRef.current) {
+            videoRef.current.playbackRate = rate;
+            setPlaybackRate(rate);
+            setShowSettings(false);
+        }
+    };
+
+    const togglePiP = async () => {
+        if (document.pictureInPictureElement) {
+            await document.exitPictureInPicture();
+        } else if (videoRef.current && document.pictureInPictureEnabled) {
+            await videoRef.current.requestPictureInPicture();
+        }
+        setShowSettings(false);
     };
 
     return (
@@ -144,7 +175,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
             />
 
             {/* Play/Pause Overlay Icon (Centered) */}
-            {!isPlaying && (
+            {!isPlaying && !showSettings && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
                     <div className="bg-black/50 p-4 rounded-full backdrop-blur-sm">
                         <Play size={32} className="text-white fill-white ml-1" />
@@ -202,9 +233,51 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
                         </span>
                     </div>
 
-                    <button type="button" onClick={toggleFullscreen} className="text-white hover:text-primary transition-colors">
-                        {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
-                    </button>
+                    <div className="flex items-center gap-3">
+                        {/* Settings Menu */}
+                        <div className="relative">
+                            {showSettings && (
+                                <div className="absolute bottom-full right-0 mb-3 w-48 bg-black/90 backdrop-blur-md border border-white/10 rounded-lg overflow-hidden p-1 shadow-xl animate-in fade-in slide-in-from-bottom-2">
+                                    <div className="flex flex-col gap-1">
+                                        <button 
+                                            type="button"
+                                            onClick={togglePiP}
+                                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-white/10 rounded transition-colors text-left"
+                                        >
+                                            <PictureInPicture size={16} />
+                                            <span>Pencere İçinde</span>
+                                        </button>
+                                        
+                                        <div className="h-px bg-white/10 my-1" />
+                                        
+                                        <div className="px-3 py-1 text-xs text-white/50 font-bold uppercase tracking-wider">Hız</div>
+                                        {[0.5, 1, 1.25, 1.5, 2].map((rate) => (
+                                            <button
+                                                key={rate}
+                                                type="button"
+                                                onClick={() => handleSpeedChange(rate)}
+                                                className="flex items-center justify-between w-full px-3 py-2 text-sm text-white hover:bg-white/10 rounded transition-colors"
+                                            >
+                                                <span>{rate}x</span>
+                                                {playbackRate === rate && <Check size={14} className="text-primary" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <button 
+                                type="button" 
+                                onClick={(e) => { e.stopPropagation(); setShowSettings(!showSettings); }} 
+                                className={`text-white hover:text-primary transition-colors ${showSettings ? 'rotate-90 text-primary' : ''}`}
+                            >
+                                <Settings size={20} />
+                            </button>
+                        </div>
+
+                        <button type="button" onClick={toggleFullscreen} className="text-white hover:text-primary transition-colors">
+                            {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
