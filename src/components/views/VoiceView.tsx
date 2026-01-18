@@ -665,10 +665,10 @@ export default function VoiceView() {
         const fileExt = mediaFile.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
-        console.log('Uploading media to voice-images bucket:', fileName);
+        console.log('Uploading media to voice-media bucket:', fileName);
 
         const { error: uploadError } = await supabase.storage
-            .from('voice-images')
+            .from('voice-media')
             .upload(fileName, mediaFile, {
                 upsert: true,
                 contentType: mediaFile.type
