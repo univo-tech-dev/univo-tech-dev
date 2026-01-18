@@ -218,7 +218,22 @@ export default function RSVPButton({
           <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">
             {attendeeCount > 0 ? (
               <>Şu an <span className="font-bold text-base" style={{ color: 'var(--primary-color, #C8102E)' }}>{attendeeCount}</span> kişi katılıyor</>
-            ) : (
+            ) : registrationLink ? (
+            <div className="flex flex-col gap-3">
+               <a 
+                 href={registrationLink}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="w-full py-4 bg-primary text-white font-black uppercase tracking-wider text-lg border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all flex items-center justify-center gap-2 hover:bg-opacity-90 active:bg-neutral-800"
+               >
+                 <ExternalLink size={24} />
+                 Kayıt Ol (Dış Bağlantı)
+               </a>
+               <p className="text-center text-[10px] font-bold text-neutral-500 uppercase">
+                 Bu etkinlik için dış kaynak üzerinden kayıt gerekmektedir
+               </p>
+            </div>
+          ) : (
               'Şu an katılan yok'
             )}
           </p>
