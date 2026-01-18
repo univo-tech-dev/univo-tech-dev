@@ -149,12 +149,20 @@ export default function CreateVoiceForm({
                         <button
                             type="submit"
                             disabled={!newStatus.trim() || isPosting}
-                            className="px-4 sm:px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs sm:text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center gap-2 transition-colors"
+                            className="px-4 sm:px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs sm:text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors min-w-[80px] sm:min-w-[110px] h-[38px]"
                         >
-                            <Send size={14} className={isPosting ? 'animate-pulse' : ''} />
-                            <span className={isPosting ? '' : 'hidden xs:inline'}>
-                                {isPosting ? '...' : 'Yayınla'}
-                            </span>
+                            {isPosting ? (
+                                <div className="flex gap-1 items-center justify-center">
+                                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" />
+                                </div>
+                            ) : (
+                                <>
+                                    <Send size={14} />
+                                    <span>Yayınla</span>
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
