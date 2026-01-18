@@ -25,6 +25,7 @@ interface CreateVoiceFormProps {
     imageFile: File | null;
     setImageFile: (val: File | null) => void;
     handleImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    photoPostsEnabled: boolean;
 }
 
 export default function CreateVoiceForm({
@@ -46,7 +47,8 @@ export default function CreateVoiceForm({
     setImagePreview,
     imageFile,
     setImageFile,
-    handleImageSelect
+    handleImageSelect,
+    photoPostsEnabled
 }: CreateVoiceFormProps) {
     if (!user) {
         return (
@@ -131,9 +133,9 @@ export default function CreateVoiceForm({
                         <div className="relative">
                             <button
                                 type="button"
-                                className="p-2 text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white transition-colors"
-                                title="Fotoğraf Ekle"
-                                onClick={() => document.getElementById('voice-image-upload')?.click()}
+                                className={`p-2 transition-colors ${photoPostsEnabled ? 'text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white' : 'text-neutral-300 dark:text-neutral-700 cursor-not-allowed'}`}
+                                title={photoPostsEnabled ? "Fotoğraf Ekle" : "Fotoğraf yükleme geçici olarak kapalı"}
+                                onClick={() => photoPostsEnabled && document.getElementById('voice-image-upload')?.click()}
                             >
                                 <Camera size={20} />
                             </button>

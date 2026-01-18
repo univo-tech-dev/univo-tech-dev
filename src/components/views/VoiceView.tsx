@@ -615,8 +615,15 @@ export default function VoiceView() {
     // Image Upload State
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [photoPostsEnabled, setPhotoPostsEnabled] = useState(true);
 
     const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!photoPostsEnabled) {
+            toast.error('Fotoğraf yükleme özelliği geçici olarak devre dışı bırakılmıştır.');
+            if (e.target) e.target.value = '';
+            return;
+        }
+
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             if (file.size > 5 * 1024 * 1024) {
@@ -686,6 +693,16 @@ export default function VoiceView() {
                 console.error('Error parsing recent tags:', e);
             }
         }
+
+        // Fetch global settings
+        fetch('/api/settings/public')
+            .then(res => res.json())
+            .then(data => {
+                if (data.photo_uploads_enabled !== undefined) {
+                    setPhotoPostsEnabled(data.photo_uploads_enabled);
+                }
+            })
+            .catch(err => console.error('Failed to load settings', err));
     }, []);
 
     useEffect(() => {
@@ -1530,6 +1547,7 @@ export default function VoiceView() {
                                         imageFile={imageFile}
                                         setImageFile={setImageFile}
                                         handleImageSelect={handleImageSelect}
+                                        photoPostsEnabled={photoPostsEnabled}
                                     />
                                 ) : (
                                     <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">

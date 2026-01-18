@@ -23,6 +23,7 @@ export default function AdminCommunitiesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
     const fetchCommunities = async () => {
         try {
@@ -61,12 +62,16 @@ export default function AdminCommunitiesPage() {
     };
 
     const filteredCommunities = useMemo(() => {
-        return communities.filter(c =>
-            c.name.toLowerCase().includes(search.toLowerCase()) ||
-            c.category.toLowerCase().includes(search.toLowerCase()) ||
-            c.admin_name.toLowerCase().includes(search.toLowerCase())
-        );
-    }, [communities, search]);
+        return communities.filter(c => {
+            const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
+                c.category.toLowerCase().includes(search.toLowerCase()) ||
+                c.admin_name.toLowerCase().includes(search.toLowerCase());
+            
+            const matchesCategory = selectedCategory === 'all' || c.category === selectedCategory;
+
+            return matchesSearch && matchesCategory;
+        });
+    }, [communities, search, selectedCategory]);
 
     if (isLoading) {
         return (
@@ -131,7 +136,37 @@ export default function AdminCommunitiesPage() {
 
             {showFilters && (
                 <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <p className="text-sm text-neutral-500 italic">Gelişmiş filtreleme seçenekleri çok yakında.</p>
+                     <div>
+                        <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Kategori Filtresi</label>
+                        <div className="flex gap-2 flex-wrap">
+                            <button
+                                onClick={() => setSelectedCategory('all')}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                    selectedCategory === 'all'
+                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
+                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                }`}
+                            >
+                                Tümü
+                            </button>
+                            {Array.from(new Set(communities.map(c => c.category))).map((cat) => (
+                                <button
+                                    key={cat}
+                                    onClick={() => setSelectedCategory(cat)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                        selectedCategory === cat
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                    }`}
+                                >
+                                    {cat}
+                                    <span className="ml-1.5 opacity-60 font-mono">
+                                        {communities.filter(c => c.category === cat).length}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
 

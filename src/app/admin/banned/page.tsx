@@ -146,7 +146,7 @@ export default function BannedUsersPage() {
                             >
                                 Tümü
                             </button>
-                            {uniqueReasons.map((reason) => (
+                             {uniqueReasons.map((reason) => (
                                 <button
                                     key={reason}
                                     onClick={() => setReasonFilter(reason!)}
@@ -157,6 +157,9 @@ export default function BannedUsersPage() {
                                     }`}
                                 >
                                     {reason}
+                                    <span className="ml-1.5 opacity-60 font-mono">
+                                        {users.filter(u => u.ban_reason === reason).length}
+                                    </span>
                                 </button>
                             ))}
                         </div>
