@@ -51,7 +51,7 @@ export const transcodeVideo = async (
     const data = await ffmpegInstance.readFile(outputName);
     
     // Create new File from output
-    const transcodedFile = new File([data], file.name.replace(/\.[^/.]+$/, "") + ".mp4", {
+    const transcodedFile = new File([data as unknown as BlobPart], file.name.replace(/\.[^/.]+$/, "") + ".mp4", {
         type: 'video/mp4'
     });
 
