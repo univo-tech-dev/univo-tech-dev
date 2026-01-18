@@ -113,7 +113,7 @@ export default function CreateVoiceForm({
                     </div>
                 )}
 
-                <div className="flex justify-between items-center border-t border-neutral-200 dark:border-neutral-800 pt-3">
+                <div className="flex flex-wrap justify-between items-center gap-3 border-t border-neutral-200 dark:border-neutral-800 pt-3">
                     <label className="flex items-center gap-2 cursor-pointer group">
                         <div className={`w-4 h-4 border transition-colors flex items-center justify-center ${isAnonymous ? 'bg-neutral-900 dark:bg-white border-neutral-900 dark:border-white' : 'border-neutral-300 dark:border-neutral-700 group-hover:border-neutral-900 dark:group-hover:border-white'}`}>
                             {isAnonymous && <span className="text-white dark:text-black text-[10px] choice">✓</span>}
@@ -127,7 +127,7 @@ export default function CreateVoiceForm({
                         <span className={`text-sm ${isAnonymous ? 'font-bold text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>Anonim Paylaş</span>
                     </label>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4 ml-auto">
                         <div className="relative">
                             <button
                                 type="button"
@@ -149,10 +149,12 @@ export default function CreateVoiceForm({
                         <button
                             type="submit"
                             disabled={!newStatus.trim() || isPosting}
-                            className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center gap-2 transition-colors"
+                            className="px-4 sm:px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs sm:text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center gap-2 transition-colors"
                         >
-                            <Send size={14} />
-                            {isPosting ? 'Yayınlanıyor...' : 'Yayınla'}
+                            <Send size={14} className={isPosting ? 'animate-pulse' : ''} />
+                            <span className={isPosting ? '' : 'hidden xs:inline'}>
+                                {isPosting ? '...' : 'Yayınla'}
+                            </span>
                         </button>
                     </div>
                 </div>

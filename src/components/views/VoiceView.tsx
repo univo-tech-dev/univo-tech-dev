@@ -1373,38 +1373,28 @@ export default function VoiceView() {
 
                                 {/* Input Area */}
                                 {user ? (
-                                    <div className="bg-neutral-50 dark:bg-transparent p-6 border border-neutral-200 dark:border-none mb-8 rounded-sm shadow-sm dark:shadow-none relative">
-                                        <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-0 dark:text-white">
-                                            <MessageSquare size={100} />
-                                        </div>
-
-                                        <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white">
-                                            Sesini Duyur
-                                        </h4>
-
-                                        <CreateVoiceForm 
-                                            user={user}
-                                            newStatus={newStatus}
-                                            handleTextChange={handleTextChange}
-                                            cursorPos={cursorPos}
-                                            setCursorPos={setCursorPos}
-                                            textareaRef={textareaRef}
-                                            showSuggestions={showSuggestions}
-                                            suggestionList={suggestionList}
-                                            insertTag={insertTag}
-                                            isAnonymous={isAnonymous}
-                                            setIsAnonymous={setIsAnonymous}
-                                            handlePost={handlePost}
-                                            isPosting={isPosting}
-                                            activeTagFilter={activeTagFilter}
-                                            setActiveTagFilter={setActiveTagFilter}
-                                            imagePreview={imagePreview}
-                                            setImagePreview={setImagePreview}
-                                            imageFile={imageFile}
-                                            setImageFile={setImageFile}
-                                            handleImageSelect={handleImageSelect}
-                                        />
-                                    </div>
+                                    <CreateVoiceForm 
+                                        user={user}
+                                        newStatus={newStatus}
+                                        handleTextChange={handleTextChange}
+                                        cursorPos={cursorPos}
+                                        setCursorPos={setCursorPos}
+                                        textareaRef={textareaRef}
+                                        showSuggestions={showSuggestions}
+                                        suggestionList={suggestionList}
+                                        insertTag={insertTag}
+                                        isAnonymous={isAnonymous}
+                                        setIsAnonymous={setIsAnonymous}
+                                        handlePost={handlePost}
+                                        isPosting={isPosting}
+                                        activeTagFilter={activeTagFilter}
+                                        setActiveTagFilter={setActiveTagFilter}
+                                        imagePreview={imagePreview}
+                                        setImagePreview={setImagePreview}
+                                        imageFile={imageFile}
+                                        setImageFile={setImageFile}
+                                        handleImageSelect={handleImageSelect}
+                                    />
                                 ) : (
                                     <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
                                         <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/login" className="underline font-bold text-black dark:text-white">giriş yapmalısın</Link>.</p>

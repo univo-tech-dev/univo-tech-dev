@@ -141,7 +141,7 @@ export default function VoiceStatsWidget({
                                     <div className="flex items-center gap-3">
                                         <span className="text-xl font-serif font-black text-neutral-400 dark:text-neutral-600 w-6">{index + 1}</span>
                                         <div className="flex flex-col">
-                                            <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
+                                            <span className={`font-bold transition-colors font-serif truncate max-w-[120px] sm:max-w-[200px] ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
                                                 {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
                                             </span>
                                             <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
