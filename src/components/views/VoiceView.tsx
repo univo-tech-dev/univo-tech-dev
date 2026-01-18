@@ -379,10 +379,10 @@ function VoiceItem({
                                 {voice.image_url && (
                                     <div className="rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 mb-3">
                                         {voice.image_url.match(/\.(mp4|webm|ogg|mov)/i) ? (
-                                            <div className="h-auto max-h-[500px] w-full bg-black">
+                                            <div className="w-full bg-black flex justify-center items-center" style={{ height: '500px' }}>
                                                 <VideoPlayer 
                                                     src={voice.image_url} 
-                                                    className="w-full h-full max-h-[500px]"
+                                                    className="w-full h-full"
                                                 />
                                             </div>
                                         ) : (
