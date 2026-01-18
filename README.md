@@ -26,6 +26,33 @@
 
 ---
 
+## 🚀 Release Notes: v1.1.0 → v1.2.0
+**📅 January 18, 2026**
+
+This update is a massive leap forward for **media consumption**, introducing a studio-grade video engine that solves compatibility issues and delivers a premium, immersive feed experience.
+
+### ✨ Highlights
+- **🎥 Universal Video Engine (FFmpeg Wasm):**
+    - Say goodbye to "Format Not Supported". We now perform **client-side transcoding** for iPhone (HEVC) and high-bitrate videos.
+    - All uploads are automatically converted to universally compatible MP4/H.264 format before they even hit the server.
+- **📱 Smart Autoplay Feed:**
+    - The feed now feels alive. Videos **automatically play** when they scroll to the center of your screen.
+    - **Single-Stream Focus:** Only one video plays at a time. The moment you scroll away, it pauses, saving data and battery.
+    - **Polite Playback:** Videos start muted by default to respect your environment.
+- **🎨 Adaptive Player UI:**
+    - The video player is no longer "soulless". Controls (volume, progress bar) now dynamically adopt your **University's Theme Color** (Red for METU, etc.).
+    - Fixed aspect ratios ensure no more "cropped cat heads"—vertical videos are displayed perfectly with smart containment.
+
+### 🛠️ Technical Changelog
+> **v1.2.0**
+> * `feat(video)`: Integrated `ffmpeg.wasm` (20MB+ lazy-loaded) for robust client-side transcoding.
+> * `feat(ux)`: Implemented `IntersectionObserver` logic with `useRef` constraints for reliable auto-play/pause.
+> * `style(player)`: Refactored `VideoPlayer` to use CSS variables (`--primary-color`) for themed controls.
+> * `fix(build)`: Resolved TypeScript casting errors for `FileData` in FFmpeg implementation.
+> * `fix(mobile)`: Enforced strictly typed `muted` attributes to satisfy iOS/Chrome autoplay policies.
+
+---
+
 ## 🚀 Release Notes: v1.0.2 → v1.1.0
 **📅 January 16, 2026**
 
