@@ -461,7 +461,7 @@ export default function LoginPage() {
                                         disabled={isLoading}
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold pointer-events-none text-sm select-none">
-                                        @{selectedUni?.id === 'bilkent' ? 'ug.bilkent.edu.tr' : 'metu.edu.tr'}
+                                        @{selectedUni?.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr'}
                                     </span>
                                 </div>
                             </div>

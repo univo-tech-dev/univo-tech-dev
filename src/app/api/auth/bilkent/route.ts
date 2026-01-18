@@ -27,43 +27,44 @@ export async function POST(request: Request) {
         }
     }));
 
-    // 2. Bilkent Moodle Login (Scraping)
-    const baseUrl = 'https://moodle.bilkent.edu.tr/2025-2026-fall';
-    const loginPageUrl = `${baseUrl}/login/index.php`;
+    // 2. Bilkent STARS Login (Scraping)
+    const loginPageUrl = 'https://stars.bilkent.edu.tr/accounts/login';
 
     try {
         const initialRes = await client.get(loginPageUrl);
-        const $ = cheerio.load(initialRes.data);
-        const loginToken = $('input[name="logintoken"]').val();
+        // STARS doesn't use CSRF tokens in the form itself (based on subagent check)
 
-        const moodleUsername = username.split('@')[0];
+        const starsId = username.split('@')[0];
         const formData = new URLSearchParams();
-        formData.append('username', moodleUsername);
-        formData.append('password', password);
-        formData.append('anchor', '');
-        if (loginToken) formData.append('logintoken', loginToken as string);
+        formData.append('LoginForm[username]', starsId);
+        formData.append('LoginForm[password]', password);
+        formData.append('yt0', 'Login'); // Submit button name
 
         const loginRes = await client.post(loginPageUrl, formData, {
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Referer': loginPageUrl }
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded', 
+                'Referer': loginPageUrl 
+            }
         });
 
-        const finalUrl = loginRes.config.url || '';
-        const isDashboard = finalUrl.includes('/my/') || loginRes.data.includes('Log out');
+        // STARS successful login redirects to /srs or /my or shows a dashboard
+        // Failed login stays on the page and contains the error message
+        const isError = loginRes.data.includes('The password or Bilkent ID number entered is incorrect');
 
-        if (!isDashboard) {
+        if (isError) {
              // Mock Success for Development/Demo if scraping fails
-             // (Remove this in production if you have real Bilkent credentials to test)
              if (process.env.NODE_ENV === 'development' || username === 'bilkent_test') {
-                 console.log('Bilkent Scraping failed, using Mock success for test user');
+                 console.log('Bilkent STARS Scraping failed, using Mock success');
              } else {
                 return NextResponse.json({ error: 'Giriş yapılamadı. Bilkent ID veya şifre hatalı.' }, { status: 401 });
              }
         }
         
         const $dash = cheerio.load(loginRes.data);
-        let fullName = $dash('.usertext').text() || $dash('.user-name').text();
+        // Extract name from top menu / profile area
+        let fullName = $dash('.user-name').text() || $dash('#user-menu-button').text() || $dash('.usertext').text();
         if (fullName) {
-            fullName = fullName.replace('You are logged in as', '').trim();
+            fullName = fullName.trim();
             fullName = toTitleCase(fullName);
         } else if (username === 'bilkent_test') {
             fullName = 'Bilkent Test Kullanıcısı';
@@ -71,8 +72,8 @@ export async function POST(request: Request) {
         
         // --- 3. UNIVO AUTHENTICATION ---
         // Bilkent student emails can be id@ug.bilkent.edu.tr or firstname.lastname@ug...
-        // For consistency with ODTÜ (which uses eXXXXXX@metu.edu.tr), we use id@ug.bilkent.edu.tr as a stable key
-        const eduEmail = username.includes('@') ? username : `${username}@ug.bilkent.edu.tr`;
+        // For consistency with ODTÜ, we use id@bilkent.edu.tr as a stable key (inclusive of grads/personnel)
+        const eduEmail = username.includes('@') ? username : `${username}@bilkent.edu.tr`;
         const supabaseAdmin = getSupabaseAdmin();
         
         // Find user
