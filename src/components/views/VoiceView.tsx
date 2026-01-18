@@ -330,7 +330,7 @@ function VoiceItem({
                                             src={voice.image_url} 
                                             alt="Post image" 
                                             className="w-full h-auto max-h-[500px] object-contain cursor-pointer transition-transform hover:scale-[1.01]" 
-                                            onClick={() => voice.image_url && setLightboxImage(voice.image_url)}
+                                            onClick={() => voice.image_url && setLightboxImage?.(voice.image_url)}
                                         />
                                     </div>
                                 )}
