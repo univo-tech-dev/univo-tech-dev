@@ -751,11 +751,43 @@ export default function OfficialView() {
                             Sınırlar kalkıyor! Dünyanın dört bir yanındaki üniversite duyuruları ve fırsatlarıyla çok yakında burada buluşacaksın.
                         </p>
 
-                        <div className="flex gap-4">
-                            <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
-                                <Lock size={18} />
-                                Erişime Kapalı
-                            </span>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full text-left">
+                           {/* Global Agenda Cards */}
+                           <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+                                <span className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-3 block uppercase tracking-wider flex items-center gap-2">
+                                    <Globe size={14} /> Teknoloji
+                                </span>
+                                <h3 className="text-xl font-bold mb-3 font-serif leading-tight group-hover:underline decoration-2 underline-offset-2">Google'dan Yeni Yapay Zeka Hamlesi: Gemini 2.0</h3>
+                                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-3">DeepMind, kodlama yeteneklerini geliştiren ve çok modlu etkileşimi bir üst seviyeye taşıyan yeni modelini tanıttı. Öğrenciler için ücretsiz API erişimi başlıyor.</p>
+                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-700/50">
+                                    <span className="text-xs font-bold text-neutral-400 uppercase">Silicon Valley · 2 s önce</span>
+                                    <button className="text-xs font-bold bg-neutral-100 dark:bg-neutral-700 px-3 py-1.5 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Detaylar</button>
+                                </div>
+                           </div>
+                           
+                           <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+                                <span className="text-xs font-bold text-green-600 dark:text-green-400 mb-3 block uppercase tracking-wider flex items-center gap-2">
+                                    <GraduationCap size={14} /> Burs Fırsatı
+                                </span>
+                                <h3 className="text-xl font-bold mb-3 font-serif leading-tight group-hover:underline decoration-2 underline-offset-2">Erasmus+ Başvuruları Başlıyor</h3>
+                                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-3">2026-2027 Akademik yılı için Erasmus+ öğrenim ve staj hareketliliği başvuruları 1 Şubat'ta açılıyor. Hibe miktarlarında %20 artış yapıldı.</p>
+                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-700/50">
+                                    <span className="text-xs font-bold text-neutral-400 uppercase">AB Komisyonu · 5 s önce</span>
+                                    <button className="text-xs font-bold bg-neutral-100 dark:bg-neutral-700 px-3 py-1.5 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Detaylar</button>
+                                </div>
+                           </div>
+
+                           <div className="bg-white dark:bg-neutral-800 p-6 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm hover:shadow-md transition-shadow group cursor-pointer">
+                                <span className="text-xs font-bold text-purple-600 dark:text-purple-400 mb-3 block uppercase tracking-wider flex items-center gap-2">
+                                    <Star size={14} /> Kültür & Sanat
+                                </span>
+                                <h3 className="text-xl font-bold mb-3 font-serif leading-tight group-hover:underline decoration-2 underline-offset-2">Dünya Üniversiteler Arası Kısa Film Festivali</h3>
+                                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 line-clamp-3">Bu yıl 15.'si düzenlenecek festivalin teması 'Sınırlar ve Ötesi'. Son başvuru tarihi 15 Mart. Büyük ödül 10.000$.</p>
+                                <div className="flex items-center justify-between mt-auto pt-4 border-t border-neutral-100 dark:border-neutral-700/50">
+                                    <span className="text-xs font-bold text-neutral-400 uppercase">New York · 1 gün önce</span>
+                                    <button className="text-xs font-bold bg-neutral-100 dark:bg-neutral-700 px-3 py-1.5 rounded-full group-hover:bg-purple-50 dark:group-hover:bg-purple-900/20 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Detaylar</button>
+                                </div>
+                           </div>
                         </div>
                     </motion.div>
                 ) : (

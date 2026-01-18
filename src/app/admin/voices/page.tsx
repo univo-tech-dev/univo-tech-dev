@@ -18,6 +18,7 @@ interface Voice {
         full_name: string;
         nickname?: string;
         avatar_url?: string;
+        university?: string;
     };
     counts?: {
         likes: number;
@@ -32,6 +33,7 @@ export default function AdminVoicesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [privacyFilter, setPrivacyFilter] = useState<'all' | 'anonymous' | 'public'>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
     const [mediaFilter, setMediaFilter] = useState<'all' | 'photo' | 'video' | 'text'>('all');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -151,6 +153,9 @@ export default function AdminVoicesPage() {
                 privacyFilter === 'anonymous' ? v.is_anonymous :
                 !v.is_anonymous;
 
+            // University filter
+            const matchesUni = uniFilter === 'all' ? true : v.profiles?.university === uniFilter;
+
             // Multi-tag matching: post must contain ALL selected tags
             const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => 
                 v.content.toLowerCase().includes(`#${tag.toLowerCase()}`) ||
@@ -160,7 +165,7 @@ export default function AdminVoicesPage() {
             // User matching: post must be from one of the selected users
             const matchesUsers = selectedUsers.length === 0 || selectedUsers.some(u => u.id === v.user_id);
 
-            return matchesSearch && matchesPrivacy && matchesTags && matchesUsers;
+            return matchesSearch && matchesPrivacy && matchesUni && matchesTags && matchesUsers;
         });
 
         // Filter by Media Type
@@ -177,6 +182,7 @@ export default function AdminVoicesPage() {
 
     const activeFilterCount = 
         (privacyFilter !== 'all' ? 1 : 0) + 
+        (uniFilter !== 'all' ? 1 : 0) + 
         (mediaFilter !== 'all' ? 1 : 0) + 
         selectedTags.length + 
         selectedUsers.length;
@@ -185,7 +191,9 @@ export default function AdminVoicesPage() {
         setSearch('');
         setSelectedTags([]);
         setSelectedUsers([]);
+        setSelectedUsers([]);
         setPrivacyFilter('all');
+        setUniFilter('all');
         setMediaFilter('all');
     };
 
@@ -310,6 +318,30 @@ export default function AdminVoicesPage() {
                                             onClick={() => setPrivacyFilter(btn.id as any)}
                                             className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                                                 privacyFilter === btn.id 
+                                                ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                                : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                            }`}
+                                        >
+                                            {btn.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Uni Filter */}
+                            <div className="space-y-3">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Üniversite</label>
+                                <div className="flex gap-2 flex-wrap">
+                                    {[
+                                        { id: 'all', label: 'Tümü' },
+                                        { id: 'metu', label: 'ODTÜ' },
+                                        { id: 'bilkent', label: 'Bilkent' }
+                                    ].map((btn) => (
+                                        <button
+                                            key={btn.id}
+                                            onClick={() => setUniFilter(btn.id as any)}
+                                            className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                                uniFilter === btn.id 
                                                 ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                                 : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                             }`}

@@ -31,6 +31,7 @@ export default function AdminPage() {
     const [search, setSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'banned'>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
     const [banModalOpen, setBanModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [banReason, setBanReason] = useState('');
@@ -130,7 +131,9 @@ export default function AdminPage() {
             statusFilter === 'active' ? !u.is_banned :
             u.is_banned;
 
-        return matchesSearch && matchesStatus;
+        const matchesUni = uniFilter === 'all' ? true : u.university === uniFilter;
+
+        return matchesSearch && matchesStatus && matchesUni;
     });
 
     if (isLoading) {
@@ -210,6 +213,30 @@ export default function AdminPage() {
                                     onClick={() => setStatusFilter(btn.id as any)}
                                     className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
                                         statusFilter === btn.id 
+                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                    }`}
+                                >
+                                    {btn.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Uni Filter */}
+                    <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Üniversite</label>
+                        <div className="flex gap-2">
+                             {[
+                                { id: 'all', label: 'Tümü' },
+                                { id: 'metu', label: 'ODTÜ' },
+                                { id: 'bilkent', label: 'Bilkent' }
+                            ].map((btn) => (
+                                <button
+                                    key={btn.id}
+                                    onClick={() => setUniFilter(btn.id as any)}
+                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        uniFilter === btn.id 
                                         ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                         : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                     }`}

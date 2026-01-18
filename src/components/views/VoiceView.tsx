@@ -596,7 +596,12 @@ export default function VoiceView() {
     const [voices, setVoices] = useState<Voice[]>([]);
     const [isGlobalMode, setIsGlobalMode] = useState(false);
 
-    const university = profile?.university || 'metu';
+    const [university, setUniversity] = useState('metu');
+
+    useEffect(() => {
+        if (profile?.university) setUniversity(profile.university);
+    }, [profile]);
+
     const isBilkent = university === 'bilkent';
 
     const [newStatus, setNewStatus] = useState('');
@@ -1621,11 +1626,44 @@ export default function VoiceView() {
                     {/* Global Mode Switch - Moved Here */}
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) - Hidden for Guests */}
                     {user && (
+                         (profile?.role === 'admin' || profile?.is_admin || user?.user_metadata?.role === 'admin') ? (
+                            <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
+                                 {/* ODTÜ Button */}
+                                 <button 
+                                     onClick={() => { setIsGlobalMode(false); setUniversity('metu'); }} 
+                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                     title="ODTÜ Kampüsü"
+                                 >
+                                     <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
+                                     {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                                 </button>
+                                 
+                                 {/* Bilkent Button */}
+                                 <button 
+                                     onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }} 
+                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                     title="Bilkent Kampüsü"
+                                 >
+                                     <img src="/bilkent_logo.png" className="w-8 h-8 object-contain" />
+                                     {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                                 </button>
+
+                                 {/* Global Button */}
+                                 <button 
+                                     onClick={() => setIsGlobalMode(true)} 
+                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                     title="Global Gündem"
+                                 >
+                                    <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
+                                    {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                                 </button>
+                            </div>
+                        ) : (
                         <div className="flex items-center gap-3">
                             <div 
                                 className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
                                 onClick={() => setIsGlobalMode(!isGlobalMode)}
-                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                                title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
                             >
                                     <div 
                                         className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
@@ -1645,6 +1683,7 @@ export default function VoiceView() {
                                 </div>
                             </div>
                         </div>
+                        )
                     )}
                 </div>
 
@@ -1656,40 +1695,26 @@ export default function VoiceView() {
             </div>
 
             <AnimatePresence mode="wait">
-                {isGlobalMode ? (
-                    <motion.div
-                        key="global"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex flex-col items-center justify-center py-20 min-h-[50vh] text-center"
-                    >
-                        <div className="relative w-64 h-64 mb-8 group perspective-1000">
-                            {/* Globe Animation/Icon */}
-                            <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-                            <Globe className="w-full h-full text-blue-600 dark:text-blue-400 animate-[spin_60s_linear_infinite]" strokeWidth={0.5} />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-6xl">🌍</span>
-                            </div>
-                        </div>
-
-                        <h2 className="text-4xl md:text-5xl font-black font-serif text-neutral-900 dark:text-white mb-6">
-                            Global Sohbet
-                        </h2>
-
-                        <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto mb-10 leading-relaxed font-serif">
-                            Sınırlar kalkıyor! Dünyanın dört bir yanındaki üniversite öğrencileriyle çok yakında burada buluşacaksın.
-                        </p>
-
-                        <div className="flex gap-4">
-                            <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
-                                <Lock size={18} />
-                                Erişime Kapalı
-                            </span>
-                        </div>
-                    </motion.div>
                 ) : (
+                    <motion.div
+                        key="content"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-full"
+                    >
+                        {/* Global Banner */}
+                        {isGlobalMode && (
+                             <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-100 dark:border-blue-800 text-center relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <h2 className="text-2xl font-bold mb-2 font-serif text-blue-900 dark:text-blue-100">🌍 Global Sohbet</h2>
+                                    <p className="text-blue-700 dark:text-blue-300">Tüm üniversitelerden öğrencilerin buluşma noktası.</p>
+                                </div>
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+                             </div>
+                        )}
+
                     <motion.div
                         key="odtu"
                         initial={{ opacity: 0 }}
@@ -1810,11 +1835,6 @@ export default function VoiceView() {
                             {/* Right Sidebar - Sticky on desktop */}
                             <div className="lg:col-span-1 space-y-6">
                                 <VoiceStatsWidget 
-                                    activePoll={activePoll}
-                                    pollLoading={pollLoading}
-                                    pollResults={pollResults}
-                                    totalVotes={totalVotes}
-                                    userVote={userVote}
                                     onPollVote={handlePollVote}
                                     allTags={allTags}
                                     activeTags={filters.tags}
@@ -1825,11 +1845,13 @@ export default function VoiceView() {
                                     issueNumber={issueNumber}
                                     onVotersClick={fetchVoters}
                                     isGlobalMode={isGlobalMode}
+                                    voices={voices}
+                                    university={isGlobalMode ? 'global' : university}
                                 />
                             </div>
                         </div>
                     </motion.div>
-                )}
+                </motion.div>
             </AnimatePresence>
 
             {/* Lightbox Modal */}

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
             .from('campus_voices')
             .select(`
                 *,
-                profiles:user_id (full_name, nickname, avatar_url)
+                profiles:user_id (full_name, nickname, avatar_url, university)
             `)
             .order('created_at', { ascending: false });
 
