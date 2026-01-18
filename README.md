@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Status-v1.1.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Status](https://img.shields.io/badge/Status-v1.2.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
 
 <!-- Language Switcher -->
 <p align="center">
