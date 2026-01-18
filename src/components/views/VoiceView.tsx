@@ -595,12 +595,28 @@ export default function VoiceView() {
     const router = useRouter();
     const [voices, setVoices] = useState<Voice[]>([]);
     const [isGlobalMode, setIsGlobalMode] = useState(false);
+    const [isModeInitialized, setIsModeInitialized] = useState(false);
 
     const [university, setUniversity] = useState('metu');
 
     useEffect(() => {
         if (profile?.university) setUniversity(profile.university);
     }, [profile]);
+
+    // Initialize Mode from LocalStorage
+    useEffect(() => {
+        const savedMode = localStorage.getItem('univo_global_mode');
+        if (savedMode === 'true') {
+            setIsGlobalMode(true);
+        }
+        setIsModeInitialized(true);
+    }, []);
+
+    const handleModeSwitch = (global: boolean) => {
+        setIsGlobalMode(global);
+        localStorage.setItem('univo_global_mode', String(global));
+        setVoices([]); // Clear voices immediately to prevent flash
+    };
 
     const isBilkent = university === 'bilkent';
 
@@ -882,8 +898,10 @@ export default function VoiceView() {
     }, []);
 
     useEffect(() => {
-        fetchVoices();
-    }, [filters, university, isGlobalMode]);
+        if (isModeInitialized) {
+            fetchVoices();
+        }
+    }, [filters, university, isGlobalMode, isModeInitialized]);
 
     const fetchVoices = async () => {
         // Only set view loading if we don't have voices yet (initial load)
@@ -1432,7 +1450,14 @@ export default function VoiceView() {
     const start = new Date(2025, 11, 29);
     const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const diffTime = current.getTime() - start.getTime();
-    const issueNumber = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    
+    // In Global Mode, 'issueNumber' represents Active Topics count instead of Day Number
+    const activeTopicCount = allTags.filter(t => (t as any).count > 0).length;
+    
+    const issueNumber = isGlobalMode 
+        ? activeTopicCount 
+        : (Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
+
     const formattedDate = today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
     const formatRelativeTime = (dateString: string) => {
@@ -1641,7 +1666,7 @@ export default function VoiceView() {
                             <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
                                  {/* ODTÜ Button */}
                                  <button 
-                                     onClick={() => { setIsGlobalMode(false); setUniversity('metu'); }} 
+                                     onClick={() => { handleModeSwitch(false); setUniversity('metu'); }} 
                                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                      title="ODTÜ Kampüsü"
                                  >
@@ -1651,7 +1676,7 @@ export default function VoiceView() {
                                  
                                  {/* Bilkent Button */}
                                  <button 
-                                     onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }} 
+                                     onClick={() => { handleModeSwitch(false); setUniversity('bilkent'); }} 
                                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                      title="Bilkent Kampüsü"
                                  >
@@ -1661,7 +1686,7 @@ export default function VoiceView() {
 
                                  {/* Global Button */}
                                  <button 
-                                     onClick={() => setIsGlobalMode(true)} 
+                                     onClick={() => handleModeSwitch(true)} 
                                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                      title="Global Gündem"
                                  >
@@ -1673,7 +1698,7 @@ export default function VoiceView() {
                         <div className="flex items-center gap-3">
                             <div 
                                 className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
-                                onClick={() => setIsGlobalMode(!isGlobalMode)}
+                                onClick={() => handleModeSwitch(!isGlobalMode)}
                                 title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
                             >
                                     <div 
