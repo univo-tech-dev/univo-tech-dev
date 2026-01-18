@@ -644,7 +644,14 @@ export default function VoiceView() {
     const [optimizationProgress, setOptimizationProgress] = useState(0);
 
     // Auto-play Logic
+    // Auto-play Logic
     const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+    const playingVideoIdRef = useRef<string | null>(null);
+
+    // Sync ref with state
+    useEffect(() => {
+        playingVideoIdRef.current = playingVideoId;
+    }, [playingVideoId]);
 
     useEffect(() => {
         const observerOptions = {
@@ -670,7 +677,7 @@ export default function VoiceView() {
                 }
                 
                 // Check if the currently playing video is still valid/intersecting
-                if (videoId && videoId === playingVideoId && entry.isIntersecting) {
+                if (videoId && videoId === playingVideoIdRef.current && entry.isIntersecting) {
                     currentPlayingIntersecting = true;
                 }
             });
@@ -678,13 +685,10 @@ export default function VoiceView() {
             if (bestVideoId) {
                 setPlayingVideoId(bestVideoId);
             } else if (!currentPlayingIntersecting && entries.length > 0) {
-                 // If the current video is present in entries but NOT intersecting anymore, stop it.
-                 // We need to be careful not to stop it if it wasn't part of this specific batch of entries.
-                 // However, usually we won't get partial batches often.
-                 // Safer logic:
                  entries.forEach(entry => {
                      const vidId = entry.target.getAttribute('data-voice-id');
-                     if (vidId === playingVideoId && !entry.isIntersecting) {
+                     // Use Ref to check against current playing
+                     if (vidId === playingVideoIdRef.current && !entry.isIntersecting) {
                          setPlayingVideoId(null);
                      }
                  });
