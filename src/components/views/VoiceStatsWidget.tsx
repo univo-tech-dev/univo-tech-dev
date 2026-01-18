@@ -20,6 +20,8 @@ interface VoiceStatsWidgetProps {
     issueNumber: number;
     onVotersClick: () => void;
     isGlobalMode?: boolean;
+    voices?: any[]; 
+    university?: string;
 }
 
 export default function VoiceStatsWidget({
@@ -37,7 +39,9 @@ export default function VoiceStatsWidget({
     activeUsers,
     issueNumber,
     onVotersClick,
-    isGlobalMode
+    isGlobalMode,
+    voices,
+    university
 }: VoiceStatsWidgetProps) {
     const { user } = useAuth();
 
