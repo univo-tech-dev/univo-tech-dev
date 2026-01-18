@@ -227,22 +227,6 @@ export default function AdminVoicesPage() {
                         </div>
 
                         <div className="space-y-3">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Medya</label>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setFilter(filter === 'with_images' ? 'all' : 'with_images')}
-                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                        filter === 'with_images'
-                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
-                                    }`}
-                                >
-                                    Fotoğraflılar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
                             <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Tag Yönetimi</label>
                             
                             {/* Active Tags */}
@@ -302,6 +286,22 @@ export default function AdminVoicesPage() {
                                     {topTags.filter(t => !selectedTags.includes(t)).length === 0 && topTags.length > 0 && <span className="text-xs text-neutral-400 italic">Tüm popüler taglar seçili.</span>}
                                     {topTags.length === 0 && <span className="text-xs text-neutral-400 italic">Henüz etiket bulunmuyor.</span>}
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="sm:col-span-2 space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Medya</label>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setFilter(filter === 'with_images' ? 'all' : 'with_images')}
+                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        filter === 'with_images'
+                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                    }`}
+                                >
+                                    Fotoğraflılar
+                                </button>
                             </div>
                         </div>
 
