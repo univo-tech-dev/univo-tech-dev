@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Sürüm-v1.1.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Status](https://img.shields.io/badge/Sürüm-v1.2.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -23,6 +23,33 @@
   <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Sürüm Notları: v1.1.0 → v1.2.0
+**📅 18 Ocak 2026**
+
+Bu güncelleme, **medya tüketimi** için dev bir adım atıyor; uyumluluk sorunlarını çözen ve birinci sınıf, sürükleyici bir akış deneyimi sunan stüdyo kalitesinde bir video motoru tanıtıyor.
+
+### ✨ Öne Çıkan Değişiklikler
+- **🎥 Evrensel Video Motoru (FFmpeg Wasm):**
+    - "Format Desteklenmiyor" hatasına elveda. Artık iPhone (HEVC) ve yüksek bit hızlı videolar için **istemci taraflı transcoding** yapıyoruz.
+    - Tüm yüklemeler, sunucuya ulaşmadan önce otomatik olarak evrensel uyumlu MP4/H.264 formatına dönüştürülür.
+- **📱 Akıllı Otomatik Oynatma Akışı:**
+    - Akış artık canlı hissettiriyor. Videolar ekranınızın merkezine geldiklerinde **otomatik olarak oynamaya** başlar.
+    - **Tekil Odak:** Aynı anda sadece bir video oynar. Ekranı kaydırdığınız anda durur, veri ve pil tasarrufu sağlar.
+    - **Nazik Oynatma:** Çevrenizi rahatsız etmemek için videolar varsayılan olarak sessiz başlar.
+- **🎨 Adaptif Oynatıcı Arayüzü:**
+    - Video oynatıcı artık "ruhsuz" değil. Kontroller (ses, ilerleme çubuğu) artık **Üniversitenizin Tema Rengini** (ODTÜ için Kırmızı, vb.) dinamik olarak benimser.
+    - Sabit en-boy oranları sayesinde artık "kesilmiş kedi kafaları" yok—dikey videolar akıllı kapsama ile mükemmel görüntülenir.
+
+### 🛠️ Teknik İyileştirmeler (Changelog)
+> **v1.2.0**
+> * `feat(video)`: Sağlam istemci taraflı dönüştürme için `ffmpeg.wasm` (20MB+ lazy-loaded) entegre edildi.
+> * `feat(ux)`: Güvenilir otomatik oynatma/duraklatma için `useRef` kısıtlamalarına sahip `IntersectionObserver` mantığı uygulandı.
+> * `style(player)`: `VideoPlayer`, temalı kontroller için CSS değişkenlerini (`--primary-color`) kullanacak şekilde yeniden düzenlendi.
+> * `fix(build)`: FFmpeg uygulamasındaki `FileData` için TypeScript tip dönüşüm hataları çözüldü.
+> * `fix(mobile)`: iOS/Chrome otomatik oynatma politikalarını karşılamak için katı tipli `muted` öznitelikleri zorunlu kılındı.
 
 ---
 
