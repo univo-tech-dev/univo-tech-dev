@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import NotificationCenter from '../NotificationCenter';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, User, BadgeCheck, Globe, Lock, Sparkles, ChevronDown, ChevronUp, Flag, Camera, Filter } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, User, BadgeCheck, Globe, Lock, Sparkles, ChevronDown, ChevronUp, Flag, Camera, Filter, Search, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -659,11 +659,15 @@ export default function VoiceView() {
 
     // Filter state
     const [filters, setFilters] = useState({
-        tag: null as string | null,
+        tags: [] as string[],
         isAnonymous: null as boolean | null,
-        hasImage: null as boolean | null
+        hasImage: null as boolean | null,
+        userId: null as string | null
     });
+    const [searchTerm, setSearchTerm] = useState('');
     const [allTags, setAllTags] = useState<{ tag: string, count: number }[]>([]);
+    const [recentTags, setRecentTags] = useState<string[]>([]);
+    const [searchSuggestions, setSearchSuggestions] = useState<{ type: 'tag' | 'user', value: string, label: string }[]>([]);
 
     // Poll Voters State
     const [showVotersModal, setShowVotersModal] = useState(false);
@@ -673,50 +677,104 @@ export default function VoiceView() {
     const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
     useEffect(() => {
+        // Load recent tags from localStorage
+        const saved = localStorage.getItem('univo_recent_tags');
+        if (saved) {
+            try {
+                setRecentTags(JSON.parse(saved));
+            } catch (e) {
+                console.error('Error parsing recent tags:', e);
+            }
+        }
+    }, []);
+
+    useEffect(() => {
         fetchVoices();
     }, [filters]);
 
     const fetchVoices = async () => {
         // Only set view loading if we don't have voices yet (initial load)
         if (voices.length === 0) setViewLoading(true);
+        
         try {
-            let url = '/api/voices?';
             const params = new URLSearchParams();
-            if (filters.tag) params.append('tag', filters.tag);
+            if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
             if (filters.isAnonymous !== null) params.append('is_anonymous', String(filters.isAnonymous));
             if (filters.hasImage !== null) params.append('has_image', String(filters.hasImage));
+            if (filters.userId) params.append('user_id', filters.userId);
             
-            url += params.toString();
-            const res = await fetch(url);
+            const res = await fetch(`/api/voices?${params.toString()}`);
             const data = await res.json();
+            
             if (data.voices) {
                 setVoices(data.voices);
                 
-                // Only update tag counts if no filters are active (initial state)
-                if (!filters.tag && filters.isAnonymous === null && filters.hasImage === null) {
-                    const tagCounts = new Map<string, number>();
-                    INITIAL_TAGS.forEach(t => tagCounts.set(t, 0));
+                // Update tag counts for sidebar
+                const tagCounts = new Map<string, number>();
+                INITIAL_TAGS.forEach(t => tagCounts.set(t.replace('#', ''), 0));
 
-                    data.voices.forEach((v: Voice) => {
-                        if (v.tags) {
-                            v.tags.forEach(t => {
-                                const lower = t.toLowerCase();
-                                tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
-                            });
-                        }
-                    });
+                data.voices.forEach((v: Voice) => {
+                    if (v.tags) {
+                        v.tags.forEach(t => {
+                            const lower = t.toLowerCase();
+                            tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
+                        });
+                    }
+                });
 
-                    const sortedTags = Array.from(tagCounts.entries())
-                        .map(([tag, count]) => ({ tag, count }))
-                        .sort((a, b) => b.count - a.count);
+                const sortedTags = Array.from(tagCounts.entries())
+                    .map(([tag, count]) => ({ tag, count }))
+                    .sort((a, b) => b.count - a.count);
 
-                    setAllTags(sortedTags);
-                }
+                setAllTags(sortedTags);
             }
-        } catch (e) {
-            console.error('Failed to fetch voices', e);
+        } catch (error) {
+            console.error('Error fetching voices:', error);
         } finally {
             setViewLoading(false);
+        }
+    };
+
+    const addTagFilter = (tag: string) => {
+        const cleanTag = tag.startsWith('#') ? tag.slice(1) : tag;
+        if (!filters.tags.includes(cleanTag)) {
+            const newTags = [...filters.tags, cleanTag];
+            setFilters(prev => ({ ...prev, tags: newTags }));
+            
+            // Update recent tags
+            const newRecent = [cleanTag, ...recentTags.filter(t => t !== cleanTag)].slice(0, 8);
+            setRecentTags(newRecent);
+            localStorage.setItem('univo_recent_tags', JSON.stringify(newRecent));
+        }
+        setSearchTerm('');
+        setSearchSuggestions([]);
+    };
+
+    const removeTagFilter = (tag: string) => {
+        setFilters(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }));
+    };
+
+    const toggleFilter = (key: 'isAnonymous' | 'hasImage', value: boolean | null) => {
+        setFilters(prev => ({ ...prev, [key]: prev[key] === value ? null : value }));
+    };
+
+    const handleSearchInput = (val: string) => {
+        setSearchTerm(val);
+        if (val.startsWith('#')) {
+            const query = val.slice(1).toLowerCase();
+            const filtered = allTags
+                .filter(t => t.tag.toLowerCase().includes(query))
+                .map(t => ({ type: 'tag' as const, value: t.tag, label: `#${t.tag}` }));
+            setSearchSuggestions(filtered.slice(0, 5));
+        } else if (val.startsWith('@')) {
+            const query = val.slice(1).toLowerCase();
+            const users = voices
+                .filter(v => !v.is_anonymous && (v.user?.full_name?.toLowerCase().includes(query) || v.user?.nickname?.toLowerCase().includes(query)))
+                .map(v => ({ type: 'user' as const, value: v.user_id, label: `@${v.user?.full_name || 'Kullanıcı'}` }));
+            const uniqueUsers = Array.from(new Map(users.map(u => [u.value, u])).values());
+            setSearchSuggestions(uniqueUsers.slice(0, 5));
+        } else {
+            setSearchSuggestions([]);
         }
     };
 
@@ -731,7 +789,7 @@ export default function VoiceView() {
                         key={index}
                         onClick={(e) => {
                             e.stopPropagation();
-                            setFilters(prev => ({ ...prev, tag: part.replace('#', '') }));
+                            addTagFilter(part.replace('#', ''));
                         }}
                         className="font-bold hover:underline cursor-pointer bg-transparent border-0 p-0 inline align-baseline hover:opacity-80 transition-colors"
                         style={{ color: 'var(--primary-color, #C8102E)' }}
@@ -1449,14 +1507,111 @@ export default function VoiceView() {
                                     </h3>
 
                                     <div className="flex items-center gap-4">
-                                        {(filters.tag || filters.isAnonymous || filters.hasImage) && (
+                                        {(filters.tags.length > 0 || filters.isAnonymous !== null || filters.hasImage !== null || filters.userId !== null) && (
                                             <button
-                                                onClick={() => setFilters({ tag: null, isAnonymous: null, hasImage: null })}
+                                                onClick={() => setFilters({ tags: [], isAnonymous: null, hasImage: null, userId: null })}
                                                 className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white bg-neutral-900 dark:bg-white dark:text-black"
                                             >
-                                                <span>FİLTRELERİ TEMİZLE</span>
+                                                <span>TEMİZLE</span>
                                                 <X size={12} strokeWidth={3} />
                                             </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Advanced Filter Bar */}
+                                <div className="space-y-4 mb-8">
+                                    {/* Search Input for Tags & Mentions */}
+                                    <div className="relative group perspective-1000">
+                                        <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 p-2 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-all focus-within:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:focus-within:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)]">
+                                            <div className="pl-2 text-neutral-400">
+                                                <Search size={20} />
+                                            </div>
+                                            <input 
+                                                type="text"
+                                                value={searchTerm}
+                                                onChange={(e) => handleSearchInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && searchTerm) {
+                                                        if (searchTerm.startsWith('#')) addTagFilter(searchTerm);
+                                                        // if (searchTerm.startsWith('@')) ... handle mention selection if unique enough
+                                                    }
+                                                }}
+                                                placeholder="#etiket veya @kişi ara..."
+                                                className="flex-1 bg-transparent border-none outline-none font-bold text-neutral-900 dark:text-white placeholder:text-neutral-400 py-1"
+                                            />
+                                            {searchTerm && (
+                                                <button 
+                                                    onClick={() => searchTerm.startsWith('#') ? addTagFilter(searchTerm) : null}
+                                                    className="px-4 py-1 bg-black dark:bg-white text-white dark:text-black rounded-lg text-xs font-black uppercase transition-transform active:scale-95"
+                                                >
+                                                    EKLE
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* Suggestions Dropdown */}
+                                        <AnimatePresence>
+                                            {searchSuggestions.length > 0 && (
+                                                <motion.div 
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 10 }}
+                                                    className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 rounded-xl shadow-xl z-[60] overflow-hidden"
+                                                >
+                                                    {searchSuggestions.map((s, idx) => (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => {
+                                                                if (s.type === 'tag') addTagFilter(s.value);
+                                                                else if (s.type === 'user') setFilters(prev => ({ ...prev, userId: s.value }));
+                                                                setSearchTerm('');
+                                                                setSearchSuggestions([]);
+                                                            }}
+                                                            className="w-full text-left p-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                                                        >
+                                                            <div className={cn(
+                                                                "p-1.5 rounded-lg",
+                                                                s.type === 'tag' ? "bg-primary/10 text-primary" : "bg-blue-500/10 text-blue-500"
+                                                            )}>
+                                                                {s.type === 'tag' ? <Tag size={14} /> : <User size={14} />}
+                                                            </div>
+                                                            <span className="font-bold text-neutral-900 dark:text-white">{s.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
+                                    {/* Active Filters Display */}
+                                    <div className="flex flex-wrap gap-2">
+                                        {filters.tags.map(tag => (
+                                            <div 
+                                                key={tag}
+                                                className="bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold shadow-sm animate-in zoom-in-95 duration-200"
+                                            >
+                                                <span>#{tag}</span>
+                                                <button 
+                                                    onClick={() => removeTagFilter(tag)}
+                                                    className="hover:bg-white/20 dark:hover:bg-black/20 rounded-full p-0.5 transition-colors"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {filters.userId && (
+                                            <div 
+                                                className="bg-blue-600 text-white px-3 py-1.5 rounded-lg flex items-center gap-2 text-sm font-bold shadow-sm"
+                                            >
+                                                <span>Profil Görüntüleniyor</span>
+                                                <button 
+                                                    onClick={() => setFilters(prev => ({ ...prev, userId: null }))}
+                                                    className="hover:bg-white/20 rounded-full p-0.5 transition-colors"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -1477,8 +1632,8 @@ export default function VoiceView() {
                                         setIsAnonymous={setIsAnonymous}
                                         handlePost={handlePost}
                                         isPosting={isPosting}
-                                        activeTagFilter={filters.tag}
-                                        setActiveTagFilter={(tag) => setFilters(prev => ({ ...prev, tag }))}
+                                        activeTagFilter={filters.tags[0] || null}
+                                        setActiveTagFilter={(tag) => tag && addTagFilter(tag)}
                                         imagePreview={imagePreview}
                                         setImagePreview={setImagePreview}
                                         imageFile={imageFile}
@@ -1492,88 +1647,45 @@ export default function VoiceView() {
                                 )}
 
                                 <div className="space-y-6">
-                                    {/* Multi-select filter chips */}
-                                    <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
-                                        <button 
-                                            onClick={() => setFilters(prev => ({ ...prev, tag: null }))}
-                                            className={cn(
-                                                "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all border",
-                                                !filters.tag 
-                                                    ? "bg-black dark:bg-white text-white dark:text-black border-transparent shadow-md" 
-                                                    : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
-                                            )}
-                                        >
-                                            Hepsi
-                                        </button>
-                                        {allTags.map(({ tag }) => (
+                                    {/* Media & Status Section */}
+                                    <div className="p-4 bg-neutral-50 dark:bg-black/30 border-2 border-neutral-200 dark:border-neutral-800 rounded-2xl">
+                                        <div className="text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-3 px-1 flex items-center gap-2">
+                                            <Camera size={12} />
+                                            Medya & Görünüm
+                                        </div>
+                                        <div className="flex flex-wrap gap-2">
                                             <button
-                                                key={tag}
-                                                onClick={() => setFilters(prev => ({ ...prev, tag: filters.tag === tag ? null : tag }))}
+                                                onClick={() => toggleFilter('hasImage', true)}
                                                 className={cn(
-                                                    "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all border flex items-center gap-2",
-                                                    filters.tag === tag 
-                                                        ? "bg-black dark:bg-white text-white dark:text-black border-transparent shadow-md" 
-                                                        : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                                                    "h-10 px-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 border-2",
+                                                    filters.hasImage === true
+                                                        ? "bg-[var(--primary-color)] text-white border-transparent shadow-md scale-105"
+                                                        : "bg-white dark:bg-neutral-900 text-neutral-500 border-neutral-100 dark:border-neutral-800 hover:border-primary/30"
                                                 )}
                                             >
-                                                #{tag}
+                                                <Camera size={16} />
+                                                Fotoğraflılar
                                             </button>
-                                        ))}
-                                    </div>
-
-                                    {/* Additional Status Filters */}
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <button
-                                            onClick={() => setFilters(prev => ({ ...prev, hasImage: filters.hasImage === true ? null : true }))}
-                                            className={cn(
-                                                "h-9 px-4 rounded-full text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 border-2",
-                                                filters.hasImage === true
-                                                    ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)] shadow-sm"
-                                                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-transparent hover:bg-neutral-200 dark:hover:bg-neutral-700"
-                                            )}
-                                        >
-                                            <Camera size={14} />
-                                            Fotoğraflılar
-                                        </button>
-                                        <button
-                                            onClick={() => setFilters(prev => ({ ...prev, isAnonymous: filters.isAnonymous === true ? null : true }))}
-                                            className={cn(
-                                                "h-9 px-4 rounded-full text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 border-2",
-                                                filters.isAnonymous === true
-                                                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm"
-                                                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-transparent hover:bg-neutral-200 dark:hover:bg-neutral-700"
-                                            )}
-                                        >
-                                            <Ghost size={14} />
-                                            Anonimler
-                                        </button>
-                                    </div>
-
-                                    {filters.tag && (
-                                        <div className="mb-6 flex items-center justify-between bg-neutral-100 dark:bg-neutral-800/50 p-4 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-left-4 duration-300">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-sm">
-                                                    <Tag size={18} className="text-neutral-900 dark:text-white" />
-                                                </div>
-                                                <div>
-                                                    <div className="text-sm font-bold text-neutral-900 dark:text-white">#{filters.tag} Etiketiyle Filtreleniyor</div>
-                                                    <div className="text-xs text-neutral-500">{voices.length} sonuç bulundu</div>
-                                                </div>
-                                            </div>
-                                            <button 
-                                                onClick={() => setFilters(prev => ({ ...prev, tag: null }))}
-                                                className="text-xs font-black uppercase text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                                            <button
+                                                onClick={() => toggleFilter('isAnonymous', true)}
+                                                className={cn(
+                                                    "h-10 px-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 border-2",
+                                                    filters.isAnonymous === true
+                                                        ? "bg-neutral-900 dark:bg-white text-white dark:text-black border-transparent shadow-md scale-105"
+                                                        : "bg-white dark:bg-neutral-900 text-neutral-500 border-neutral-100 dark:border-neutral-800 hover:border-black/30"
+                                                )}
                                             >
-                                                TEMİZLE
+                                                <Shield size={16} />
+                                                Anonimler
                                             </button>
                                         </div>
-                                    )}
+                                    </div>
                                     {voices.length === 0 && !showSkeleton ? (
                                         <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
                                     ) : (
                                         <AnimatePresence mode="wait">
                                             <motion.div
-                                                key={`voices-${filters.tag || 'all'}-${filters.isAnonymous}-${filters.hasImage}`}
+                                                key={`voices-${filters.tags.join('-')}-${filters.isAnonymous}-${filters.hasImage}-${filters.userId}`}
                                                 initial={{ opacity: 0, x: 20 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 exit={{ opacity: 0, x: -20 }}
@@ -1639,8 +1751,10 @@ export default function VoiceView() {
                                     userVote={userVote}
                                     onPollVote={handlePollVote}
                                     allTags={allTags}
-                                    activeTagFilter={filters.tag}
-                                    onTagFilterChange={(tag) => setFilters(prev => ({ ...prev, tag }))}
+                                    activeTags={filters.tags}
+                                    recentTags={recentTags}
+                                    onTagToggle={addTagFilter}
+                                    onTagRemove={removeTagFilter}
                                     activeUsers={activeUsers}
                                     issueNumber={issueNumber}
                                     onVotersClick={fetchVoters}

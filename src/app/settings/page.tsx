@@ -234,7 +234,7 @@ export default function SettingsPage() {
                             {isAdminSession && (
                                 <div 
                                     onClick={() => router.push('/admin')}
-                                    className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                                    className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors mt-4"
                                 >
                                     <div className="h-12 w-12 rounded-full flex items-center justify-center text-xl bg-neutral-200 dark:bg-neutral-700 shadow-sm">
                                         <Shield size={24} className="text-neutral-600 dark:text-neutral-300" />
@@ -439,7 +439,7 @@ export default function SettingsPage() {
                         {isAdminSession && (
                             <div 
                                 onClick={() => router.push('/admin')}
-                                className="p-4 flex items-center justify-between cursor-pointer active:bg-neutral-50 dark:active:bg-neutral-800"
+                                className="p-4 flex items-center justify-between cursor-pointer active:bg-neutral-50 dark:active:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-800"
                             >
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-neutral-100 dark:bg-neutral-800">

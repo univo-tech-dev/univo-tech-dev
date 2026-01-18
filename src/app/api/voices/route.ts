@@ -17,11 +17,14 @@ export async function GET(request: Request) {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { searchParams } = new URL(request.url);
-    const tag = searchParams.get('tag');
+    const tagsParam = searchParams.get('tags'); // Support comma-separated tags
+    const userId = searchParams.get('user_id');
     const isAnonymous = searchParams.get('is_anonymous');
     const hasImage = searchParams.get('has_image');
     const sort = searchParams.get('sort');
 
+    // Parse tags into array
+    const tags = tagsParam ? tagsParam.split(',').filter(t => t.trim().length > 0) : [];
 
     // 1. Try with nickname
     let query = supabase
@@ -39,11 +42,16 @@ export async function GET(request: Request) {
       `)
       .eq('moderation_status', 'approved');
 
-    if (tag) {
-      query = query.contains('tags', [tag]);
+    if (tags.length > 0) {
+      // Supabase .contains for array column
+      query = query.contains('tags', tags);
     }
 
-    if (isAnonymous !== null) {
+    if (userId) {
+      query = query.eq('user_id', userId);
+    }
+
+    if (isAnonymous !== null && isAnonymous !== undefined) {
       query = query.eq('is_anonymous', isAnonymous === 'true');
     }
 
@@ -75,11 +83,15 @@ export async function GET(request: Request) {
         `)
         .eq('moderation_status', 'approved');
       
-      if (tag) {
-        fallbackQuery = fallbackQuery.contains('tags', [tag]);
+      if (tags.length > 0) {
+        fallbackQuery = fallbackQuery.contains('tags', tags);
       }
 
-      if (isAnonymous !== null) {
+      if (userId) {
+        fallbackQuery = fallbackQuery.eq('user_id', userId);
+      }
+
+      if (isAnonymous !== null && isAnonymous !== undefined) {
         fallbackQuery = fallbackQuery.eq('is_anonymous', isAnonymous === 'true');
       }
 
