@@ -36,16 +36,6 @@ export default function VoiceStatsWidget({
 
     return (
         <div className="w-full">
-             {/* Mobile Wrapper Style vs Desktop Transparent */}
-            <div
-                className="md:hidden mb-6 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] border-2 transition-colors duration-300"
-                style={{
-                    borderColor: 'var(--primary-color, #C8102E)',
-                    backgroundColor: 'rgba(var(--primary-rgb), 0.03)'
-                }}
-            >
-             {/* This wrapper was only for mobile styling. */}
-            </div>
             
             {/* Unified Container */}
             <div className={`
@@ -56,9 +46,14 @@ export default function VoiceStatsWidget({
                 overflow-x-auto md:overflow-visible 
                 p-4 md:p-0 
                 snap-x snap-mandatory md:snap-none
-                ${/* Mobile styling container if needed, or we just keep the content generic */ ''}
+                md:border-0 border-2 md:shadow-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]
+                transition-colors duration-300 mb-6 md:mb-0
             `} 
-            style={{ scrollbarWidth: 'none' }}>
+            style={{ 
+                scrollbarWidth: 'none',
+                borderColor: 'var(--primary-color, #C8102E)',
+                backgroundColor: 'rgba(var(--primary-rgb), 0.03)'
+            }}>
                 
                 {/* Weekly Poll */}
                 <div className="border-4 border-black dark:border-neutral-600 p-4 bg-neutral-50 dark:bg-black/50 transition-colors shrink-0 w-[80vw] md:w-full snap-center rounded-xl md:rounded-none" style={{ scrollSnapStop: 'always' }}>
