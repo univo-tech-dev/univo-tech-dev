@@ -1,10 +1,11 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import NotificationCenter from '../NotificationCenter';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, User, BadgeCheck, Globe, Lock, Sparkles, ChevronDown, ChevronUp, Flag } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, User, BadgeCheck, Globe, Lock, Sparkles, ChevronDown, ChevronUp, Flag, Camera, Filter } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -135,6 +136,12 @@ interface VoiceItemProps {
     formatRelativeTime: (d: string) => string;
     renderContentWithTags: (content: string) => React.ReactNode;
     setLightboxImage?: (url: string | null) => void;
+    // Image Edit Props
+    imagePreview: string | null;
+    setImagePreview: (val: string | null) => void;
+    imageFile: File | null;
+    setImageFile: (val: File | null) => void;
+    handleImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 function VoiceItem({
@@ -171,7 +178,12 @@ function VoiceItem({
     setNewComment,
     formatRelativeTime,
     renderContentWithTags,
-    setLightboxImage
+    setLightboxImage,
+    imagePreview,
+    setImagePreview,
+    imageFile,
+    setImageFile,
+    handleImageSelect
 }: VoiceItemProps) {
     const { openReportModal } = useReport();
     const reactions = voice.reactions || [];
@@ -322,6 +334,39 @@ function VoiceItem({
                                     >
                                         KAYDET
                                     </button>
+                                </div>
+                                <div className="mt-3">
+                                    {imagePreview ? (
+                                        <div className="relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 h-48 sm:h-64">
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setImagePreview(null);
+                                                    setImageFile(null);
+                                                }}
+                                                className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                                            >
+                                                <X size={20} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById(`edit-image-upload-${voice.id}`)?.click()}
+                                            className="w-full py-4 border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-lg flex flex-col items-center justify-center gap-2 text-neutral-500 hover:text-black dark:hover:text-white hover:border-neutral-300 dark:hover:border-neutral-600 transition-all font-sans"
+                                        >
+                                            <Camera size={24} />
+                                            <span className="text-xs font-bold uppercase">Fotoğraf Ekle</span>
+                                        </button>
+                                    )}
+                                    <input
+                                        id={`edit-image-upload-${voice.id}`}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleImageSelect}
+                                    />
                                 </div>
                             </form>
                         ) : (
@@ -613,7 +658,11 @@ export default function VoiceView() {
     };
 
     // Filter state
-    const [activeTagFilter, setActiveTagFilter] = useState<string | null>(null);
+    const [filters, setFilters] = useState({
+        tag: null as string | null,
+        isAnonymous: null as boolean | null,
+        hasImage: null as boolean | null
+    });
     const [allTags, setAllTags] = useState<{ tag: string, count: number }[]>([]);
 
     // Poll Voters State
@@ -625,22 +674,26 @@ export default function VoiceView() {
 
     useEffect(() => {
         fetchVoices();
-    }, [activeTagFilter]);
+    }, [filters]);
 
     const fetchVoices = async () => {
         // Only set view loading if we don't have voices yet (initial load)
         if (voices.length === 0) setViewLoading(true);
         try {
-            let url = '/api/voices';
-            if (activeTagFilter) {
-                url += `?tag=${encodeURIComponent(activeTagFilter)}`;
-            }
+            let url = '/api/voices?';
+            const params = new URLSearchParams();
+            if (filters.tag) params.append('tag', filters.tag);
+            if (filters.isAnonymous !== null) params.append('is_anonymous', String(filters.isAnonymous));
+            if (filters.hasImage !== null) params.append('has_image', String(filters.hasImage));
+            
+            url += params.toString();
             const res = await fetch(url);
             const data = await res.json();
             if (data.voices) {
                 setVoices(data.voices);
-
-                if (!activeTagFilter) {
+                
+                // Only update tag counts if no filters are active (initial state)
+                if (!filters.tag && filters.isAnonymous === null && filters.hasImage === null) {
                     const tagCounts = new Map<string, number>();
                     INITIAL_TAGS.forEach(t => tagCounts.set(t, 0));
 
@@ -678,7 +731,7 @@ export default function VoiceView() {
                         key={index}
                         onClick={(e) => {
                             e.stopPropagation();
-                            setActiveTagFilter(part);
+                            setFilters(prev => ({ ...prev, tag: part.replace('#', '') }));
                         }}
                         className="font-bold hover:underline cursor-pointer bg-transparent border-0 p-0 inline align-baseline hover:opacity-80 transition-colors"
                         style={{ color: 'var(--primary-color, #C8102E)' }}
@@ -1036,6 +1089,8 @@ export default function VoiceView() {
     const startEdit = (voice: Voice) => {
         setEditingId(voice.id);
         setEditContent(voice.content);
+        setImagePreview(voice.image_url || null);
+        setImageFile(null);
     };
 
     const handleUpdate = async (e: React.FormEvent) => {
@@ -1043,14 +1098,27 @@ export default function VoiceView() {
         if (!editingId || !editContent.trim()) return;
         const vId = editingId;
         
-        // Extract hashtags
-        const extractedTags = Array.from(new Set(editContent.match(/#[a-zA-Z\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c70-9]+/g) || [])).map(t => t.toLowerCase());
-
-        setVoices(prev => prev.map(v => v.id === vId ? { ...v, content: editContent, tags: extractedTags } : v));
-        setEditingId(null);
+        setIsPosting(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return;
+            if (!session) {
+                setIsPosting(false);
+                return;
+            }
+
+            let finalImageUrl = imagePreview; // Could be old URL, new preview (base64/blob), or null
+
+            // If a new file was selected (imageFile exists), upload it
+            if (imageFile) {
+                const uploadedUrl = await uploadImage();
+                if (uploadedUrl) {
+                    finalImageUrl = uploadedUrl;
+                }
+            }
+
+            // Extract hashtags
+            const extractedTags = Array.from(new Set(editContent.match(/#[a-zA-Z\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c70-9]+/g) || [])).map(t => t.toLowerCase());
+
             const res = await fetch(`/api/voices/${vId}`, {
                 method: 'PUT',
                 headers: {
@@ -1059,7 +1127,8 @@ export default function VoiceView() {
                 },
                 body: JSON.stringify({ 
                     content: editContent,
-                    tags: extractedTags
+                    tags: extractedTags,
+                    image_url: finalImageUrl
                 })
             });
 
@@ -1070,21 +1139,19 @@ export default function VoiceView() {
             
             const data = await res.json();
             if (data.voice) {
-                // Confirm server state matches local optimistic state
-                if (JSON.stringify(data.voice.tags) !== JSON.stringify(extractedTags)) {
-                   console.warn('Server tags mismatch:', data.voice.tags, extractedTags);
-                }
-                // Force update with server data
                 setVoices(prev => prev.map(v => v.id === vId ? { ...v, ...data.voice } : v));
             }
             
+            setEditingId(null);
+            setImagePreview(null);
+            setImageFile(null);
             toast.success('Gönderi güncellendi.');
-            // Refresh to update Kampüste Gündem and other lists
             await fetchVoices();
         } catch (e: any) {
             console.error(e);
             toast.error(`Güncelleme başarısız: ${e.message}`);
-            fetchVoices();
+        } finally {
+            setIsPosting(false);
         }
     };
 
@@ -1382,13 +1449,12 @@ export default function VoiceView() {
                                     </h3>
 
                                     <div className="flex items-center gap-4">
-                                        {activeTagFilter && (
+                                        {(filters.tag || filters.isAnonymous || filters.hasImage) && (
                                             <button
-                                                onClick={() => setActiveTagFilter(null)}
-                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
-                                                style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                                onClick={() => setFilters({ tag: null, isAnonymous: null, hasImage: null })}
+                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white bg-neutral-900 dark:bg-white dark:text-black"
                                             >
-                                                <span>{activeTagFilter}</span>
+                                                <span>FİLTRELERİ TEMİZLE</span>
                                                 <X size={12} strokeWidth={3} />
                                             </button>
                                         )}
@@ -1411,8 +1477,8 @@ export default function VoiceView() {
                                         setIsAnonymous={setIsAnonymous}
                                         handlePost={handlePost}
                                         isPosting={isPosting}
-                                        activeTagFilter={activeTagFilter}
-                                        setActiveTagFilter={setActiveTagFilter}
+                                        activeTagFilter={filters.tag}
+                                        setActiveTagFilter={(tag) => setFilters(prev => ({ ...prev, tag }))}
                                         imagePreview={imagePreview}
                                         setImagePreview={setImagePreview}
                                         imageFile={imageFile}
@@ -1426,12 +1492,88 @@ export default function VoiceView() {
                                 )}
 
                                 <div className="space-y-6">
+                                    {/* Multi-select filter chips */}
+                                    <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
+                                        <button 
+                                            onClick={() => setFilters(prev => ({ ...prev, tag: null }))}
+                                            className={cn(
+                                                "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all border",
+                                                !filters.tag 
+                                                    ? "bg-black dark:bg-white text-white dark:text-black border-transparent shadow-md" 
+                                                    : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                                            )}
+                                        >
+                                            Hepsi
+                                        </button>
+                                        {allTags.map(({ tag }) => (
+                                            <button
+                                                key={tag}
+                                                onClick={() => setFilters(prev => ({ ...prev, tag: filters.tag === tag ? null : tag }))}
+                                                className={cn(
+                                                    "px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all border flex items-center gap-2",
+                                                    filters.tag === tag 
+                                                        ? "bg-black dark:bg-white text-white dark:text-black border-transparent shadow-md" 
+                                                        : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700"
+                                                )}
+                                            >
+                                                #{tag}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Additional Status Filters */}
+                                    <div className="flex items-center gap-2 mb-6">
+                                        <button
+                                            onClick={() => setFilters(prev => ({ ...prev, hasImage: filters.hasImage === true ? null : true }))}
+                                            className={cn(
+                                                "h-9 px-4 rounded-full text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 border-2",
+                                                filters.hasImage === true
+                                                    ? "bg-[var(--primary-color)] text-white border-[var(--primary-color)] shadow-sm"
+                                                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-transparent hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                                            )}
+                                        >
+                                            <Camera size={14} />
+                                            Fotoğraflılar
+                                        </button>
+                                        <button
+                                            onClick={() => setFilters(prev => ({ ...prev, isAnonymous: filters.isAnonymous === true ? null : true }))}
+                                            className={cn(
+                                                "h-9 px-4 rounded-full text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 border-2",
+                                                filters.isAnonymous === true
+                                                    ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-sm"
+                                                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-500 border-transparent hover:bg-neutral-200 dark:hover:bg-neutral-700"
+                                            )}
+                                        >
+                                            <Ghost size={14} />
+                                            Anonimler
+                                        </button>
+                                    </div>
+
+                                    {filters.tag && (
+                                        <div className="mb-6 flex items-center justify-between bg-neutral-100 dark:bg-neutral-800/50 p-4 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-left-4 duration-300">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-white dark:bg-neutral-800 rounded-lg shadow-sm">
+                                                    <Tag size={18} className="text-neutral-900 dark:text-white" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-neutral-900 dark:text-white">#{filters.tag} Etiketiyle Filtreleniyor</div>
+                                                    <div className="text-xs text-neutral-500">{voices.length} sonuç bulundu</div>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={() => setFilters(prev => ({ ...prev, tag: null }))}
+                                                className="text-xs font-black uppercase text-neutral-500 hover:text-black dark:hover:text-white transition-colors"
+                                            >
+                                                TEMİZLE
+                                            </button>
+                                        </div>
+                                    )}
                                     {voices.length === 0 && !showSkeleton ? (
                                         <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
                                     ) : (
                                         <AnimatePresence mode="wait">
                                             <motion.div
-                                                key={activeTagFilter || 'all'}
+                                                key={`voices-${filters.tag || 'all'}-${filters.isAnonymous}-${filters.hasImage}`}
                                                 initial={{ opacity: 0, x: 20 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 exit={{ opacity: 0, x: -20 }}
@@ -1474,6 +1616,11 @@ export default function VoiceView() {
                                                         formatRelativeTime={formatRelativeTime}
                                                         renderContentWithTags={renderContentWithTags}
                                                         setLightboxImage={setLightboxImage}
+                                                        imagePreview={imagePreview}
+                                                        setImagePreview={setImagePreview}
+                                                        imageFile={imageFile}
+                                                        setImageFile={setImageFile}
+                                                        handleImageSelect={handleImageSelect}
                                                     />
                                                 ))}
                                             </motion.div>
@@ -1492,8 +1639,8 @@ export default function VoiceView() {
                                     userVote={userVote}
                                     onPollVote={handlePollVote}
                                     allTags={allTags}
-                                    activeTagFilter={activeTagFilter}
-                                    onTagFilterChange={setActiveTagFilter}
+                                    activeTagFilter={filters.tag}
+                                    onTagFilterChange={(tag) => setFilters(prev => ({ ...prev, tag }))}
                                     activeUsers={activeUsers}
                                     issueNumber={issueNumber}
                                     onVotersClick={fetchVoters}

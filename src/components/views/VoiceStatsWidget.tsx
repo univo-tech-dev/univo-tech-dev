@@ -1,7 +1,8 @@
 'use client';
 
-import { TrendingUp, ArrowRight } from 'lucide-react';
+import { TrendingUp, ArrowRight, Tag, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { cn } from '@/lib/utils';
 
 interface VoiceStatsWidgetProps {
     activePoll: { question: string, options: string[] } | null;
@@ -129,20 +130,55 @@ export default function VoiceStatsWidget({
                         <TrendingUp size={24} style={{ color: 'var(--primary-color, #C8102E)' }} />
                         Kampüste Gündem
                     </h3>
+                    
+                    {/* Active Tag Highlighting */}
+                    {activeTagFilter && (
+                        <div className="mb-4 p-3 bg-black dark:bg-white text-white dark:text-black rounded-lg flex items-center justify-between animate-in fade-in slide-in-from-left-2">
+                            <div className="flex items-center gap-2">
+                                <Tag size={14} />
+                                <span className="text-sm font-bold">#{activeTagFilter}</span>
+                            </div>
+                            <button 
+                                onClick={() => onTagFilterChange(null)}
+                                className="text-[10px] font-black uppercase opacity-70 hover:opacity-100 transition-opacity"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                    )}
+
                     <div className="space-y-3">
                         {allTags.length > 0 ? (
                             allTags.slice(0, 5).map((topic, index) => (
-                                <div key={topic.tag} onClick={() => onTagFilterChange(topic.tag === activeTagFilter ? null : topic.tag)} className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-700 last:border-0 ${activeTagFilter === topic.tag ? 'bg-white dark:bg-neutral-800 shadow-sm' : 'hover:bg-white dark:hover:bg-neutral-800'}`}>
+                                <div 
+                                    key={topic.tag} 
+                                    onClick={() => onTagFilterChange(topic.tag === activeTagFilter ? null : topic.tag)} 
+                                    className={cn(
+                                        "flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-700 last:border-0",
+                                        activeTagFilter === topic.tag 
+                                            ? "bg-white dark:bg-neutral-800 shadow-sm border-transparent" 
+                                            : "hover:bg-white dark:hover:bg-neutral-800"
+                                    )}
+                                >
                                     <div className="flex items-center gap-3">
-                                        <span className="text-xl font-serif font-black text-neutral-400 dark:text-neutral-600 w-6">{index + 1}</span>
+                                        <span className={cn(
+                                            "text-xl font-serif font-black w-6",
+                                            activeTagFilter === topic.tag ? "text-primary" : "text-neutral-400 dark:text-neutral-600"
+                                        )}>{index + 1}</span>
                                         <div className="flex flex-col">
-                                            <span className={`font-bold transition-colors font-serif truncate max-w-[120px] sm:max-w-[200px] ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
+                                            <span className={cn(
+                                                "font-bold transition-colors font-serif truncate max-w-[120px] sm:max-w-[200px]",
+                                                activeTagFilter === topic.tag ? "text-primary" : "text-neutral-900 dark:text-white group-hover:text-primary"
+                                            )}>
                                                 {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
                                             </span>
                                             <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
                                         </div>
                                     </div>
-                                    <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-primary' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
+                                    <ArrowRight size={16} className={cn(
+                                        "transition-transform",
+                                        activeTagFilter === topic.tag ? "opacity-100 text-primary" : "text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1"
+                                    )} />
                                 </div>
                             ))
                         ) : (

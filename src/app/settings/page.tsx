@@ -189,20 +189,44 @@ export default function SettingsPage() {
                                 </div>
                             </div>
 
-                            {/* User Role Card */}
-                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 mb-4">
-                                <div className="h-12 w-12 rounded-full flex items-center justify-center text-xl bg-neutral-200 dark:bg-neutral-700 shadow-sm">
-                                    <User size={24} className="text-neutral-600 dark:text-neutral-300" />
-                                </div>
-                                <div>
-                                    <div className="font-bold text-lg text-neutral-900 dark:text-white">Hesap Türü</div>
-                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
-                                        {isAdminSession ? (
-                                            <span className="text-[var(--primary-color)] font-bold">Yönetici</span>
-                                        ) : (
-                                            <span>Kullanıcı</span>
-                                        )}
+                            {/* Role Card - Redesigned to show both static type and session authority */}
+                            <div className="p-5 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center shadow-sm">
+                                            <User size={20} className="text-neutral-600 dark:text-neutral-400" />
+                                        </div>
+                                        <div>
+                                            <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Profil Türü</div>
+                                            <div className="font-bold text-neutral-900 dark:text-white">Kullanıcı</div>
+                                        </div>
                                     </div>
+                                    <div className="h-8 px-3 rounded-full bg-neutral-200 dark:bg-neutral-700 flex items-center gap-1.5 shadow-inner">
+                                        <Check size={14} className="text-neutral-600 dark:text-neutral-400" />
+                                        <span className="text-[10px] font-black uppercase text-neutral-600 dark:text-neutral-400">Onaylı</span>
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-neutral-200 dark:bg-neutral-700 w-full" />
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 flex items-center justify-center shadow-sm">
+                                            <Shield size={20} className={cn("transition-colors", isAdminSession ? "text-[var(--primary-color)]" : "text-neutral-600 dark:text-neutral-400")} />
+                                        </div>
+                                        <div>
+                                            <div className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Oturum Yetkisi</div>
+                                            <div className={cn("font-bold", isAdminSession ? "text-[var(--primary-color)]" : "text-neutral-900 dark:text-white")}>
+                                                {isAdminSession ? "Yönetici" : "Standart"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {isAdminSession && (
+                                        <div className="h-8 px-3 rounded-full bg-[var(--primary-color)]/10 flex items-center gap-1.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--primary-color)] animate-pulse" />
+                                            <span className="text-[10px] font-black uppercase text-[var(--primary-color)]">Aktif Yetki</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -378,23 +402,38 @@ export default function SettingsPage() {
                                 </div>
                             </div>
                         </div>
-                        {/* User Role */}
+                        {/* Profil Türü */}
                         <div className="p-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
-                                    <Shield size={20} className="text-neutral-600 dark:text-neutral-400" />
+                                    <User size={20} className="text-neutral-600 dark:text-neutral-400" />
                                 </div>
                                 <div>
-                                    <div className="font-medium text-neutral-900 dark:text-white">Hesap Türü</div>
-                                    <div className="text-sm text-neutral-500">
-                                        {isAdminSession ? (
-                                            <span className="text-[var(--primary-color)] font-bold">Yönetici</span>
-                                        ) : (
-                                            <span>Kullanıcı</span>
-                                        )}
+                                    <div className="font-medium text-neutral-900 dark:text-white leading-tight">Profil Türü</div>
+                                    <div className="text-xs text-neutral-500">Kullanıcı</div>
+                                </div>
+                            </div>
+                            <span className="text-[10px] font-black uppercase px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-500 rounded-md">Onaylı</span>
+                        </div>
+                        {/* Oturum Yetkisi */}
+                        <div className="p-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+                                    <Shield size={20} className={cn(isAdminSession ? "text-[var(--primary-color)]" : "text-neutral-600 dark:text-neutral-400")} />
+                                </div>
+                                <div>
+                                    <div className="font-medium text-neutral-900 dark:text-white leading-tight">Oturum Yetkisi</div>
+                                    <div className={cn("text-xs font-bold", isAdminSession ? "text-[var(--primary-color)]" : "text-neutral-500")}>
+                                        {isAdminSession ? "Yönetici" : "Standart"}
                                     </div>
                                 </div>
                             </div>
+                            {isAdminSession && (
+                                <div className="flex items-center gap-1.5 px-2 py-1 bg-[var(--primary-color)]/10 rounded-md">
+                                    <div className="w-1 h-1 rounded-full bg-[var(--primary-color)] animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase text-[var(--primary-color)]">Aktif</span>
+                                </div>
+                            )}
                         </div>
                         {/* Admin Panel Link */}
                         {isAdminSession && (

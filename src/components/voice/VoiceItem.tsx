@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowBigUp, ArrowBigDown, Edit2, Trash2, MoreVertical, Share2, Filter, User, Calendar, Award, Ghost, Tag, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowBigUp, ArrowBigDown, Edit2, Trash2, MoreVertical, Share2, Filter, User, Calendar, Award, Ghost, Tag, MessageSquare, ChevronDown, ChevronUp, Camera, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import CommentThread from './CommentSystem';
@@ -51,6 +51,13 @@ interface VoiceItemProps {
 
     formatRelativeTime: (d: string) => string;
     renderContentWithTags: (content: string) => React.ReactNode;
+    setLightboxImage?: (url: string | null) => void;
+    // Image Edit Props
+    imagePreview: string | null;
+    setImagePreview: (val: string | null) => void;
+    imageFile: File | null;
+    setImageFile: (val: File | null) => void;
+    handleImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function VoiceItem({
@@ -86,7 +93,13 @@ export default function VoiceItem({
     newComment,
     setNewComment,
     formatRelativeTime,
-    renderContentWithTags
+    renderContentWithTags,
+    setLightboxImage,
+    imagePreview,
+    setImagePreview,
+    imageFile,
+    setImageFile,
+    handleImageSelect
 }: VoiceItemProps) {
     const reactions = voice.reactions || [];
     const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
@@ -153,27 +166,40 @@ export default function VoiceItem({
                                 <MoreVertical size={16} />
                             </button>
                             {activeMenu === voice.id && (
-                                <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-lg overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
-                                    <button
-                                        onClick={() => {
-                                            startEdit(voice);
-                                            setActiveMenu(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2"
-                                    >
-                                        <Edit2 size={14} /> Düzenle
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            if (window.confirm('Bu paylaşımı silmek istediğinize emin misiniz?')) {
-                                                handleDelete(voice.id);
-                                            }
-                                            setActiveMenu(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
-                                    >
-                                        <Trash2 size={14} /> Sil
-                                    </button>
+                                <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-lg overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
+                                    {user?.id === voice.user_id ? (
+                                        <>
+                                            <button
+                                                onClick={() => {
+                                                    startEdit(voice);
+                                                    setActiveMenu(null);
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors"
+                                            >
+                                                <Edit2 size={14} /> Düzenle
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (window.confirm('Bu paylaşımı silmek istediğinize emin misiniz?')) {
+                                                        handleDelete(voice.id);
+                                                    }
+                                                    setActiveMenu(null);
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 flex items-center gap-2 transition-colors"
+                                            >
+                                                <Trash2 size={14} /> Sil
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link 
+                                                href={`/profile/${voice.user_id}`}
+                                                className="w-full text-left px-4 py-2 text-sm font-medium !text-neutral-700 dark:!text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors"
+                                            >
+                                                <User size={14} className="text-neutral-500 dark:text-neutral-400" /> Profili Gör
+                                            </Link>
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -206,6 +232,39 @@ export default function VoiceItem({
                                         KAYDET
                                     </button>
                                 </div>
+                                <div className="mt-3">
+                                    {imagePreview ? (
+                                        <div className="relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 h-48 sm:h-64">
+                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setImagePreview(null);
+                                                    setImageFile(null);
+                                                }}
+                                                className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                                            >
+                                                <X size={20} />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => document.getElementById(`edit-image-upload-${voice.id}`)?.click()}
+                                            className="w-full py-4 border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-lg flex flex-col items-center justify-center gap-2 text-neutral-500 hover:text-black dark:hover:text-white hover:border-neutral-300 dark:hover:border-neutral-600 transition-all"
+                                        >
+                                            <Camera size={24} />
+                                            <span className="text-xs font-bold uppercase">Fotoğraf Ekle</span>
+                                        </button>
+                                    )}
+                                    <input
+                                        id={`edit-image-upload-${voice.id}`}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleImageSelect}
+                                    />
+                                </div>
                             </form>
                         ) : (
                             <div className="mb-4 group/content relative">
@@ -218,7 +277,7 @@ export default function VoiceItem({
                                             src={voice.image_url} 
                                             alt="Post image" 
                                             className="w-full h-auto max-h-[500px] object-contain cursor-pointer transition-transform hover:scale-[1.01]" 
-                                            onClick={() => voice.image_url && window.open(voice.image_url, '_blank')}
+                                            onClick={() => voice.image_url && setLightboxImage?.(voice.image_url)}
                                         />
                                     </div>
                                 )}

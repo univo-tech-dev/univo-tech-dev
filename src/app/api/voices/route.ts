@@ -1,3 +1,4 @@
+```typescript
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { toTitleCase } from '@/lib/utils';
@@ -18,6 +19,8 @@ export async function GET(request: Request) {
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { searchParams } = new URL(request.url);
     const tag = searchParams.get('tag');
+    const isAnonymous = searchParams.get('is_anonymous');
+    const hasImage = searchParams.get('has_image');
     const sort = searchParams.get('sort');
 
 
@@ -39,6 +42,16 @@ export async function GET(request: Request) {
 
     if (tag) {
       query = query.contains('tags', [tag]);
+    }
+
+    if (isAnonymous !== null) {
+      query = query.eq('is_anonymous', isAnonymous === 'true');
+    }
+
+    if (hasImage === 'true') {
+      query = query.not('image_url', 'is', null);
+    } else if (hasImage === 'false') {
+      query = query.is('image_url', null);
     }
 
     // Always sort by newest first by default or specified
@@ -65,6 +78,16 @@ export async function GET(request: Request) {
       
       if (tag) {
         fallbackQuery = fallbackQuery.contains('tags', [tag]);
+      }
+
+      if (isAnonymous !== null) {
+        fallbackQuery = fallbackQuery.eq('is_anonymous', isAnonymous === 'true');
+      }
+
+      if (hasImage === 'true') {
+        fallbackQuery = fallbackQuery.not('image_url', 'is', null);
+      } else if (hasImage === 'false') {
+        fallbackQuery = fallbackQuery.is('image_url', null);
       }
       
       fallbackQuery = fallbackQuery.order('created_at', { ascending: false });

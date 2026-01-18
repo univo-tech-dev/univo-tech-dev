@@ -111,7 +111,7 @@ export async function PUT(
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await request.json();
-    const { content, tags } = body;
+    const { content, tags, image_url } = body;
 
     if (!content || !content.trim()) {
         return NextResponse.json({ error: 'Content required' }, { status: 400 });
@@ -139,7 +139,8 @@ export async function PUT(
         .from('campus_voices')
         .update({ 
             content: content.substring(0, 280),
-            tags: tags || []
+            tags: tags || [],
+            image_url: image_url === undefined ? undefined : image_url
         })
         .eq('id', id)
         .select();
