@@ -159,9 +159,9 @@ export default function AdminLogsPage() {
                                 className="w-full px-3 py-2 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm"
                             >
                                 <option value="">Tümü</option>
-                                {uniqueActions.map(action => (
+                                {Object.keys(ACTION_LABELS).map(action => (
                                     <option key={action} value={action}>
-                                        {ACTION_LABELS[action] || action}
+                                        {ACTION_LABELS[action]}
                                     </option>
                                 ))}
                             </select>

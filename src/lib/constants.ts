@@ -82,3 +82,17 @@ export const REPORT_CATEGORIES = [
   { id: 'copyright', label: 'Telif Hakkı İhlali', description: 'İzinsiz içerik kullanımı' },
   { id: 'other', label: 'Diğer', description: 'Diğer sebepler' }
 ];
+
+export const COMMUNITY_CATEGORIES = [
+  "Sanat",
+  "Spor",
+  "Bilim",
+  "Teknoloji",
+  "Kültür",
+  "Müzik",
+  "Sosyal Sorumluluk",
+  "Girişimcilik",
+  "Mesleki",
+  "Oyun",
+  "Diğer"
+];

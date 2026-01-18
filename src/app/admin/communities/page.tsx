@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Search, Trash2, Users, Calendar, ArrowRight, Settings, Plus, Building2, Filter, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import SkeletonLoader from '@/components/ui/SkeletonLoader';
+import { COMMUNITY_CATEGORIES } from '@/lib/constants';
 
 interface Community {
     id: string;
@@ -149,7 +150,7 @@ export default function AdminCommunitiesPage() {
                             >
                                 Tümü
                             </button>
-                            {Array.from(new Set(communities.map(c => c.category))).map((cat) => (
+                            {COMMUNITY_CATEGORIES.map((cat) => (
                                 <button
                                     key={cat}
                                     onClick={() => setSelectedCategory(cat)}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Ban, CheckCircle, Search, Filter, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { BAN_CATEGORIES } from '@/lib/constants';
 
 interface User {
     id: string;
@@ -146,19 +147,19 @@ export default function BannedUsersPage() {
                             >
                                 Tümü
                             </button>
-                             {uniqueReasons.map((reason) => (
+                            {BAN_CATEGORIES.map((category) => (
                                 <button
-                                    key={reason}
-                                    onClick={() => setReasonFilter(reason!)}
+                                    key={category.id}
+                                    onClick={() => setReasonFilter(category.label)}
                                     className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                        reasonFilter === reason 
+                                        reasonFilter === category.label 
                                         ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                         : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                     }`}
                                 >
-                                    {reason}
+                                    {category.label}
                                     <span className="ml-1.5 opacity-60 font-mono">
-                                        {users.filter(u => u.ban_reason === reason).length}
+                                        {users.filter(u => u.ban_reason === category.label).length}
                                     </span>
                                 </button>
                             ))}
