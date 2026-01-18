@@ -225,10 +225,15 @@ function VoiceItem({
                             </Link>
                         )}
                         {(voice.user?.department || voice.user?.class_year) && (
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                                <span className="mx-1 opacity-50">|</span>
                                 {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
                             </span>
                         )}
+                        <span className="text-xs text-neutral-400 dark:text-neutral-500 font-serif">
+                            <span className="mx-1 opacity-50">|</span>
+                            {formatRelativeTime(voice.created_at)}
+                        </span>
                         <div className="ml-auto relative">
                              <button
                                 onClick={() => setActiveMenu(activeMenu === voice.id ? null : voice.id)}
@@ -366,7 +371,6 @@ function VoiceItem({
                             >
                                 YANITLA
                             </button>
-                            
                             <button
                                 onClick={() => {
                                     navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
@@ -379,10 +383,6 @@ function VoiceItem({
                                 </div>
                             </button>
                         </div>
-
-                         <span className="text-xs text-neutral-400 dark:text-neutral-500 font-serif ml-auto">
-                            {formatRelativeTime(voice.created_at)}
-                        </span>
                     </div>
 
                     {/* Show Comments Toggle */}

@@ -31,7 +31,7 @@ export async function GET(request: Request) {
         voice_reactions (user_id, reaction_type),
         voice_comments (
           id, content, created_at, user_id, parent_id,
-          user:user_id (full_name, avatar_url),
+          user:user_id (full_name, avatar_url, department, class_year),
           voice_comment_reactions (user_id, reaction_type)
         )
       `)
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
           voice_reactions (user_id, reaction_type),
           voice_comments (
             id, content, created_at, user_id, parent_id,
-            user:user_id (full_name, avatar_url),
+            user:user_id (full_name, avatar_url, department, class_year),
             voice_comment_reactions (user_id, reaction_type)
           )
         `)
@@ -143,6 +143,8 @@ export async function GET(request: Request) {
             created_at: c.created_at,
             user: toTitleCase(c.user?.full_name || 'Kullanıcı'),
             user_avatar: c.user?.avatar_url,
+            user_department: c.user?.department ? cleanDept(c.user.department) : null,
+            user_class: c.user?.class_year,
             user_id: c.user_id,
             parent_id: c.parent_id,
             reactions: { count: cLikes - cDislikes, data: c.voice_comment_reactions || []}

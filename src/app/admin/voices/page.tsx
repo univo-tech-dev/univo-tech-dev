@@ -20,6 +20,7 @@ interface Voice {
         likes: number;
         comments: number;
     };
+    image_url?: string;
 }
 
 export default function AdminVoicesPage() {
@@ -28,7 +29,7 @@ export default function AdminVoicesPage() {
     const [tagHistory, setTagHistory] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState<'all' | 'anonymous' | 'public'>('all');
+    const [filter, setFilter] = useState<'all' | 'anonymous' | 'public' | 'with_images'>('all');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedTag, setSelectedTag] = useState<string>('');
 
@@ -87,6 +88,7 @@ export default function AdminVoicesPage() {
             const matchesFilter = 
                 filter === 'all' ? true :
                 filter === 'anonymous' ? v.is_anonymous :
+                filter === 'with_images' ? !!v.image_url :
                 !v.is_anonymous;
 
             const matchesTag = selectedTag ? v.content.toLowerCase().includes(`#${selectedTag.toLowerCase()}`) : true;
@@ -186,7 +188,8 @@ export default function AdminVoicesPage() {
                                 {[
                                     { id: 'all', label: 'Tümü' },
                                     { id: 'anonymous', label: 'Anonimler' },
-                                    { id: 'public', label: 'Herkese Açık' }
+                                    { id: 'public', label: 'Herkese Açık' },
+                                    { id: 'with_images', label: 'Fotoğraflılar' }
                                 ].map((btn) => (
                                     <button
                                         key={btn.id}
@@ -299,9 +302,14 @@ export default function AdminVoicesPage() {
                                                 {new Date(voice.created_at).toLocaleDateString('tr-TR')} {new Date(voice.created_at).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         </div>
-                                        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed font-serif text-lg">
+                                        <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed font-serif text-lg mb-3">
                                             {voice.content}
                                         </p>
+                                        {voice.image_url && (
+                                            <div className="mt-3 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 w-full max-w-sm">
+                                                <img src={voice.image_url} alt="" className="w-full h-auto object-contain bg-neutral-100 dark:bg-neutral-900" />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <button
