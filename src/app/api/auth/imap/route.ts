@@ -26,12 +26,7 @@ async function fetchRecentEmails(username: string, password: string, extraUids: 
     await connection.openBox('INBOX');
 
     // 1. Get ALL message summaries (Lightweight) to find the latest UIDs
-    const searchOptions = {
-        bodies: ['HEADER.FIELDS (DATE)'], 
-        struct: false
-    };
-
-    let searchRes = await connection.search(['ALL'], searchOptions);
+    let searchRes = await connection.search(['ALL'], { struct: false });
 
     if (searchRes.length === 0) {
         connection.end();
@@ -41,33 +36,28 @@ async function fetchRecentEmails(username: string, password: string, extraUids: 
     // 2. Sort by UID descending (Newest first)
     searchRes.sort((a, b) => b.attributes.uid - a.attributes.uid);
 
-    // 3. Take only the top 50 latest
-    const topLimit = searchRes.slice(0, 50);
-    let uidsToFetch = topLimit.map(m => m.attributes.uid);
+    // 3. Take only the top 20 latest (Lower limit but higher success chance)
+    const top20 = searchRes.slice(0, 20);
+    const uidsToFetch = top20.map(m => m.attributes.uid);
 
-    // 4. Add Extra UIDs (Starred) if provided
-    if (extraUids && extraUids.length > 0) {
-        const numericExtras = extraUids.map(u => Number(u)).filter(n => !isNaN(n));
-        const newUids = numericExtras.filter(uid => !uidsToFetch.includes(uid));
-        uidsToFetch = [...uidsToFetch, ...newUids];
-    }
+    // 4. Fetch detailed headers for these specific UIDs INDIVIDUALLY to ensure server compliance
+    // We use Promise.all to do it in parallel on the same connection
+    const fetchPromises = uidsToFetch.map(uid => 
+        connection.search([['UID', uid]], {
+            bodies: ['HEADER'], 
+            markSeen: false,
+            struct: true
+        })
+    );
 
-    // 5. Fetch detailed headers for these specific UIDs
-    const fetchCriteria = [['UID', uidsToFetch]]; // imap-simple handles arrays of UIDs here
-    const fetchPartsOptions = {
-        bodies: ['HEADER'], 
-        markSeen: false,
-        struct: true
-    };
-
-    const detailedRes = await connection.search(fetchCriteria, fetchPartsOptions);
+    const resultsArray = await Promise.all(fetchPromises);
+    const detailedRes = resultsArray.flat();
     
     // Map the detailed results
     const emails = detailedRes.map((m: any) => {
         const headerPart = m.parts.find((p: any) => p.which === 'HEADER');
         const headerBody = headerPart ? headerPart.body : {};
         
-        // Decode Subject/From
         let subject = headerBody.subject ? headerBody.subject[0] : 'Konusuz';
         let from = headerBody.from ? headerBody.from[0] : 'Bilinmeyen Gönderen';
         let dateStr = headerBody.date ? headerBody.date[0] : new Date().toISOString();
