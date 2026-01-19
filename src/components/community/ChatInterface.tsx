@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { CommunityPost, requestPostPermission, createComment, getPostComments } from '@/app/actions/community-chat';
 import PostComposer from './PostComposer';
 import AdminRequestPanel from './AdminRequestPanel';
-import { MessageCircle, Heart, Share2, MoreHorizontal, Hand, Send } from 'lucide-react';
+import { MessageSquare, Heart, Share2, MoreHorizontal, Hand, Send } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ChatInterfaceProps {
@@ -79,8 +79,8 @@ export default function ChatInterface({
                 ))}
                 {posts.length === 0 && (
                     <div className="text-center py-12 text-neutral-500 dark:text-neutral-400">
-                        <MessageCircle size={48} className="mx-auto mb-4 opacity-50" />
-                        <p>Henüz hiç paylaşım yapılmamış.</p>
+                        <MessageSquare size={48} className="mx-auto mb-4 opacity-20 text-black dark:text-white" />
+                        <p className="font-serif italic font-medium">Henüz hiç paylaşım yapılmamış.</p>
                     </div>
                 )}
             </div>
@@ -129,7 +129,7 @@ function PostItem({ post }: { post: CommunityPost }) {
     };
 
     return (
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-hidden">
             <div className="p-4">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-3">
@@ -184,7 +184,7 @@ function PostItem({ post }: { post: CommunityPost }) {
                         onClick={loadComments}
                         className="flex items-center gap-1.5 text-xs font-medium hover:text-blue-500 transition-colors"
                     >
-                        <MessageCircle size={16} />
+                        <MessageSquare size={16} />
                         Yorumlar
                     </button>
                 </div>
@@ -209,7 +209,7 @@ function PostItem({ post }: { post: CommunityPost }) {
                                             alt="User"
                                         />
                                     </div>
-                                    <div className="bg-white dark:bg-neutral-900 p-2.5 rounded-lg rounded-tl-none border border-neutral-200 dark:border-neutral-800 text-sm flex-1 shadow-sm">
+                                    <div className="bg-white dark:bg-neutral-900 p-2.5 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)]">
                                         <div className="flex justify-between items-baseline mb-1">
                                             <span className="font-bold text-xs text-neutral-900 dark:text-neutral-200">
                                                 {comment.profiles?.full_name}
@@ -233,7 +233,7 @@ function PostItem({ post }: { post: CommunityPost }) {
                     <form onSubmit={handleComment} className="flex gap-2">
                         <input
                             type="text"
-                            className="flex-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-neutral-400"
+                            className="flex-1 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 px-3 py-2 text-sm focus:outline-none"
                             placeholder="Yorum yaz..."
                             value={commentContent}
                             onChange={(e) => setCommentContent(e.target.value)}
@@ -242,7 +242,7 @@ function PostItem({ post }: { post: CommunityPost }) {
                         <button
                             type="submit"
                             disabled={!commentContent.trim() || submittingComment}
-                            className="bg-black dark:bg-white text-white dark:text-black p-2 rounded-lg disabled:opacity-50"
+                            className="bg-black dark:bg-white text-white dark:text-black p-2 disabled:opacity-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
                         >
                             <Send size={16} />
                         </button>

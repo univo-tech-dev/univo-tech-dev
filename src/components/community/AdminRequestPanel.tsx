@@ -42,15 +42,15 @@ export default function AdminRequestPanel({ requests: initialRequests }: AdminRe
     };
 
     return (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
-            <div className="flex items-center gap-2 mb-3 text-amber-800 dark:text-amber-200">
+        <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-500 dark:border-amber-700 p-4 mb-6 shadow-[4px_4px_0px_0px_rgba(180,83,9,0.2)]">
+            <div className="flex items-center gap-2 mb-3 text-amber-800 dark:text-amber-300">
                 <Bell size={18} />
-                <h3 className="font-bold text-sm">Paylaşım İzin İstekleri</h3>
+                <h3 className="font-bold text-sm uppercase tracking-tight">Paylaşım İzin İstekleri</h3>
             </div>
 
             <div className="space-y-3">
                 {requests.map((req) => (
-                    <div key={req.id} className="bg-white dark:bg-neutral-900 p-3 rounded-lg border border-amber-100 dark:border-amber-900/50 flex justify-between items-center shadow-sm">
+                    <div key={req.id} className="bg-white dark:bg-neutral-900 p-3 border-2 border-amber-200 dark:border-amber-900/50 flex justify-between items-center shadow-[2px_2px_0px_0px_rgba(180,83,9,0.1)]">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}

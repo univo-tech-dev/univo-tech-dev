@@ -53,11 +53,10 @@ export default function CommunitySidebar({ community, followerCount, eventCount 
 
                 <Link 
                     href={`/community/${community.id}/chat`} 
-                    className="flex items-center justify-center gap-2 w-full text-white font-bold py-3 px-4 transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
-                    style={{ backgroundColor: 'var(--primary-color)' }}
+                    className="flex items-center justify-center gap-2 w-full bg-black text-white dark:bg-white dark:text-black font-black uppercase tracking-wider text-sm py-4 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all hover:bg-neutral-800 dark:hover:bg-neutral-200"
                 >
-                    <MessageSquare size={20} />
-                    Topluluk Sohbeti
+                    <MessageSquare size={18} />
+                    TOPLULUK SOHBETİ
                 </Link>
             </div>
 

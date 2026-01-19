@@ -1,6 +1,6 @@
 import { getCommunityPosts, getPendingRequests, checkUserPermission } from '@/app/actions/community-chat';
 import ChatInterface from '@/components/community/ChatInterface';
-import { ArrowLeft, Users } from 'lucide-react';
+import { ArrowLeft, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -32,8 +32,8 @@ export default async function CommunityChatPage({ params }: { params: Promise<{ 
                     <ArrowLeft size={20} className="text-neutral-600 dark:text-neutral-400" />
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold font-serif flex items-center gap-2">
-                        <Users className="text-violet-600" />
+                    <h1 className="text-2xl font-black font-serif flex items-center gap-2 uppercase tracking-tight text-black dark:text-white transition-colors">
+                        <MessageSquare className="text-black dark:text-white" />
                         Topluluk Sohbeti
                     </h1>
                     <p className="text-neutral-500 text-sm">

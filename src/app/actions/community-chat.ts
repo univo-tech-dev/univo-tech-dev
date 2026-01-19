@@ -137,16 +137,26 @@ export async function requestPostPermission(communityId: string) {
     }
 
     // Check if already has pending or approved
-    const { data: existing } = await supabase
-        .from('community_permission_requests')
-        .select('*')
-        .eq('community_id', communityId)
-        .eq('user_id', user.id)
-        .in('status', ['pending', 'approved'])
-        .single()
+    try {
+        const { data: existing, error: fetchError } = await supabase
+            .from('community_permission_requests')
+            .select('*')
+            .eq('community_id', communityId)
+            .eq('user_id', user.id)
+            .in('status', ['pending', 'approved'])
+            .maybeSingle()
 
-    if (existing) {
-        return { success: false, message: 'Already has a pending or approved request' }
+        if (fetchError) {
+            console.error('Error fetching existing request:', fetchError);
+            throw new Error('Database error while checking permissions');
+        }
+
+        if (existing) {
+            return { success: false, message: 'Zaten beklemede olan veya onaylanmış bir isteğiniz var.' }
+        }
+    } catch (e: any) {
+        console.error('Error in permission check:', e);
+        return { success: false, message: e.message || 'Bir hata oluştu' }
     }
 
     const { error } = await supabase
