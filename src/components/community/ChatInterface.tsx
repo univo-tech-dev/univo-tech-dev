@@ -54,9 +54,9 @@ export default function ChatInterface({
                     isAnnouncement={isAdmin} // Admins post announcements by default? Or toggle? Let's simplfy: Admins post normally for now.
                 />
             ) : (
-                <div className="bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-200 dark:border-violet-900/30 rounded-xl p-6 text-center mb-8">
-                    <div className="w-12 h-12 bg-white dark:bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                        <Hand className="text-violet-600 dark:text-violet-300" size={24} />
+            <div className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl p-6 text-center mb-8">
+                    <div className="w-12 h-12 bg-white dark:bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm border border-neutral-200 dark:border-neutral-700">
+                        <Hand className="text-neutral-600 dark:text-neutral-300" size={24} />
                     </div>
                     <h3 className="font-bold text-lg mb-1 text-neutral-800 dark:text-neutral-100">Bir sorun mu var?</h3>
                     <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-4">
@@ -64,7 +64,8 @@ export default function ChatInterface({
                     </p>
                     <button
                         onClick={handleRequestPermission}
-                        className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full font-medium transition-colors shadow-lg shadow-violet-500/20"
+                        className="text-white px-6 py-2 rounded-full font-medium transition-colors shadow-lg"
+                        style={{ backgroundColor: 'var(--primary-color)' }}
                     >
                         Sorum Var! ✋
                     </button>
