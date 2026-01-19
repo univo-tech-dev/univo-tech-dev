@@ -45,13 +45,11 @@ ALTER TABLE public.community_post_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.community_permission_requests ENABLE ROW LEVEL SECURITY;
 
 -- Posts Policies
--- View: Everyone can view if public, or if member. For MVP let's make it viewable by authenticated users to simplify, 
--- or strictly check membership. Let's start with: Viewable by everyone (public visibility controlled by UI for now, or deeply integrated).
--- Actually, let's stick to the requirements: "kimler tarafından görülebileceği... belirlensin".
--- So we check community.is_chat_public OR if user is follower.
+DROP POLICY IF EXISTS "Posts viewable by everyone if public or follower" ON public.community_posts;
 CREATE POLICY "Posts viewable by everyone if public or follower"
   ON public.community_posts FOR SELECT
   USING (
+    auth.uid() = user_id OR -- Authors can always see their own posts
     EXISTS (
       SELECT 1 FROM public.communities c
       LEFT JOIN public.community_followers cf ON cf.community_id = c.id AND cf.user_id = auth.uid()
@@ -60,6 +58,7 @@ CREATE POLICY "Posts viewable by everyone if public or follower"
     )
   );
 
+DROP POLICY IF EXISTS "Admins can insert posts" ON public.community_posts;
 CREATE POLICY "Admins can insert posts"
   ON public.community_posts FOR INSERT
   WITH CHECK (
@@ -68,6 +67,7 @@ CREATE POLICY "Admins can insert posts"
     )
   );
 
+DROP POLICY IF EXISTS "Users with approved request can insert posts" ON public.community_posts;
 CREATE POLICY "Users with approved request can insert posts"
   ON public.community_posts FOR INSERT
   WITH CHECK (
@@ -76,9 +76,8 @@ CREATE POLICY "Users with approved request can insert posts"
         WHERE user_id = auth.uid() AND community_id = community_posts.community_id AND status = 'approved'
      )
   );
-  -- NOTE: We will need to update the request status to 'used' AFTER insertion via a trigger or application logic.
-  -- Trigger is safer.
 
+DROP POLICY IF EXISTS "Authors and Admins can delete posts" ON public.community_posts;
 CREATE POLICY "Authors and Admins can delete posts"
   ON public.community_posts FOR DELETE
   USING (
@@ -87,21 +86,22 @@ CREATE POLICY "Authors and Admins can delete posts"
   );
 
 -- Comments Policies
+DROP POLICY IF EXISTS "Comments viewable by viewers of posts" ON public.community_post_comments;
 CREATE POLICY "Comments viewable by viewers of posts"
   ON public.community_post_comments FOR SELECT
   USING (
     EXISTS (
         SELECT 1 FROM public.community_posts p
         WHERE p.id = post_id
-        -- We rely on the Post visibility (simplification: if you can see post, you can see comments)
-        -- Ideally we duplicate the logic or join.
     )
   );
 
+DROP POLICY IF EXISTS "Authenticated users can comment" ON public.community_post_comments;
 CREATE POLICY "Authenticated users can comment"
   ON public.community_post_comments FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Authors and Admins can delete comments" ON public.community_post_comments;
 CREATE POLICY "Authors and Admins can delete comments"
   ON public.community_post_comments FOR DELETE
   USING (auth.uid() = user_id OR EXISTS (
@@ -112,16 +112,19 @@ CREATE POLICY "Authors and Admins can delete comments"
 
 
 -- Permission Requests Policies
+DROP POLICY IF EXISTS "Users can see their own requests" ON public.community_permission_requests;
 CREATE POLICY "Users can see their own requests"
   ON public.community_permission_requests FOR SELECT
   USING (auth.uid() = user_id OR EXISTS (
       SELECT 1 FROM public.communities WHERE id = community_id AND admin_id = auth.uid()
   ));
 
+DROP POLICY IF EXISTS "Users can create requests" ON public.community_permission_requests;
 CREATE POLICY "Users can create requests"
   ON public.community_permission_requests FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Admins can update requests" ON public.community_permission_requests;
 CREATE POLICY "Admins can update requests"
   ON public.community_permission_requests FOR UPDATE
   USING (
@@ -132,7 +135,6 @@ CREATE POLICY "Admins can update requests"
   -- For MVP, let's allow Admins to update. We will handle 'used' status via Server Action with Service Role probably.
 
 
--- TRIGGER to mark request as used
 -- When a post is inserted by a non-admin, find the approved request and mark it used.
 CREATE OR REPLACE FUNCTION mark_request_as_used()
 RETURNS TRIGGER AS $$
@@ -162,6 +164,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_mark_request_used ON public.community_posts;
 CREATE TRIGGER trigger_mark_request_used
 AFTER INSERT ON public.community_posts
 FOR EACH ROW

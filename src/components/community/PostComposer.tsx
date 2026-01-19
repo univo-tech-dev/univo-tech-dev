@@ -49,7 +49,7 @@ export default function PostComposer({ communityId, onPostCreated, isAnnouncemen
                     <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
-                        placeholder={isAnnouncement ? "Bir duyuru paylaş..." : "Toplulukla bir şeyler paylaş..."}
+                        placeholder={isAnnouncementPost ? "Bir duyuru paylaş..." : "Toplulukla bir şeyler paylaş..."}
                         className="w-full bg-transparent border-none focus:ring-0 resize-none min-h-[80px] text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 font-serif"
                         disabled={isSubmitting}
                     />

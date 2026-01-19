@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { CommunityPost, requestPostPermission, createComment, getPostComments, getCommunityPosts, reactToPost, deletePost } from '@/app/actions/community-chat';
 import PostComposer from './PostComposer';
 import AdminRequestPanel from './AdminRequestPanel';
-import { MessageSquare, Heart, Share2, MoreHorizontal, Hand, Send, Trash2, ShieldCheck, Flag } from 'lucide-react';
+import { MessageSquare, Heart, Share2, MoreHorizontal, Hand, Send, Trash2, ShieldCheck, Flag, ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { ThreadConnector, BranchConnector } from '../ui/ThreadConnectors';
@@ -131,23 +131,29 @@ function PostItem({
     const isCommunityAdmin = communityAdminId === post.user_id;
     const canDelete = isOwner || communityAdminId === currentUserId;
 
-    const handleLike = async () => {
-        const newReaction = userReaction === 'like' ? null : 'like';
+    const handleReaction = async (type: 'like' | 'dislike') => {
+        const newReaction = userReaction === type ? null : type;
         const prevReaction = userReaction;
+        const prevCount = reactionCount;
         
         // Optimistic UI
         setUserReaction(newReaction);
-        if (newReaction === 'like') {
-            setReactionCount(prev => prev + 1);
-        } else if (prevReaction === 'like') {
-            setReactionCount(prev => prev - 1);
-        }
+        
+        // Calculate new count (Upvote = +1, Downvote = -1) - Simple count for now
+        let countDiff = 0;
+        if (prevReaction === 'like') countDiff -= 1;
+        if (prevReaction === 'dislike') countDiff += 1;
+        
+        if (newReaction === 'like') countDiff += 1;
+        if (newReaction === 'dislike') countDiff -= 1;
+        
+        setReactionCount(prev => prev + countDiff);
 
         const result = await reactToPost(post.id, newReaction);
         if (!result.success) {
             // Revert
             setUserReaction(prevReaction);
-            setReactionCount(post.reaction_count || 0);
+            setReactionCount(prevCount);
             toast.error(result.message);
         }
     };
@@ -203,7 +209,7 @@ function PostItem({
     };
 
     return (
-        <div className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] overflow-visible">
+        <div className="bg-white dark:bg-[#0a0a0a] border-2 border-black dark:border-neutral-700 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] overflow-visible relative z-20 transition-colors">
             <div className="p-4">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-3">
@@ -295,13 +301,26 @@ function PostItem({
 
                 {/* Actions */}
                 <div className="flex items-center gap-4 text-neutral-500 dark:text-neutral-400 pt-3 border-t-2 border-neutral-100 dark:border-neutral-800">
-                    <button 
-                        onClick={handleLike}
-                        className={`flex items-center gap-1.5 text-xs font-bold transition-all ${userReaction === 'like' ? 'text-[#ff4b2b] scale-110' : 'hover:text-[#ff4b2b]'}`}
-                    >
-                        <Heart size={16} fill={userReaction === 'like' ? 'currentColor' : 'none'} />
-                        <span>{reactionCount > 0 ? reactionCount : 'Beğen'}</span>
-                    </button>
+                    <div className="flex items-center gap-0.5 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1 py-0.5 border border-neutral-100 dark:border-neutral-800">
+                        <button 
+                            onClick={() => handleReaction('like')}
+                            className={`p-1 rounded-full transition-all flex items-center justify-center w-7 h-7 hover:bg-white dark:hover:bg-black hover:shadow-sm ${userReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
+                        >
+                            <ArrowBigUp size={18} fill={userReaction === 'like' ? 'currentColor' : 'none'} />
+                        </button>
+                        <span className={`text-[11px] font-bold min-w-[1rem] text-center ${
+                            reactionCount > 0 ? 'text-green-600' : 
+                            reactionCount < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-500'
+                        }`}>
+                            {reactionCount}
+                        </span>
+                        <button 
+                            onClick={() => handleReaction('dislike')}
+                            className={`p-1 rounded-full transition-all flex items-center justify-center w-7 h-7 hover:bg-white dark:hover:bg-black hover:shadow-sm ${userReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-600'}`}
+                        >
+                            <ArrowBigUp size={18} className={`rotate-180 ${userReaction === 'dislike' ? 'fill-current' : ''}`} fill={userReaction === 'dislike' ? 'currentColor' : 'none'} />
+                        </button>
+                    </div>
                     <button
                         onClick={loadComments}
                         className="flex items-center gap-1.5 text-xs font-bold hover:text-black dark:hover:text-white transition-colors"
@@ -353,12 +372,12 @@ function PostItem({
                                                 alt="User"
                                             />
                                         </div>
-                                        <div className="bg-white dark:bg-neutral-900 px-3 py-2 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] relative z-20">
+                                        <div className="bg-white dark:bg-[#0a0a0a] px-3 py-2 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] relative z-20 rounded-xl">
                                             <div className="flex justify-between items-baseline mb-1">
                                                 <span className="font-bold text-[11px] text-neutral-900 dark:text-neutral-200">
                                                     {comment.profiles?.full_name}
                                                     {comment.user_id === communityAdminId && (
-                                                        <span className="ml-1.5 text-[#ff4b2b] text-[9px] font-black uppercase tracking-tighter">SAHİBİ</span>
+                                                        <span className="ml-1.5 text-[#ff4b2b] dark:text-[#ff6b4b] text-[9px] font-black bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900/50 uppercase tracking-tight">Topluluk Sahibi</span>
                                                     )}
                                                 </span>
                                                 <span className="text-[9px] font-bold text-neutral-400 uppercase">

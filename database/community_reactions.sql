@@ -12,18 +12,22 @@ CREATE TABLE IF NOT EXISTS public.community_post_reactions (
 ALTER TABLE public.community_post_reactions ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+DROP POLICY IF EXISTS "Reactions are viewable by everyone" ON public.community_post_reactions;
 CREATE POLICY "Reactions are viewable by everyone"
   ON public.community_post_reactions FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Users can react" ON public.community_post_reactions;
 CREATE POLICY "Users can react"
   ON public.community_post_reactions FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update reaction" ON public.community_post_reactions;
 CREATE POLICY "Users can update reaction"
   ON public.community_post_reactions FOR UPDATE
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can remove reaction" ON public.community_post_reactions;
 CREATE POLICY "Users can remove reaction"
   ON public.community_post_reactions FOR DELETE
   USING (auth.uid() = user_id);
