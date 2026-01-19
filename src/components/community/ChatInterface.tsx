@@ -54,17 +54,17 @@ export default function ChatInterface({
                     isAnnouncement={isAdmin} // Admins post announcements by default? Or toggle? Let's simplfy: Admins post normally for now.
                 />
             ) : (
-            <div className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl p-6 text-center mb-8">
-                    <div className="w-12 h-12 bg-white dark:bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm border border-neutral-200 dark:border-neutral-700">
-                        <Hand className="text-neutral-600 dark:text-neutral-300" size={24} />
+            <div className="bg-neutral-50 dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 p-6 text-center mb-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                    <div className="w-12 h-12 bg-white dark:bg-neutral-800 flex items-center justify-center mx-auto mb-3 border-2 border-black dark:border-neutral-600">
+                        <Hand className="text-neutral-700 dark:text-neutral-300" size={24} />
                     </div>
-                    <h3 className="font-bold text-lg mb-1 text-neutral-800 dark:text-neutral-100">Bir sorun mu var?</h3>
-                    <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-4">
+                    <h3 className="font-bold font-serif text-lg mb-1 text-neutral-900 dark:text-neutral-100">Bir sorun mu var?</h3>
+                    <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-4 font-serif">
                         Sadece yöneticiler ve izin verilen üyeler paylaşım yapabilir. Sormak istediğin bir soru varsa izin isteyebilirsin.
                     </p>
                     <button
                         onClick={handleRequestPermission}
-                        className="text-white px-6 py-2 rounded-full font-medium transition-colors shadow-lg"
+                        className="text-white px-6 py-2.5 font-bold transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                         style={{ backgroundColor: 'var(--primary-color)' }}
                     >
                         Sorum Var! ✋

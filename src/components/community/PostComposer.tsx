@@ -36,22 +36,22 @@ export default function PostComposer({ communityId, onPostCreated, isAnnouncemen
     };
 
     return (
-        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 mb-6 shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 p-4 mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder={isAnnouncement ? "Bir duyuru paylaş..." : "Toplulukla bir şeyler paylaş..."}
-                        className="w-full bg-transparent border-none focus:ring-0 resize-none min-h-[80px] text-neutral-800 dark:text-neutral-200 placeholder-neutral-400"
+                        className="w-full bg-transparent border-none focus:ring-0 resize-none min-h-[80px] text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 font-serif"
                         disabled={isSubmitting}
                     />
                 </div>
 
-                <div className="flex justify-between items-center border-t border-neutral-100 dark:border-neutral-800 pt-3">
+                <div className="flex justify-between items-center border-t-2 border-neutral-200 dark:border-neutral-700 pt-3">
                     <button
                         type="button"
-                        className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                         title="Resim ekle (Yakında)"
                         disabled
                     >
@@ -61,7 +61,7 @@ export default function PostComposer({ communityId, onPostCreated, isAnnouncemen
                     <button
                         type="submit"
                         disabled={!content.trim() || isSubmitting}
-                        className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 font-bold text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
                     >
                         {isSubmitting ? (
                             <>
