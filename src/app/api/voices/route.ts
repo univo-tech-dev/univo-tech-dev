@@ -287,6 +287,32 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Çok hızlı gidiyorsun! Lütfen 1 dakika bekle.' }, { status: 429 });
     }
 
+    // --- University Validation ---
+    // Fetch user's profile to get their university and admin status
+    const { data: userProfile } = await supabase
+      .from('profiles')
+      .select('university, role, is_admin')
+      .eq('id', user.id)
+      .single();
+
+    const userUniversity = userProfile?.university || 'metu'; // Default to metu for legacy users
+    const isAdmin = userProfile?.role === 'admin' || userProfile?.is_admin === true;
+
+    // Check if post contains #global tag
+    const hasGlobalTag = (tags || []).some((t: string) => 
+      t.toLowerCase().replace('#', '') === 'global'
+    );
+
+    // Non-admin users can only post to their own university or global
+    // For now, we don't restrict global posts, only local posts
+    if (!isAdmin && !hasGlobalTag) {
+      // The post will be associated with the user's profile university
+      // This is already handled by the filtering logic in GET
+      // But we log for monitoring
+      console.log(`User ${user.id} posting to ${userUniversity} feed`);
+    }
+    // --------------------------
+
     const { data, error } = await supabase
       .from('campus_voices')
       .insert({

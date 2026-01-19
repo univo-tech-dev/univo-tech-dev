@@ -598,6 +598,21 @@ export default function VoiceView() {
     const [isModeInitialized, setIsModeInitialized] = useState(false);
 
     const [university, setUniversity] = useState('metu');
+    const [isAdminSession, setIsAdminSession] = useState(false);
+
+    // Check admin session
+    useEffect(() => {
+        const checkAdmin = async () => {
+            try {
+                const res = await fetch('/api/admin/session');
+                const data = await res.json();
+                setIsAdminSession(data.isAdmin === true);
+            } catch (e) {
+                setIsAdminSession(false);
+            }
+        };
+        if (user) checkAdmin();
+    }, [user]);
 
     useEffect(() => {
         if (profile?.university) setUniversity(profile.university);
@@ -1662,7 +1677,7 @@ export default function VoiceView() {
                     {/* Global Mode Switch - Moved Here */}
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) - Hidden for Guests */}
                     {user && (
-                         (profile?.role === 'admin' || profile?.is_admin || user?.user_metadata?.role === 'admin') ? (
+                         isAdminSession ? (
                             <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
                                  {/* ODTÜ Button */}
                                  <button 

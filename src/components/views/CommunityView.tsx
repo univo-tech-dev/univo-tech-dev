@@ -88,9 +88,24 @@ export default function CommunityView() {
   const router = useRouter();
   const { user, profile, setViewLoading, loading: showSkeleton } = useAuth();
   const [isGlobalMode, setIsGlobalMode] = useState(false);
+  const [isAdminSession, setIsAdminSession] = useState(false);
 
-  const university = profile?.university || 'metu';
+  const [university, setUniversity] = useState(profile?.university || 'metu');
   const isBilkent = university === 'bilkent';
+
+  // Check admin session
+  useEffect(() => {
+      const checkAdmin = async () => {
+          try {
+              const res = await fetch('/api/admin/session');
+              const data = await res.json();
+              setIsAdminSession(data.isAdmin === true);
+          } catch (e) {
+              setIsAdminSession(false);
+          }
+      };
+      if (user) checkAdmin();
+  }, [user]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [popularEvents, setPopularEvents] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
@@ -184,6 +199,39 @@ export default function CommunityView() {
 
           {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
           <div className="flex items-center gap-3">
+            {user && isAdminSession ? (
+              <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
+                {/* ODTÜ Button */}
+                <button 
+                    onClick={() => { setIsGlobalMode(false); setUniversity('metu'); }} 
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'metu' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                    title="ODTÜ Kampüsü"
+                >
+                    <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
+                    {!isGlobalMode && university === 'metu' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                </button>
+                
+                {/* Bilkent Button */}
+                <button 
+                    onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }} 
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'bilkent' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                    title="Bilkent Kampüsü"
+                >
+                    <img src="/bilkent_logo.png" className="w-8 h-8 object-contain" />
+                    {!isGlobalMode && university === 'bilkent' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                </button>
+
+                {/* Global Button */}
+                <button 
+                    onClick={() => setIsGlobalMode(true)} 
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                    title="Global Gündem"
+                >
+                   <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
+                   {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                </button>
+              </div>
+            ) : (
             <div 
                 className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
                 onClick={() => setIsGlobalMode(!isGlobalMode)}
@@ -206,6 +254,7 @@ export default function CommunityView() {
                     </div>
                 </div>
             </div>
+            )}
           </div>
         </div>
         <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
