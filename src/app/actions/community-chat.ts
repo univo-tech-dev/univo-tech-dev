@@ -134,15 +134,15 @@ export async function createComment(postId: string, content: string) {
 }
 
 export async function requestPostPermission(communityId: string) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-        throw new Error('Unauthorized')
-    }
-
-    // Check if already has pending or approved
     try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return { success: false, message: 'Oturum açmanız gerekiyor' }
+        }
+
+        // Check if already has pending or approved
         const { data: existing, error: fetchError } = await supabase
             .from('community_permission_requests')
             .select('*')
@@ -153,31 +153,31 @@ export async function requestPostPermission(communityId: string) {
 
         if (fetchError) {
             console.error('Error fetching existing request:', fetchError);
-            throw new Error('Database error while checking permissions');
+            return { success: false, message: 'İzin durumu kontrol edilirken bir hata oluştu' }
         }
 
         if (existing) {
             return { success: false, message: 'Zaten beklemede olan veya onaylanmış bir isteğiniz var.' }
         }
+
+        const { error } = await supabase
+            .from('community_permission_requests')
+            .insert({
+                community_id: communityId,
+                user_id: user.id,
+                status: 'pending'
+            })
+
+        if (error) {
+            console.error('Error requesting permission:', error)
+            return { success: false, message: 'İstek gönderilirken bir veritabanı hatası oluştu' }
+        }
+
+        return { success: true }
     } catch (e: any) {
-        console.error('Error in permission check:', e);
-        return { success: false, message: e.message || 'Bir hata oluştu' }
+        console.error('Unexpected error in requestPostPermission:', e);
+        return { success: false, message: 'Beklenmedik bir hata oluştu' }
     }
-
-    const { error } = await supabase
-        .from('community_permission_requests')
-        .insert({
-            community_id: communityId,
-            user_id: user.id,
-            status: 'pending'
-        })
-
-    if (error) {
-        console.error('Error requesting permission:', error)
-        throw new Error('Could not request permission')
-    }
-
-    return { success: true }
 }
 
 export async function getPendingRequests(communityId: string) {

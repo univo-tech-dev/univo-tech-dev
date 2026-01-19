@@ -721,7 +721,7 @@ export default function OfficialView() {
                               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'bilkent' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                               title="Bilkent Kampüsü"
                           >
-                              <img src="/bilkent_emblem.svg" className="w-8 h-8 object-contain" />
+                              <img src="/bilkent_logo.png" className="w-8 h-8 object-contain" />
                               {!isGlobalMode && university === 'bilkent' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                           </button>
 
