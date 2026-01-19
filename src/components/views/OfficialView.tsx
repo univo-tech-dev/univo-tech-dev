@@ -721,7 +721,9 @@ export default function OfficialView() {
                               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'bilkent' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                               title="Bilkent Kampüsü"
                           >
-                              <img src="/universities/bilkent_cleaned.png" className="w-8 h-8 object-contain" />
+                              <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                  <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
+                              </div>
                               {!isGlobalMode && university === 'bilkent' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                           </button>
 
@@ -746,8 +748,10 @@ export default function OfficialView() {
                                 style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
                             >
                                 {/* Front: Uni Logo */}
-                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center">
-                                     <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-10 h-10 object-contain" />
+                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
+                                     <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                     </div>
                                 </div>
                                 {/* Back: Global */}
                                 <div 
