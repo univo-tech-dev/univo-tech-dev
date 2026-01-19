@@ -87,10 +87,17 @@ export async function PATCH(
       return NextResponse.json({ error: 'Failed to accept request' }, { status: 500 });
     }
 
-    // Cleanup friend_request notification for the receiver (me)
+    // Cleanup friend_request notification for the receiver (me) - UPDATE instead of DELETE
+    // We want to keep the history: "You accepted X's request"
     await supabase
       .from('notifications')
-      .delete()
+      .update({
+        message: `Arkadaşlık isteğini kabul ettin`, // We'll rely on the UI to show WHO it was based on actor_id, or we can fetch the name.
+        read: true,
+        // We might want to change type to avoid 'accept/reject' buttons showing up again,
+        // but the UI checks !read for buttons, so read=true is enough.
+        // Actually, let's make it clearer.
+      })
       .eq('user_id', currentUserId)
       .eq('actor_id', friendship.requester_id)
       .eq('type', 'friend_request');
@@ -101,6 +108,26 @@ export async function PATCH(
       .select('full_name')
       .eq('id', currentUserId)
       .single();
+
+    // To make the message better ("X kişisinin..."), we need the requester's name.
+    // We already seem to need it for the message.
+    const { data: requesterProfile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', friendship.requester_id)
+        .single();
+    
+    if (requesterProfile) {
+         await supabase
+          .from('notifications')
+          .update({
+            message: `${requesterProfile.full_name} kişisinin arkadaşlık isteğini kabul ettin`, 
+            read: true
+          })
+          .eq('user_id', currentUserId)
+          .eq('actor_id', friendship.requester_id)
+          .eq('type', 'friend_request');
+    }
 
     // Create notification for the requester
     await supabase

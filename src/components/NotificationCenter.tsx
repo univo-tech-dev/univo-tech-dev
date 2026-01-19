@@ -177,10 +177,14 @@ export default function NotificationCenter() {
         body: JSON.stringify({ action })
       });
 
-      if (response.ok) {
-        // Mark notification as read (or delete it)
-        markAsRead(notificationId);
-      }
+        // Update local state to reflect the action immediately
+        const actorName = notifications.find(n => n.id === notificationId)?.actor?.full_name || 'Kullanıcının';
+        const newMessage = `${actorName} kişisinin arkadaşlık isteğini ${action === 'accept' ? 'kabul ettiniz' : 'reddettiniz'}`;
+        
+        setNotifications(prev =>
+          prev.map(n => n.id === notificationId ? { ...n, read: true, message: newMessage } : n)
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
       console.error(`Error handling friend request (${action}):`, error);
     } finally {
@@ -310,12 +314,22 @@ export default function NotificationCenter() {
                   <div className="flex gap-3">
                     {notification.actor && (
                       <Link href={`/profile/${notification.actor.id}`}>
-                        <div 
-                          className="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0"
-                          style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
-                        >
-                          {notification.actor.full_name?.charAt(0) || '?'}
-                        </div>
+                        {notification.actor.avatar_url ? (
+                          <div className="relative w-10 h-10 shrink-0">
+                            <img 
+                              src={notification.actor.avatar_url}
+                              alt={notification.actor.full_name}
+                              className="w-10 h-10 rounded-full object-cover border border-neutral-100 dark:border-neutral-800"
+                            />
+                          </div>
+                        ) : (
+                          <div 
+                            className="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm shrink-0"
+                            style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                          >
+                            {notification.actor.full_name?.charAt(0) || '?'}
+                          </div>
+                        )}
                       </Link>
                     )}
 
