@@ -364,8 +364,19 @@ BEGIN
         DELETE FROM public.profiles WHERE id = NEW.id;
         UPDATE public.profiles SET id = NEW.id WHERE id = old_profile_id;
     ELSE
-        INSERT INTO public.profiles (id, full_name, avatar_url, email)
-        VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'), NEW.raw_user_meta_data->>'avatar_url', NEW.email)
+        INSERT INTO public.profiles (id, full_name, avatar_url, email, university)
+        VALUES (
+            NEW.id, 
+            COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'), 
+            NEW.raw_user_meta_data->>'avatar_url', 
+            NEW.email,
+            CASE 
+                WHEN NEW.email LIKE '%@bilkent.edu.tr' THEN 'bilkent'
+                WHEN NEW.email LIKE '%@ug.bilkent.edu.tr' THEN 'bilkent'
+                WHEN NEW.email LIKE '%@metu.edu.tr' THEN 'metu'
+                ELSE 'metu'
+            END
+        )
         ON CONFLICT (id) DO NOTHING;
     END IF;
     
