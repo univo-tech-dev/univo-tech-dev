@@ -121,16 +121,25 @@ export default function CommunityView() {
           title, 
           date, 
           location,
-          community:communities(name),
+          community:communities(name, admin_id, profiles:admin_id(university)),
           event_attendees(count)
         `)
         .gte('date', today)
-        .order('date', { ascending: true }) // Get nearest upcoming first to ensure they are relevant
-        .limit(10); // Fetch a batch to find popular ones
+        .order('date', { ascending: true })
+        .limit(10);
 
       if (data) {
+        // Filter by university if not in global mode
+        let filtered = data;
+        if (!isGlobalMode) {
+          filtered = data.filter((event: any) => {
+            const eventUni = event.community?.profiles?.university || 'metu';
+            return eventUni === university || !event.community?.profiles?.university;
+          });
+        }
+        
         // Sort by attendee count descending
-        const sorted = data.sort((a: any, b: any) => {
+        const sorted = filtered.sort((a: any, b: any) => {
           const countA = a.event_attendees?.[0]?.count || 0;
           const countB = b.event_attendees?.[0]?.count || 0;
           return countB - countA;
@@ -147,15 +156,24 @@ export default function CommunityView() {
             .from('events')
             .select(`
                 *,
-                community:communities(id, name, logo_url, category),
+                community:communities(id, name, logo_url, category, admin_id, profiles:admin_id(university)),
                 event_attendees(count)
             `)
             .gte('date', today)
             .order('date', { ascending: true });
         
         if (data) {
+             // Filter by university if not in global mode
+             let filtered = data;
+             if (!isGlobalMode) {
+               filtered = data.filter((event: any) => {
+                 const eventUni = event.community?.profiles?.university || 'metu';
+                 return eventUni === university || !event.community?.profiles?.university;
+               });
+             }
+             
              // Combine real data with mock events for presentation
-             const combinedEvents = [...data, ...mockEvents];
+             const combinedEvents = [...filtered, ...mockEvents];
              
              // Remove duplicates if any ID conflicts (though mock IDs are distinct)
              const uniqueEvents = Array.from(new Map(combinedEvents.map(item => [item.id, item])).values());
@@ -170,7 +188,7 @@ export default function CommunityView() {
         setViewLoading(false);
     };
     fetchAllEvents();
-  }, [setViewLoading]);
+  }, [setViewLoading, isGlobalMode, university]);
 
   if (showSkeleton) {
     return <CommunityViewSkeleton />;

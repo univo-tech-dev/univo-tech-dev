@@ -1927,14 +1927,18 @@ export default function VoiceView() {
                                         userVote={userVote}
                                         onPollVote={handlePollVote}
                                         allTags={allTags}
-                                        activeTags={filters.tags}
-                                        onTagToggle={addTagFilter}
-                                        onTagRemove={removeTagFilter}
+                                        activeTagFilter={filters.tags[0] || null}
+                                        onTagFilterChange={(tag) => {
+                                            if (tag) {
+                                                setFilters(prev => ({ ...prev, tags: [tag] }));
+                                            } else {
+                                                setFilters(prev => ({ ...prev, tags: [] }));
+                                            }
+                                        }}
                                         activeUsers={activeUsers}
                                         issueNumber={issueNumber}
                                         onVotersClick={fetchVoters}
                                         isGlobalMode={isGlobalMode}
-                                        voices={voices}
                                         university={isGlobalMode ? 'global' : university}
                                     />
                                 )}

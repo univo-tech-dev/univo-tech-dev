@@ -1,6 +1,6 @@
 'use client';
 
-import { TrendingUp, ArrowRight, Tag, X } from 'lucide-react';
+import { TrendingUp, ArrowRight, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
@@ -12,14 +12,12 @@ interface VoiceStatsWidgetProps {
     userVote: number | null;
     onPollVote: (index: number) => void;
     allTags: { tag: string, count: number }[];
-    activeTags: string[];
-    onTagToggle: (tag: string) => void;
-    onTagRemove: (tag: string) => void;
+    activeTagFilter: string | null;
+    onTagFilterChange: (tag: string | null) => void;
     activeUsers: number;
     issueNumber: number;
     onVotersClick: () => void;
     isGlobalMode?: boolean;
-    voices?: any[]; 
     university?: string;
 }
 
@@ -31,22 +29,15 @@ export default function VoiceStatsWidget({
     userVote,
     onPollVote,
     allTags,
-    activeTags,
-    onTagToggle,
-    onTagRemove,
+    activeTagFilter,
+    onTagFilterChange,
     activeUsers,
     issueNumber,
     onVotersClick,
     isGlobalMode,
-    voices,
     university
 }: VoiceStatsWidgetProps) {
     const { user } = useAuth();
-
-    // Filter logic for exclusivity
-    const displayPopTags = allTags
-        .filter(t => !activeTags.includes(t.tag.replace('#', '')))
-        .slice(0, 5);
 
     return (
         <div className="w-full">
@@ -144,56 +135,67 @@ export default function VoiceStatsWidget({
                         {isGlobalMode ? 'Global Gündem' : 'Kampüste Gündem'}
                     </h3>
                     
-                    {/* Active Tag Indicator (single tag only) */}
-                    {activeTags.length > 0 && (
+                    {/* Active Filter Indicator */}
+                    {activeTagFilter && (
                         <div className="mb-4 p-3 bg-black dark:bg-white rounded-lg flex items-center justify-between">
                             <span className="text-white dark:text-black text-sm font-bold">
-                                #{activeTags[0]}
+                                #{activeTagFilter}
                             </span>
                             <button 
-                                onClick={() => onTagRemove(activeTags[0])}
+                                onClick={() => onTagFilterChange(null)}
                                 className="text-white/70 dark:text-black/70 hover:text-white dark:hover:text-black"
                             >
                                 <X size={16} />
                             </button>
                         </div>
                     )}
-
-                    {/* 3. POPÜLER */}
-                    <div>
-                        <div className="text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-3 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                            Popüler
-                        </div>
-                        <div className="space-y-3">
-                            {displayPopTags.length > 0 ? (
-                                displayPopTags.map((topic, index) => (
-                                    <div 
-                                        key={topic.tag} 
-                                        onClick={() => onTagToggle(topic.tag)} 
-                                        className={cn(
-                                            "flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-700 last:border-0",
-                                            "hover:bg-white dark:hover:bg-neutral-800 shadow-sm"
-                                        )}
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-xl font-serif font-black w-6 text-neutral-400 dark:text-neutral-600 group-hover:text-primary transition-colors">{index + 1}</span>
-                                            <div className="flex flex-col">
-                                                <span className="font-bold transition-colors font-serif truncate max-w-[120px] sm:max-w-[200px] text-neutral-900 dark:text-white group-hover:text-primary">
-                                                    {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
-                                                </span>
-                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
-                                            </div>
+                    
+                    {/* Popular Tags */}
+                    <div className="space-y-3">
+                        {allTags.length > 0 ? (
+                            allTags.slice(0, 5).map((topic, index) => (
+                                <div 
+                                    key={topic.tag} 
+                                    onClick={() => onTagFilterChange(topic.tag === activeTagFilter ? null : topic.tag)} 
+                                    className={cn(
+                                        "flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-700 last:border-0",
+                                        activeTagFilter === topic.tag 
+                                            ? 'bg-white dark:bg-neutral-800 shadow-sm' 
+                                            : 'hover:bg-white dark:hover:bg-neutral-800'
+                                    )}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className={cn(
+                                            "text-xl font-serif font-black w-6",
+                                            activeTagFilter === topic.tag 
+                                                ? 'text-primary' 
+                                                : 'text-neutral-400 dark:text-neutral-600 group-hover:text-primary transition-colors'
+                                        )}>{index + 1}</span>
+                                        <div className="flex flex-col">
+                                            <span className={cn(
+                                                "font-bold transition-colors font-serif truncate max-w-[120px] sm:max-w-[200px]",
+                                                activeTagFilter === topic.tag 
+                                                    ? 'text-primary' 
+                                                    : 'text-neutral-900 dark:text-white group-hover:text-primary'
+                                            )}>
+                                                {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
+                                            </span>
+                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
                                         </div>
-                                        <ArrowRight size={16} className="text-primary opacity-0 group-hover:opacity-100 translate-x-1 transition-all" />
                                     </div>
-                                ))
-                            ) : (
-                                <div className="text-center py-6 text-neutral-400 text-sm italic">
-                                    Henüz gündem oluşmadı.
+                                    <ArrowRight size={16} className={cn(
+                                        "transition-all",
+                                        activeTagFilter === topic.tag 
+                                            ? 'opacity-100 text-primary' 
+                                            : 'text-primary opacity-0 group-hover:opacity-100 translate-x-1'
+                                    )} />
                                 </div>
-                            )}
-                        </div>
+                            ))
+                        ) : (
+                            <div className="text-center py-6 text-neutral-400 text-sm italic">
+                                Henüz gündem oluşmadı.
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -236,4 +238,3 @@ export default function VoiceStatsWidget({
         </div>
     );
 }
-
