@@ -273,15 +273,17 @@ export default function CommunityView() {
                         <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
                     </div>
                 </div>
-            </div>
+              </div>
             )
-           )}
+          )}
         </div>
-        <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
-          <span>SAYI: {issueNumber}</span>
-          <span>ÖĞRENCİ BÜLTENİ</span>
-          <span>{formattedDate.toUpperCase()}</span>
-        </div>
+      </div>
+    </div>
+
+    <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
+        <span>SAYI: {issueNumber}</span>
+        <span>ÖĞRENCİ BÜLTENİ</span>
+        <span>{formattedDate.toUpperCase()}</span>
       </div>
 
       {showSkeleton ? (
