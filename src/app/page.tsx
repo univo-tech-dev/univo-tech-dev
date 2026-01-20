@@ -1,4 +1,5 @@
 'use client';
+// Final push trigger for Vercel synchronization
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
