@@ -8,35 +8,53 @@ const supabase = createClient(OLD_URL, OLD_KEY);
 
 const tables = [
   'profiles',
+  'admin_audit_logs',
+  'admin_identities',
+  'badges',
+  'user_badges',
+  'system_settings',
+  'content_reports',
   'communities',
   'community_followers',
+  'community_permission_requests',
+  'community_posts',
+  'community_post_comments',
+  'community_comment_reactions',
+  'community_post_reactions',
   'events',
+  'event_attendees',
+  'event_feedback',
   'campus_voices',
   'voice_reactions',
   'voice_comments',
   'voice_comment_reactions',
-  'community_posts',
-  'community_post_comments',
-  'community_comment_reactions',
-  'community_permission_requests',
-  'notifications',
+  'announcement_comments',
+  'announcement_comment_reactions',
   'announcement_reads',
-  'friendships'
+  'friendships',
+  'notifications',
+  'weekly_polls',
+  'poll_votes',
+  'user_follows',
+  'followers'
 ];
 
 async function dumpData() {
-  let fullSql = "-- DATA MIGRATION SCRIPT\nSET session_replication_role = 'replica';\n\n";
+  let fullSql = "-- DATA MIGRATION SCRIPT (COMPLETE 29+ TABLES)\nSET session_replication_role = 'replica';\n\n";
 
   for (const table of tables) {
     console.log(`Fetching ${table}...`);
     const { data, error } = await supabase.from(table).select('*');
     
     if (error) {
-      console.error(`Error fetching ${table}:`, error);
+      console.warn(`Skipping ${table}: ${error.message}`);
       continue;
     }
 
-    if (!data || data.length === 0) continue;
+    if (!data || data.length === 0) {
+        console.log(`Table ${table} is empty.`);
+        continue;
+    }
 
     fullSql += `-- Table: ${table}\n`;
     for (const row of data) {
@@ -47,7 +65,7 @@ async function dumpData() {
         if (v === null) return 'NULL';
         
         // Handle TEXT[] columns
-        if (Array.isArray(v) && (col === 'tags' || col === 'links')) {
+        if (Array.isArray(v) && (col === 'tags' || col === 'links' || col === 'options')) {
           return `ARRAY[${v.map(item => `'${String(item).replace(/'/g, "''")}'`).join(', ')}]::TEXT[]`;
         }
         
