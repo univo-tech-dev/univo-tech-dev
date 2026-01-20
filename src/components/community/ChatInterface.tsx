@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { CommunityPost, CommunityPostComment, requestPostPermission, createComment, getPostComments, getCommunityPosts, reactToPost, deletePost, reactToComment, updateComment, deleteComment } from '@/app/actions/community-chat';
 import PostComposer from './PostComposer';
 import AdminRequestPanel from './AdminRequestPanel';
-import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowBigUp, Loader2, Edit2, User, MoreVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowBigUp, Loader2, Edit2, User, MoreVertical, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
@@ -258,9 +258,14 @@ function PostItem({
                                         {post.profiles?.full_name}
                                     </h4>
                                     {isCommunityAdminPost && (
-                                        <span className="text-[#ff4b2b] dark:text-[#ff6b4b] text-[10px] bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900/50 font-black uppercase tracking-tight">
-                                            Topluluk Sahibi
-                                        </span>
+                                        <div className="group/badge relative flex items-center">
+                                            <ShieldCheck size={16} className="text-[#ff4b2b] dark:text-[#ff6b4b] fill-red-50 dark:fill-red-950/30" />
+                                            {/* Tooltip */}
+                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] font-bold rounded opacity-0 group-hover/badge:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                                                Topluluk Sahibi
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black" />
+                                            </div>
+                                        </div>
                                     )}
                                     {post.profiles?.department && (
                                         <span className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium capitalize">
@@ -602,7 +607,14 @@ function CommentItem({
                                 {comment.profiles?.full_name}
                             </span>
                             {isCommunityAdminComment && (
-                                <span className="text-[#ff4b2b] dark:text-[#ff6b4b] text-[9px] font-black bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900/50 uppercase tracking-tight">Topluluk Sahibi</span>
+                                <div className="group/badge relative flex items-center">
+                                    <ShieldCheck size={14} className="text-[#ff4b2b] dark:text-[#ff6b4b] fill-red-50 dark:fill-red-950/30" />
+                                    {/* Tooltip */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] font-bold rounded opacity-0 group-hover/badge:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                                        Topluluk Sahibi
+                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-black" />
+                                    </div>
+                                </div>
                             )}
                             {comment.profiles?.department && (
                                 <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium capitalize">
