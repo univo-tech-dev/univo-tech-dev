@@ -64,12 +64,20 @@ async function dumpData() {
         const v = row[col];
         if (v === null) return 'NULL';
         
+        // Define JSONB columns to ensure strict quoting/casting
+        const jsonbColumns = ['interests', 'privacy_settings', 'social_links', 'theme_preference', 'notification_settings', 'metadata', 'value'];
+        
         // Handle TEXT[] columns
         if (Array.isArray(v) && (col === 'tags' || col === 'links' || col === 'options')) {
           return `ARRAY[${v.map(item => `'${String(item).replace(/'/g, "''")}'`).join(', ')}]::TEXT[]`;
         }
         
-        // Handle JSONB and other objects
+        // Handle JSONB columns (even if primitive number/boolean)
+        if (jsonbColumns.includes(col)) {
+          return `'${JSON.stringify(v).replace(/'/g, "''")}'::jsonb`;
+        }
+
+        // Handle JSONB and other objects (catch-all)
         if (typeof v === 'object') {
           return `'${JSON.stringify(v).replace(/'/g, "''")}'`;
         }
