@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockEvents } from '@/data/mockEvents';
+
 import NotificationCenter from '../NotificationCenter';
 import { useAuth } from '@/contexts/AuthContext';
 import { EventCategory } from '@/types';
@@ -172,18 +172,11 @@ export default function CommunityView() {
                });
              }
              
-             // Combine real data with mock events for presentation
-             const combinedEvents = [...filtered, ...mockEvents];
-             
-             // Remove duplicates if any ID conflicts (though mock IDs are distinct)
-             const uniqueEvents = Array.from(new Map(combinedEvents.map(item => [item.id, item])).values());
-             
-             // Sort by date just in case
-             uniqueEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-             
-             setEvents(uniqueEvents);
+
+             // Use only real data
+             setEvents(filtered);
         } else {
-             setEvents(mockEvents);
+             setEvents([]);
         }
         setViewLoading(false);
     };
