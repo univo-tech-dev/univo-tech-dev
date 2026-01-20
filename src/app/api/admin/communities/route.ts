@@ -11,12 +11,12 @@ export async function GET(req: NextRequest) {
     const supabase = getSupabaseAdmin();
 
     try {
-        // Fetch all communities
+        // Fetch all communities with admin's university
         const { data: communities, error: communitiesError } = await supabase
             .from('communities')
             .select(`
                 *,
-                profiles:admin_id (full_name)
+                profiles:admin_id (full_name, university)
             `)
             .order('created_at', { ascending: false });
 
@@ -45,7 +45,8 @@ export async function GET(req: NextRequest) {
                 ...community,
                 follower_count: followerCount,
                 event_count: eventCount,
-                admin_name: community.profiles?.full_name || 'Bilinmiyor'
+                admin_name: community.profiles?.full_name || 'Bilinmiyor',
+                university: community.profiles?.university || 'metu' // Default to metu for old communities
             };
         });
 

@@ -144,29 +144,18 @@ export default function VoiceStatsWidget({
                         {isGlobalMode ? 'Global Gündem' : 'Kampüste Gündem'}
                     </h3>
                     
-                    {/* 1. AKTİF TAGLAR */}
+                    {/* Active Tag Indicator (single tag only) */}
                     {activeTags.length > 0 && (
-                        <div className="mb-6">
-                            <div className="text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-3 flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                                Aktif Taglar
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {activeTags.map(tag => (
-                                    <div 
-                                        key={tag}
-                                        className="bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-lg flex items-center justify-between gap-2 text-xs font-bold animate-in zoom-in-95"
-                                    >
-                                        <span>#{tag}</span>
-                                        <button 
-                                            onClick={() => onTagRemove(tag)}
-                                            className="hover:bg-white/20 dark:hover:bg-black/20 rounded-full p-0.5"
-                                        >
-                                            <X size={12} />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="mb-4 p-3 bg-black dark:bg-white rounded-lg flex items-center justify-between">
+                            <span className="text-white dark:text-black text-sm font-bold">
+                                #{activeTags[0]}
+                            </span>
+                            <button 
+                                onClick={() => onTagRemove(activeTags[0])}
+                                className="text-white/70 dark:text-black/70 hover:text-white dark:hover:text-black"
+                            >
+                                <X size={16} />
+                            </button>
                         </div>
                     )}
 

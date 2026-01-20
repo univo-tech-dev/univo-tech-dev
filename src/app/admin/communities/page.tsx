@@ -17,6 +17,7 @@ interface Community {
     follower_count: number;
     event_count: number;
     created_at: string;
+    university?: string;
 }
 
 export default function AdminCommunitiesPage() {
@@ -25,6 +26,7 @@ export default function AdminCommunitiesPage() {
     const [search, setSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
 
     const fetchCommunities = async () => {
         try {
@@ -69,10 +71,16 @@ export default function AdminCommunitiesPage() {
                 c.admin_name.toLowerCase().includes(search.toLowerCase());
             
             const matchesCategory = selectedCategory === 'all' || c.category === selectedCategory;
+            
+            // University filter
+            let matchesUni = true;
+            if (uniFilter !== 'all') {
+                matchesUni = c.university === uniFilter || (!c.university && uniFilter === 'metu');
+            }
 
-            return matchesSearch && matchesCategory;
+            return matchesSearch && matchesCategory && matchesUni;
         });
-    }, [communities, search, selectedCategory]);
+    }, [communities, search, selectedCategory, uniFilter]);
 
     if (isLoading) {
         return (
@@ -136,7 +144,32 @@ export default function AdminCommunitiesPage() {
             </div>
 
             {showFilters && (
-                <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="mb-6 p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2 duration-300 space-y-4">
+                    {/* University Filter */}
+                    <div>
+                        <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Üniversite</label>
+                        <div className="flex gap-2 flex-wrap">
+                            {[
+                                { id: 'all', label: 'Tümü' },
+                                { id: 'metu', label: 'ODTÜ' },
+                                { id: 'bilkent', label: 'Bilkent' }
+                            ].map((btn) => (
+                                <button
+                                    key={btn.id}
+                                    onClick={() => setUniFilter(btn.id as any)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                                        uniFilter === btn.id
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                    }`}
+                                >
+                                    {btn.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Category Filter */}
                      <div>
                         <label className="block text-xs font-bold uppercase text-neutral-500 mb-2">Kategori Filtresi</label>
                         <div className="flex gap-2 flex-wrap">
