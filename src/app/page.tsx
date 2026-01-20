@@ -18,17 +18,17 @@ function HomeContent() {
   const [isGuest, setIsGuest] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
-  // Check auth and guest status
+  // Check auth and guest status - redirect to login immediately if not authenticated
   useEffect(() => {
     if (!authLoading) {
       const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
       setIsGuest(guestMode);
       
       if (!user && !guestMode) {
-        router.push('/login');
-      } else {
-        setIsChecking(false);
+        router.replace('/login');
+        return;
       }
+      setIsChecking(false);
     }
   }, [user, authLoading, router]);
 
@@ -44,15 +44,9 @@ function HomeContent() {
     }
   };
 
-  if (isChecking) {
-       return (
-         <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center">
-             <div className="animate-pulse flex flex-col items-center gap-4">
-                 <div className="h-12 w-12 rounded-full border-4 border-neutral-200 border-t-black dark:border-neutral-800 dark:border-t-white animate-spin"></div>
-                 <p className="text-sm font-medium text-neutral-500">Univo Başlatılıyor...</p>
-             </div>
-         </div>
-       );
+  // Don't render anything while checking - redirect happens immediately
+  if (isChecking || authLoading) {
+    return null;
   }
 
   return (
