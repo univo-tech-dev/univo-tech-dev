@@ -44,9 +44,13 @@ function HomeContent() {
     }
   };
 
-  // Don't render anything while checking - redirect happens immediately
+  // Don't render content while checking - but show the layout so Header works
   if (isChecking || authLoading) {
-    return null;
+    return (
+      <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] transition-colors duration-300 overflow-x-hidden">
+        {/* Empty div - Header will still render normally */}
+      </div>
+    );
   }
 
   return (
