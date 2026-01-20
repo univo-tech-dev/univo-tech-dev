@@ -1935,7 +1935,6 @@ export default function VoiceView() {
                                         onPollVote={handlePollVote}
                                         allTags={allTags}
                                         activeTags={filters.tags}
-                                        recentTags={recentTags}
                                         onTagToggle={addTagFilter}
                                         onTagRemove={removeTagFilter}
                                         activeUsers={activeUsers}

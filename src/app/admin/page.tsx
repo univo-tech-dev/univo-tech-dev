@@ -132,7 +132,18 @@ export default function AdminPage() {
             statusFilter === 'active' ? !u.is_banned :
             u.is_banned;
 
-        const matchesUni = uniFilter === 'all' ? true : u.university === uniFilter;
+        // Robust university matching: check both the field and email domain as fallback
+        let matchesUni = true;
+        if (uniFilter !== 'all') {
+            const isBilkentEmail = u.email?.includes('bilkent.edu.tr');
+            const isMeruEmail = u.email?.includes('metu.edu.tr');
+            
+            if (uniFilter === 'bilkent') {
+                matchesUni = u.university === 'bilkent' || !!isBilkentEmail;
+            } else if (uniFilter === 'metu') {
+                matchesUni = (u.university === 'metu' || !u.university) && !isBilkentEmail;
+            }
+        }
 
         return matchesSearch && matchesStatus && matchesUni;
     });

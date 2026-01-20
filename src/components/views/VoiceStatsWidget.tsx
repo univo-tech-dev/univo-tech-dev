@@ -13,7 +13,6 @@ interface VoiceStatsWidgetProps {
     onPollVote: (index: number) => void;
     allTags: { tag: string, count: number }[];
     activeTags: string[];
-    recentTags: string[];
     onTagToggle: (tag: string) => void;
     onTagRemove: (tag: string) => void;
     activeUsers: number;
@@ -33,7 +32,6 @@ export default function VoiceStatsWidget({
     onPollVote,
     allTags,
     activeTags,
-    recentTags,
     onTagToggle,
     onTagRemove,
     activeUsers,
@@ -48,10 +46,6 @@ export default function VoiceStatsWidget({
     // Filter logic for exclusivity
     const displayPopTags = allTags
         .filter(t => !activeTags.includes(t.tag.replace('#', '')))
-        .slice(0, 5);
-    
-    const displayRecentTags = recentTags
-        .filter(t => !activeTags.includes(t.replace('#', '')))
         .slice(0, 5);
 
     return (
@@ -171,28 +165,6 @@ export default function VoiceStatsWidget({
                                             <X size={12} />
                                         </button>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* 2. SON KULLANILANLAR */}
-                    {displayRecentTags.length > 0 && (
-                        <div className="mb-6">
-                            <div className="text-[10px] font-black tracking-widest text-neutral-400 uppercase mb-3 flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />
-                                Son Kullanılanlar
-                            </div>
-                            <div className="space-y-2">
-                                {displayRecentTags.map(tag => (
-                                    <button 
-                                        key={tag} 
-                                        onClick={() => onTagToggle(tag)}
-                                        className="w-full text-left p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors flex items-center justify-between group"
-                                    >
-                                        <span className="text-sm font-bold text-neutral-600 dark:text-neutral-400 group-hover:text-primary transition-colors">#{tag}</span>
-                                        <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 translate-x-[-4px] group-hover:translate-x-0 transition-all text-primary" />
-                                    </button>
                                 ))}
                             </div>
                         </div>

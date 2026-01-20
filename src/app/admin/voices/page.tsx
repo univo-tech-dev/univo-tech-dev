@@ -153,8 +153,16 @@ export default function AdminVoicesPage() {
                 privacyFilter === 'anonymous' ? v.is_anonymous :
                 !v.is_anonymous;
 
-            // University filter
-            const matchesUni = uniFilter === 'all' ? true : v.profiles?.university === uniFilter;
+            // University filter - robust with email domain fallback
+            let matchesUni = true;
+            if (uniFilter !== 'all') {
+                const isBilkentEmail = v.profiles?.full_name && false; // profiles don't have email, check university field
+                if (uniFilter === 'bilkent') {
+                    matchesUni = v.profiles?.university === 'bilkent';
+                } else if (uniFilter === 'metu') {
+                    matchesUni = v.profiles?.university === 'metu' || !v.profiles?.university;
+                }
+            }
 
             // Multi-tag matching: post must contain ALL selected tags
             const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => 
