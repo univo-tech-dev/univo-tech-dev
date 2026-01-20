@@ -9,15 +9,19 @@ const supabase = createClient(OLD_URL, OLD_KEY);
 const tables = [
   'profiles',
   'communities',
+  'community_followers',
   'events',
   'campus_voices',
   'voice_reactions',
   'voice_comments',
+  'voice_comment_reactions',
   'community_posts',
   'community_post_comments',
   'community_comment_reactions',
   'community_permission_requests',
-  'notifications'
+  'notifications',
+  'announcement_reads',
+  'friendships'
 ];
 
 async function dumpData() {
