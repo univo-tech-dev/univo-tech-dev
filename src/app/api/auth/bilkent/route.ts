@@ -27,48 +27,86 @@ export async function POST(request: Request) {
         }
     }));
 
-    // 2. Bilkent STARS Login (Scraping)
-    const loginPageUrl = 'https://stars.bilkent.edu.tr/accounts/login';
-
-    try {
-        const initialRes = await client.get(loginPageUrl);
-        // STARS doesn't use CSRF tokens in the form itself (based on subagent check)
-
-        const starsId = username.split('@')[0];
-        const formData = new URLSearchParams();
-        formData.append('LoginForm[username]', starsId);
-        formData.append('LoginForm[password]', password);
-        formData.append('yt0', 'Login'); // Submit button name
-
-        const loginRes = await client.post(loginPageUrl, formData, {
-            headers: { 
-                'Content-Type': 'application/x-www-form-urlencoded', 
-                'Referer': loginPageUrl 
-            }
-        });
-
-        // STARS successful login redirects to /srs or /my or shows a dashboard
-        // Failed login stays on the page and contains the error message
-        const isError = loginRes.data.includes('The password or Bilkent ID number entered is incorrect');
-
-        if (isError) {
-             // Mock Success for Development/Demo if scraping fails
-             if (process.env.NODE_ENV === 'development' || username === 'bilkent_test') {
-                 console.log('Bilkent STARS Scraping failed, using Mock success');
-             } else {
-                return NextResponse.json({ error: 'Giriş yapılamadı. Bilkent ID veya şifre hatalı.' }, { status: 401 });
-             }
+        // 2.1 Security Check: Prevent cross-university domain leak
+        if (username.includes('@') && !username.toLowerCase().endsWith('@bilkent.edu.tr') && !username.toLowerCase().endsWith('@ug.bilkent.edu.tr')) {
+            return NextResponse.json({ error: 'Bilkent girişi için lütfen Bilkent e-posta adresinizi veya ID numaranızı kullanın.' }, { status: 400 });
         }
+
+        const loginPageUrl = 'https://stars.bilkent.edu.tr/accounts/login';
+
+        try {
+            const initialRes = await client.get(loginPageUrl);
+
+            const starsId = username.split('@')[0];
+            const formData = new URLSearchParams();
+            formData.append('LoginForm[username]', starsId);
+            formData.append('LoginForm[password]', password);
+            formData.append('yt0', 'Login');
+
+            const loginRes = await client.post(loginPageUrl, formData, {
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded', 
+                    'Referer': loginPageUrl 
+                }
+            });
+
+            const isError = loginRes.data.includes('The password or Bilkent ID number entered is incorrect');
+
+            if (isError) {
+                // Restricted Mock Success: Only for specific test account
+                if (username === 'bilkent_test') {
+                    console.log('Bilkent STARS Mock success for test account');
+                } else {
+                    return NextResponse.json({ error: 'Giriş yapılamadı. Bilkent ID veya şifre hatalı.' }, { status: 401 });
+                }
+            }
         
         const $dash = cheerio.load(loginRes.data);
-        // Extract name from top menu / profile area
-        let fullName = $dash('.user-name').text() || $dash('#user-menu-button').text() || $dash('.usertext').text();
+        
+        // --- ROBUST NAME EXTRACTION ---
+        // 1. Core SELECTORS (Top priority)
+        const selectors = [
+            '.user-name', 
+            '#user-menu-button', 
+            '.usertext', 
+            '.profile-name', 
+            '.account-name',
+            '.navbar-user',
+            '.srs-user',
+            'header .user-info',
+            '.dropdown-toggle span'
+        ];
+        
+        let fullName = '';
+        for (const selector of selectors) {
+            const text = $dash(selector).text().trim();
+            if (text && !text.includes('Logout') && !text.includes('Giriş')) {
+                fullName = text;
+                break;
+            }
+        }
+
+        // 2. TEXT-BASED Search (If selectors fail)
+        if (!fullName) {
+            // Find "Hoş geldin" pattern
+            const welcomeText = $dash(':contains("Hoş geldin")').text() || $dash(':contains("Welcome")').text();
+            if (welcomeText) {
+                const match = welcomeText.match(/(?:Hoş geldin|Welcome),?\s+([^!.,\n]+)/i);
+                if (match && match[1]) {
+                    fullName = match[1].trim();
+                }
+            }
+        }
+
+        // 3. TITLE Case & Normalization
         if (fullName) {
             fullName = fullName.trim();
             fullName = toTitleCase(fullName);
         } else if (username === 'bilkent_test') {
             fullName = 'Bilkent Test Kullanıcısı';
         } else {
+            // Log for debugging if fail (only in dev/admin view context)
+            console.warn(`[ROBUST SCRAPE] Could not find name for ${username}. HTML sample: ${loginRes.data.substring(0, 500)}`);
             fullName = 'Bilkent Öğrencisi';
         }
         

@@ -207,73 +207,76 @@ export default function AdminPage() {
 
             {showFilters && (
                 <div className="mb-6 p-6 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="space-y-3">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Hesap Durumu</label>
-                        <div className="flex gap-2">
-                            {[
-                                { id: 'all', label: 'Tümü' },
-                                { id: 'active', label: 'Aktifler' },
-                                { id: 'banned', label: 'Yasaklılar' }
-                            ].map((btn) => (
-                                <button
-                                    key={btn.id}
-                                    onClick={() => setStatusFilter(btn.id as any)}
-                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                        statusFilter === btn.id 
-                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
-                                    }`}
-                                >
-                                    {btn.label}
-                                </button>
-                            ))}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {/* Status Filter */}
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Hesap Durumu</label>
+                            <div className="flex gap-2">
+                                {[
+                                    { id: 'all', label: 'Tümü' },
+                                    { id: 'active', label: 'Aktifler' },
+                                    { id: 'banned', label: 'Yasaklılar' }
+                                ].map((btn) => (
+                                    <button
+                                        key={btn.id}
+                                        onClick={() => setStatusFilter(btn.id as any)}
+                                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                            statusFilter === btn.id 
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                        }`}
+                                    >
+                                        {btn.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Uni Filter */}
-                    <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Üniversite</label>
-                        <div className="flex gap-2">
-                             {[
-                                { id: 'all', label: 'Tümü' },
-                                { id: 'metu', label: 'ODTÜ' },
-                                { id: 'bilkent', label: 'Bilkent' }
-                            ].map((btn) => (
-                                <button
-                                    key={btn.id}
-                                    onClick={() => setUniFilter(btn.id as any)}
-                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                        uniFilter === btn.id 
-                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
-                                    }`}
-                                >
-                                    {btn.label}
-                                </button>
-                            ))}
+                        {/* Uni Filter */}
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Üniversite</label>
+                            <div className="flex gap-2">
+                                {[
+                                    { id: 'all', label: 'Tümü' },
+                                    { id: 'metu', label: 'ODTÜ' },
+                                    { id: 'bilkent', label: 'Bilkent' }
+                                ].map((btn) => (
+                                    <button
+                                        key={btn.id}
+                                        onClick={() => setUniFilter(btn.id as any)}
+                                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                            uniFilter === btn.id 
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                        }`}
+                                    >
+                                        {btn.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Sort Order */}
-                    <div className="space-y-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
-                        <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Sıralama (Kayıt Tarihi)</label>
-                        <div className="flex gap-2">
-                             {[
-                                { id: 'newest', label: 'Yeni Kayıtlar' },
-                                { id: 'oldest', label: 'Eski Kayıtlar' }
-                            ].map((btn) => (
-                                <button
-                                    key={btn.id}
-                                    onClick={() => setSortOrder(btn.id as any)}
-                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                        sortOrder === btn.id 
-                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
-                                    }`}
-                                >
-                                    {btn.label}
-                                </button>
-                            ))}
+                        {/* Sort Order */}
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Sıralama (Kayıt Tarihi)</label>
+                            <div className="flex gap-2">
+                                {[
+                                    { id: 'newest', label: 'Yeni Kayıtlar' },
+                                    { id: 'oldest', label: 'Eski Kayıtlar' }
+                                ].map((btn) => (
+                                    <button
+                                        key={btn.id}
+                                        onClick={() => setSortOrder(btn.id as any)}
+                                        className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                            sortOrder === btn.id 
+                                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                            : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                        }`}
+                                    >
+                                        {btn.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

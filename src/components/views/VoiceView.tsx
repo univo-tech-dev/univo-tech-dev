@@ -1661,10 +1661,9 @@ export default function VoiceView() {
         }
     };
 
-    if (showSkeleton) {
-        return <VoiceViewSkeleton />;
-    }
 
+    // We render the layout unconditionally to keep the header stable (and animating)
+    // The skeleton logic is now moved inside the main return block.
     return (
         <div className="container mx-auto px-4 pt-8 pb-32 relative min-h-[100dvh]">
             {/* Newspaper Header - Static on mobile */}
@@ -1806,7 +1805,31 @@ export default function VoiceView() {
                                 )}
 
                                 <div className="space-y-6">
-                                    {voices.length === 0 && !showSkeleton ? (
+                                    {showSkeleton ? (
+                                        <div className="space-y-6">
+                                            {[1, 2, 3].map((i) => (
+                                                <div key={i} className="pb-6 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
+                                                    <div className="flex gap-4 items-start">
+                                                        <SkeletonLoader width={40} height={40} className="rounded-full shrink-0" />
+                                                        <div className="flex-1 space-y-3">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <SkeletonLoader width={120} height={20} />
+                                                                <SkeletonLoader width={80} height={16} />
+                                                            </div>
+                                                            <SkeletonLoader width="90%" height={18} />
+                                                            <SkeletonLoader width="100%" height={18} />
+                                                            <SkeletonLoader width="80%" height={18} />
+                                                            <div className="flex gap-6 mt-4 pt-2">
+                                                                <SkeletonLoader width={40} height={16} />
+                                                                <SkeletonLoader width={40} height={16} />
+                                                                <SkeletonLoader width={20} height={16} className="ml-auto" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : voices.length === 0 ? (
                                         <div className="text-center py-20 bg-neutral-50 dark:bg-[#0a0a0a]/50 rounded-lg border-2 border-dashed border-neutral-200 dark:border-neutral-800 w-full">
                                             <Sparkles className="mx-auto mb-4 text-neutral-300 dark:text-neutral-700" size={48} />
                                             <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
@@ -1871,25 +1894,46 @@ export default function VoiceView() {
 
                             {/* Right Sidebar - Sticky on desktop */}
                             <div className="lg:col-span-1 space-y-6">
-                                <VoiceStatsWidget 
-                                    activePoll={activePoll}
-                                    pollLoading={pollLoading}
-                                    pollResults={pollResults}
-                                    totalVotes={totalVotes}
-                                    userVote={userVote}
-                                    onPollVote={handlePollVote}
-                                    allTags={allTags}
-                                    activeTags={filters.tags}
-                                    recentTags={recentTags}
-                                    onTagToggle={addTagFilter}
-                                    onTagRemove={removeTagFilter}
-                                    activeUsers={activeUsers}
-                                    issueNumber={issueNumber}
-                                    onVotersClick={fetchVoters}
-                                    isGlobalMode={isGlobalMode}
-                                    voices={voices}
-                                    university={isGlobalMode ? 'global' : university}
-                                />
+                                {showSkeleton ? (
+                                    <div className="space-y-8">
+                                        <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+                                            <SkeletonLoader width={150} height={24} className="mb-6 mx-auto" />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <SkeletonLoader height={80} className="rounded-xl" />
+                                                <SkeletonLoader height={80} className="rounded-xl" />
+                                            </div>
+                                        </div>
+                                        <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+                                            <SkeletonLoader width={180} height={24} className="mb-4" />
+                                            <SkeletonLoader width="100%" height={24} className="mb-6" />
+                                            <div className="space-y-3">
+                                                <SkeletonLoader height={40} className="rounded-lg" />
+                                                <SkeletonLoader height={40} className="rounded-lg" />
+                                                <SkeletonLoader height={40} className="rounded-lg" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <VoiceStatsWidget 
+                                        activePoll={activePoll}
+                                        pollLoading={pollLoading}
+                                        pollResults={pollResults}
+                                        totalVotes={totalVotes}
+                                        userVote={userVote}
+                                        onPollVote={handlePollVote}
+                                        allTags={allTags}
+                                        activeTags={filters.tags}
+                                        recentTags={recentTags}
+                                        onTagToggle={addTagFilter}
+                                        onTagRemove={removeTagFilter}
+                                        activeUsers={activeUsers}
+                                        issueNumber={issueNumber}
+                                        onVotersClick={fetchVoters}
+                                        isGlobalMode={isGlobalMode}
+                                        voices={voices}
+                                        university={isGlobalMode ? 'global' : university}
+                                    />
+                                )}
                             </div>
                         </div>
                 </motion.div>

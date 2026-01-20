@@ -112,6 +112,15 @@ export default function LoginPage() {
             return;
         }
 
+        // Domain Cross-Check
+        if (selectedUni && username.includes('@')) {
+            const domain = selectedUni.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr';
+            if (!username.toLowerCase().endsWith(domain) && !username.toLowerCase().endsWith(`ug.${domain}`)) {
+                setError(`${selectedUni.name} girişi için lütfen ${domain} uzantılı e-postanızı kullanın.`);
+                return;
+            }
+        }
+
         setIsLoading(true);
 
         // Timer for slow connection message
@@ -449,12 +458,14 @@ export default function LoginPage() {
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-bold uppercase text-neutral-500 dark:text-neutral-500 mb-1.5 ml-1">Kullanıcı Adı (NetID)</label>
+                                <label className="block text-xs font-bold uppercase text-neutral-500 dark:text-neutral-500 mb-1.5 ml-1">
+                                    {selectedUni?.id === 'bilkent' ? 'Bilkent ID / E-posta' : 'NetID (e123456) / E-posta'}
+                                </label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         required
-                                        placeholder="e123456"
+                                        placeholder={selectedUni?.id === 'bilkent' ? 'Örn: 22501234' : 'Örn: e123456'}
                                         className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] focus:outline-none dark:text-white transition-all rounded-lg"
                                         value={username}
                                         onChange={e => setUsername(e.target.value)}

@@ -34,6 +34,11 @@ export async function POST(request: Request) {
 
     // A. Internal METU Login (Scraping)
     try {
+        // 2.1 Security Check: Prevent cross-university domain leak
+        if (username.includes('@') && !username.toLowerCase().endsWith('@metu.edu.tr')) {
+            return NextResponse.json({ error: 'ODTÜ girişi için lütfen ODTÜ e-posta adresinizi veya NetID kullanın.' }, { status: 400 });
+        }
+
         const initialRes = await client.get(loginPageUrl);
         const $ = cheerio.load(initialRes.data);
         const loginToken = $('input[name="logintoken"]').val();
@@ -59,7 +64,12 @@ export async function POST(request: Request) {
                  return NextResponse.json({ error: errorMsg }, { status: 401 });
              } else {
                  if (finalUrl.includes('login')) {
-                    return NextResponse.json({ error: 'Giriş yapılamadı. Kullanıcı adı veya şifre hatalı.' }, { status: 401 });
+                    // Restricted Mock Success: Only for specific test account
+                    if (username === 'metu_test') {
+                        console.log('ODTÜClass Mock success for test account');
+                    } else {
+                        return NextResponse.json({ error: 'Giriş yapılamadı. Kullanıcı adı veya şifre hatalı.' }, { status: 401 });
+                    }
                  }
              }
         }
