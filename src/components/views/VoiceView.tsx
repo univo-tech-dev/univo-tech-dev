@@ -1771,6 +1771,19 @@ export default function VoiceView() {
                                         <MessageSquare size={24} />
                                         Öğrenci Kürsüsü
                                     </h3>
+
+                                    <div className="flex items-center gap-4">
+                                        {filters.tags[0] && (
+                                            <button
+                                                onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
+                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
+                                                style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                            >
+                                                <span>#{filters.tags[0]}</span>
+                                                <X size={12} strokeWidth={3} />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Input Area */}
