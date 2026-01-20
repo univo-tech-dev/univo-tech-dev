@@ -946,24 +946,27 @@ export default function VoiceView() {
             if (data.voices) {
                 setVoices(data.voices);
                 
-                // Update tag counts for sidebar
-                const tagCounts = new Map<string, number>();
-                INITIAL_TAGS.forEach(t => tagCounts.set(t.replace('#', ''), 0));
+                if (filters.tags.length === 0) {
+                    // Update tag counts for sidebar only if no tag filter is active
+                    // This keeps the "Agenda" list stable while drilling down
+                    const tagCounts = new Map<string, number>();
+                    INITIAL_TAGS.forEach(t => tagCounts.set(t.replace('#', ''), 0));
 
-                data.voices.forEach((v: Voice) => {
-                    if (v.tags) {
-                        v.tags.forEach(t => {
-                            const lower = t.toLowerCase();
-                            tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
-                        });
-                    }
-                });
+                    data.voices.forEach((v: Voice) => {
+                        if (v.tags) {
+                            v.tags.forEach(t => {
+                                const lower = t.toLowerCase();
+                                tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
+                            });
+                        }
+                    });
 
-                const sortedTags = Array.from(tagCounts.entries())
-                    .map(([tag, count]) => ({ tag, count }))
-                    .sort((a, b) => b.count - a.count);
+                    const sortedTags = Array.from(tagCounts.entries())
+                        .map(([tag, count]) => ({ tag, count }))
+                        .sort((a, b) => b.count - a.count);
 
-                setAllTags(sortedTags);
+                    setAllTags(sortedTags);
+                }
             }
         } catch (error) {
             console.error('Error fetching voices:', error);
@@ -1459,31 +1462,28 @@ export default function VoiceView() {
     };
 
     // Date & Issue Logic
-    const today = new Date();
-    const start = new Date(2025, 11, 29);
-    const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const diffTime = current.getTime() - start.getTime();
-    
-    // In Global Mode, 'issueNumber' represents Active Topics count instead of Day Number
-    const activeTopicCount = useMemo(() => 
-        allTags.filter(t => (t as any).count > 0).length
-    , [allTags]);
-
-    const lastActiveTopicCount = useRef(11);
-    useEffect(() => {
-        if (activeTopicCount > 0) {
-            lastActiveTopicCount.current = activeTopicCount;
-        }
-    }, [activeTopicCount]);
-    
     const issueNumber = useMemo(() => {
-        if (isGlobalMode) {
-            return activeTopicCount > 0 ? activeTopicCount : lastActiveTopicCount.current;
-        }
-        return (Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
-    }, [isGlobalMode, activeTopicCount, diffTime]);
+        const today = new Date();
+        const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        
+        // Default ODTÜ Date: Dec 29, 2025
+        let start = new Date(2025, 11, 29); 
 
-    const formattedDate = today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (isGlobalMode) {
+             // Global Start Date: Jan 20, 2026
+             start = new Date(2026, 0, 20);
+        } else if (isBilkent) {
+             // Bilkent Start Date: Jan 18, 2026
+             start = new Date(2026, 0, 18);
+        }
+
+        const diffTime = current.getTime() - start.getTime();
+        return Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
+    }, [isGlobalMode, isBilkent]);
+
+    const formattedDate = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+
 
     const formatRelativeTime = (dateString: string) => {
         const date = new Date(dateString);
@@ -1861,6 +1861,11 @@ export default function VoiceView() {
                                         <AnimatePresence mode="popLayout">
                                             <motion.div
                                                 layout
+                                                key="voices-list"
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
+                                                transition={{ duration: 0.3 }}
                                                 className="space-y-4"
                                             >
                                                 {voices.map((voice) => (

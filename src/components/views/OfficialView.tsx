@@ -8,23 +8,9 @@ import { toast } from 'sonner';
 import NotificationCenter from '../NotificationCenter';
 import SkeletonLoader from '../ui/SkeletonLoader';
 
-const OfficialViewSkeleton = () => {
+const OfficialSkeletonContent = () => {
   return (
-    <div className="container mx-auto px-4 pt-8 pb-32 relative animate-in fade-in duration-500 min-h-[100dvh] overflow-x-hidden">
-       <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center md:static pt-4 -mt-4 -mx-4 px-4 relative min-h-[240px] bg-neutral-50 dark:bg-[#0a0a0a]">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <SkeletonLoader width={450} height={60} className="mb-2" />
-          <div className="flex items-center gap-3 mb-2">
-             <SkeletonLoader width={56} height={56} className="rounded-full" />
-          </div>
-        </div>
-        <div className="flex justify-between items-center border-t-2 border-neutral-200 dark:border-neutral-800 pt-2 mt-4 max-w-2xl mx-auto h-8">
-           <SkeletonLoader width={80} height={20} />
-           <SkeletonLoader width={120} height={20} />
-           <SkeletonLoader width={80} height={20} />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in fade-in duration-500">
           <div className="lg:col-span-2 space-y-8">
               <div className="border-4 border-neutral-200 dark:border-neutral-800 p-6 shadow-sm mt-4">
                   <SkeletonLoader width={120} height={20} className="mb-4 bg-neutral-800 dark:bg-white" />
@@ -72,7 +58,6 @@ const OfficialViewSkeleton = () => {
               </div>
           </div>
       </div>
-    </div>
   );
 };
 
@@ -120,10 +105,20 @@ export default function OfficialView() {
 
     // Dynamic Date and Issue Number
     const today = new Date();
-    const start = new Date(2025, 11, 29);
+    // Default ODTÜ Date: Dec 29, 2025 (Month is 11)
+    let start = new Date(2025, 11, 29); 
+    
+    if (isGlobalMode) {
+         // Global Start Date: Jan 20, 2026 (Month is 0 for Jan)
+         start = new Date(2026, 0, 20);
+    } else if (isBilkent) {
+         // Bilkent Start Date: Jan 18, 2026 (Month is 0)
+         start = new Date(2026, 0, 18);
+    }
+    
     const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const diffTime = current.getTime() - start.getTime();
-    const issueNumber = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    const issueNumber = Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
     const formattedDate = today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
     // Menu, Announcements & Real Emails State
@@ -429,9 +424,7 @@ export default function OfficialView() {
         fetchData();
     }, [setViewLoading, user, university, isGlobalMode]);
 
-    if (showSkeleton) {
-        return <OfficialViewSkeleton />;
-    }
+
 
     const handleMarkRead = async (id: string, e?: React.MouseEvent) => {
         if (e) {
@@ -812,6 +805,8 @@ export default function OfficialView() {
                            </div>
                         </div>
                     </motion.div>
+                ) : showSkeleton ? (
+                    <OfficialSkeletonContent />
                 ) : (
                     <motion.div
                         key="odtu"

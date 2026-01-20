@@ -49,32 +49,79 @@ async function fetchBilkentMenu() {
             $todayPane = $('.tab-pane.active');
         }
 
+
+        // Check if we found the pane
+        if ($todayPane.length === 0) {
+             console.error('Bilkent Menu: Could not find today pane or active pane');
+             return NextResponse.json({ 
+                date: new Date().toLocaleDateString('tr-TR'),
+                menu: { breakfast: [], lunch: [], dinner: [] }, 
+                announcements: [] 
+            });
+        }
+
         const breakfast: any[] = [];
         const lunch: any[] = [];
         const dinner: any[] = [];
 
-        // Bilkent usually has 3 columns: Fixed Lunch, Fixed Dinner, Alternative
-        const columns = $todayPane.find('.col-lg-4');
+        // Bilkent Structure: usually columns inside the pane
+        // Column 0: Lunch (Fixed)
+        // Column 1: Dinner (Fixed)
+        // Column 2: Alternative (Seçmeli)
         
-        const parseColumn = (colIndex: number) => {
-            const items: any[] = [];
-            const $col = columns.eq(colIndex);
-            $col.find('.meal-item').each((_, el) => {
-                const name = $(el).contents().first().text().trim();
-                if (name && name.length > 1) {
-                    items.push({
-                        name: name,
-                        image: getLocalImage(name)
-                    });
-                }
-            });
-            return items;
+        // Find all columns directly inside the pane
+        // Refined selector based on observation: .row > .col*
+        // Sometimes it's direct content.
+        
+        const parseContent = ($container: any) => {
+             const items: any[] = [];
+             // Items are usually in <table> or <ul> or just div lines. 
+             // Based on "Tabildot..." headers which are h5
+             
+             // Strategy: Find Headers ("Öğlen", "Akşam") and look at next siblings
+             const $headers = $container.find('h5');
+             $headers.each((_: any, header: any) => {
+                 const text = $(header).text().toLowerCase();
+                 // Determine which meal this header belongs to
+                 let targetArray = null;
+                 if (text.includes('öğlen')) targetArray = lunch;
+                 else if (text.includes('akşam')) targetArray = dinner;
+                 else if (text.includes('seçmeli')) targetArray = lunch; // Usually alternatives are available for lunch
+
+                 if (targetArray) {
+                     // Get all content after this header until the next header
+                     let $curr = $(header).next();
+                     while ($curr.length && $curr[0].tagName !== 'h5') {
+                         // Check for table content
+                         $curr.find('tr').each((_: any, tr: any) => {
+                             const tx = $(tr).text().trim();
+                             if (tx && !tx.includes('Kalori')) { // Filter metadata
+                                 // Split by newlines if multiple items
+                                 tx.split('\n').forEach(line => {
+                                     const clean = line.trim();
+                                     if (clean.length > 2) targetArray!.push({ name: clean, image: getLocalImage(clean) });
+                                 });
+                             }
+                         });
+
+                         // Check for plain lists or divs if table structure isn't used
+                         if ($curr.is('ul')) {
+                             $curr.find('li').each((_: any, li: any) => {
+                                 const tx = $(li).text().trim();
+                                 if (tx) targetArray!.push({ name: tx, image: getLocalImage(tx) });
+                             });
+                         }
+                         
+                         $curr = $curr.next();
+                     }
+                 }
+             });
+             return items; // Logic handled via side-effects to arrays above
         };
 
-        if (columns.length >= 1) lunch.push(...parseColumn(0));
-        if (columns.length >= 2) dinner.push(...parseColumn(1));
+        parseContent($todayPane);
         
-        // Announcements for Bilkent Cafe (placeholder or scrape if found)
+        // Also announcements often appear here
         const announcements: any[] = [];
 
         return NextResponse.json({
