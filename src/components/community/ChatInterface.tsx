@@ -8,6 +8,7 @@ import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowB
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { ThreadConnector, BranchConnector } from '../ui/ThreadConnectors';
 
 // Relative time formatter to match VoiceView
 const formatRelativeTime = (dateString: string) => {
@@ -139,6 +140,11 @@ function PostItem({
     const [showMenu, setShowMenu] = useState(false);
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     
+    // Connection Line Refs
+    const rootContainerRef = useRef<HTMLDivElement>(null);
+    const postOwnerAvatarRef = useRef<HTMLDivElement>(null);
+    const rootAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+    
     // Reaction State
     const [reactionCount, setReactionCount] = useState(post.reaction_count || 0);
     const [userReaction, setUserReaction] = useState<'like' | 'dislike' | null>(post.user_reaction || null);
@@ -226,10 +232,13 @@ function PostItem({
     return (
         <div className="bg-white dark:bg-[#0a0a0a] border-2 border-black dark:border-neutral-700 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] overflow-visible relative z-20 transition-colors">
             <div className="p-4">
-                {/* Header */}
-                <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden border-2 border-black dark:border-neutral-700">
+                <div className="flex gap-4 items-stretch">
+                    {/* Avatar Column */}
+                    <div className="flex flex-col items-center shrink-0 relative">
+                        <div 
+                            ref={postOwnerAvatarRef}
+                            className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden border-2 border-black dark:border-neutral-700 relative z-20"
+                        >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.profiles?.avatar_url || '/placeholder-user.jpg'}
@@ -237,195 +246,215 @@ function PostItem({
                                 alt={post.profiles?.full_name}
                             />
                         </div>
-                        <div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <h4 className="font-bold text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
-                                    {post.profiles?.full_name}
-                                </h4>
-                                {isCommunityAdminPost && (
-                                    <span className="text-[#ff4b2b] dark:text-[#ff6b4b] text-[10px] bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900/50 font-black uppercase tracking-tight">
-                                        Topluluk Sahibi
-                                    </span>
-                                )}
-                                {post.profiles?.department && (
-                                    <span className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium capitalize">
-                                        <span className="mx-1 opacity-50">|</span>
-                                        {post.profiles.department} {post.profiles.class_year && `• ${post.profiles.class_year}`}
-                                    </span>
-                                )}
-                                {post.is_announcement && (
-                                    <span className="bg-black text-white dark:bg-white dark:text-black text-[10px] font-black px-2 py-0.5 rounded-none uppercase tracking-tighter">
-                                        DUYURU
-                                    </span>
-                                )}
-                            </div>
-                            <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400">
-                                {formatRelativeTime(post.created_at)}
-                            </span>
-                        </div>
                     </div>
 
-                    <div className="relative">
-                        <button 
-                            onClick={() => setShowMenu(!showMenu)}
-                            className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
-                        >
-                            <MoreVertical size={20} className="text-neutral-400" />
-                        </button>
-                        
-                        {showMenu && (
-                            <>
-                                <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
-                                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] z-20 py-1">
-                                    {isOwner ? (
-                                        <>
-                                            <button 
-                                                className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
-                                                onClick={() => { setShowMenu(false); /* Implement edit if needed */ }}
-                                            >
-                                                <Edit2 size={14} /> Düzenle
-                                            </button>
-                                            <button 
-                                                onClick={() => { setShowMenu(false); handleDelete(); }}
-                                                className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2"
-                                            >
-                                                <Trash2 size={14} /> Gönderiyi Sil
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Link 
-                                                href={`/profile/${post.user_id}`}
-                                                className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
-                                            >
-                                                <User size={14} /> Profili Gör
-                                            </Link>
-                                            {communityAdminId === currentUserId && !isOwner && (
-                                                <button 
-                                                    onClick={() => { setShowMenu(false); handleDelete(); }}
-                                                    className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2"
-                                                >
-                                                    <Trash2 size={14} /> Gönderiyi Sil (Yönetici)
-                                                </button>
-                                            )}
-                                            <button 
-                                                className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
-                                                onClick={() => { setShowMenu(false); /* Implement report */ }}
-                                            >
-                                                <Flag size={14} /> Bildir
-                                            </button>
-                                        </>
+                    {/* Content Column */}
+                    <div className="flex-1 min-w-0">
+                        {/* Header */}
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <h4 className="font-bold text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+                                        {post.profiles?.full_name}
+                                    </h4>
+                                    {isCommunityAdminPost && (
+                                        <span className="text-[#ff4b2b] dark:text-[#ff6b4b] text-[10px] bg-red-50 dark:bg-red-950/30 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-900/50 font-black uppercase tracking-tight">
+                                            Topluluk Sahibi
+                                        </span>
+                                    )}
+                                    {post.profiles?.department && (
+                                        <span className="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium capitalize">
+                                            <span className="mx-1 opacity-50">|</span>
+                                            {post.profiles.department} {post.profiles.class_year && `• ${post.profiles.class_year}`}
+                                        </span>
+                                    )}
+                                    {post.is_announcement && (
+                                        <span className="bg-black text-white dark:bg-white dark:text-black text-[10px] font-black px-2 py-0.5 rounded-none uppercase tracking-tighter">
+                                            DUYURU
+                                        </span>
                                     )}
                                 </div>
-                            </>
+                                <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-400">
+                                    {formatRelativeTime(post.created_at)}
+                                </span>
+                            </div>
+
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setShowMenu(!showMenu)}
+                                    className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                                >
+                                    <MoreVertical size={20} className="text-neutral-400" />
+                                </button>
+                                
+                                {showMenu && (
+                                    <>
+                                        <div className="fixed inset-0 z-10" onClick={() => setShowMenu(false)} />
+                                        <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] z-20 py-1">
+                                            {isOwner ? (
+                                                <>
+                                                    <button 
+                                                        className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
+                                                        onClick={() => { setShowMenu(false); /* Implement edit if needed */ }}
+                                                    >
+                                                        <Edit2 size={14} /> Düzenle
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => { setShowMenu(false); handleDelete(); }}
+                                                        className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2"
+                                                    >
+                                                        <Trash2 size={14} /> Gönderiyi Sil
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Link 
+                                                        href={`/profile/${post.user_id}`}
+                                                        className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
+                                                    >
+                                                        <User size={14} /> Profili Gör
+                                                    </Link>
+                                                    {communityAdminId === currentUserId && !isOwner && (
+                                                        <button 
+                                                            onClick={() => { setShowMenu(false); handleDelete(); }}
+                                                            className="w-full px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2"
+                                                        >
+                                                            <Trash2 size={14} /> Gönderiyi Sil (Yönetici)
+                                                        </button>
+                                                    )}
+                                                    <button 
+                                                        className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
+                                                        onClick={() => { setShowMenu(false); /* Implement report */ }}
+                                                    >
+                                                        <Flag size={14} /> Bildir
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Content */}
+                        <div className="text-neutral-800 dark:text-neutral-200 text-sm whitespace-pre-wrap mb-4 font-serif leading-relaxed">
+                            {post.content}
+                        </div>
+
+                        {post.media_url && (
+                            <div className="mb-4 border-2 border-black dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={post.media_url} className="w-full" alt="Post content" />
+                            </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-4 text-neutral-500 dark:text-neutral-400 pt-3 border-t-2 border-neutral-100 dark:border-neutral-800">
+                            <div className="flex items-center gap-0.5 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1.5 py-1 border border-neutral-100 dark:border-neutral-800">
+                                <button 
+                                    onClick={() => handleReaction('like')}
+                                    className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${userReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
+                                >
+                                    <ArrowBigUp size={20} fill={userReaction === 'like' ? 'currentColor' : 'none'} />
+                                </button>
+                                <span className={`text-sm font-bold min-w-[1.5rem] text-center ${
+                                    reactionCount > 0 ? 'text-green-600' : 
+                                    reactionCount < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-500'
+                                }`}>
+                                    {reactionCount}
+                                </span>
+                                <button 
+                                    onClick={() => handleReaction('dislike')}
+                                    className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${userReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-600'}`}
+                                >
+                                    <ArrowBigUp size={20} className={`rotate-180 ${userReaction === 'dislike' ? 'fill-current' : ''}`} fill={userReaction === 'dislike' ? 'currentColor' : 'none'} />
+                                </button>
+                            </div>
+                            <button
+                                onClick={toggleComments}
+                                className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${showComments ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
+                            >
+                                <MessageSquare size={16} />
+                                <span>{post.comment_count && post.comment_count > 0 ? post.comment_count : 'Yorumlar'}</span>
+                            </button>
+                            <button className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors ml-auto">
+                                <div className="p-2 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20">
+                                    <Share2 size={18} />
+                                </div>
+                            </button>
+                        </div>
+
+                        {/* Comments Section - Inside Content Column for exact alignment */}
+                        {showComments && (
+                            <div ref={rootContainerRef} className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2 relative overflow-visible">
+                                {/* Main Rail from Post Owner to last root comment */}
+                                <ThreadConnector 
+                                    containerRef={rootContainerRef}
+                                    startRef={postOwnerAvatarRef}
+                                    endRefs={rootAvatarRefs}
+                                    offsetX={-36} // Positioned relative to Content Column (starts at gap-4 + avatar center)
+                                />
+
+                                {loadingComments && comments.length === 0 ? (
+                                    <div className="text-center py-4">
+                                        <Loader2 size={24} className="animate-spin mx-auto text-black dark:text-white opacity-20" />
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4 mb-4 overflow-visible relative">
+                                        {comments.map((comment, idx) => (
+                                            <CommentItem 
+                                                key={comment.id}
+                                                comment={comment}
+                                                post={post}
+                                                currentUserId={currentUserId}
+                                                communityAdminId={communityAdminId}
+                                                onCommentAction={refreshComments}
+                                                replyingTo={replyingTo}
+                                                setReplyingTo={setReplyingTo}
+                                                submittingComment={submittingComment}
+                                                containerRef={rootContainerRef}
+                                                offsetX={-36}
+                                                onAvatarRef={(el) => { rootAvatarRefs.current[idx] = el; }}
+                                            />
+                                        ))}
+                                        {comments.length === 0 && (
+                                            <div className="text-center py-8 border-2 border-dashed border-neutral-100 dark:border-neutral-800 rounded-xl">
+                                                <p className="text-sm text-neutral-400 italic font-serif">Henüz hiç yorum yapılmamış. İlk yorumu sen yap!</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {!replyingTo && (
+                                    <form onSubmit={(e) => handleComment(e)} className="flex gap-2">
+                                        <textarea
+                                            className="flex-1 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 px-3 py-2 text-sm focus:outline-none font-serif min-h-[42px] max-h-32 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]"
+                                            placeholder="Bir şeyler yaz..."
+                                            rows={1}
+                                            value={commentContent}
+                                            onChange={(e) => setCommentContent(e.target.value)}
+                                            disabled={submittingComment}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                    e.preventDefault();
+                                                    handleComment(e as any);
+                                                }
+                                            }}
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={!commentContent.trim() || submittingComment}
+                                            className="bg-black dark:bg-white text-white dark:text-black w-10 h-10 flex items-center justify-center disabled:opacity-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] flex-shrink-0"
+                                        >
+                                            <Send size={18} />
+                                        </button>
+                                    </form>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
-
-                {/* Content */}
-                <div className="text-neutral-800 dark:text-neutral-200 text-sm whitespace-pre-wrap mb-4 font-serif leading-relaxed">
-                    {post.content}
-                </div>
-
-                {post.media_url && (
-                    <div className="mb-4 border-2 border-black dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] overflow-hidden bg-neutral-100 dark:bg-neutral-800">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={post.media_url} className="w-full" alt="Post content" />
-                    </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex items-center gap-4 text-neutral-500 dark:text-neutral-400 pt-3 border-t-2 border-neutral-100 dark:border-neutral-800">
-                    <div className="flex items-center gap-0.5 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1 py-0.5 border border-neutral-100 dark:border-neutral-800">
-                        <button 
-                            onClick={() => handleReaction('like')}
-                            className={`p-1 rounded-full transition-all flex items-center justify-center w-7 h-7 hover:bg-white dark:hover:bg-black hover:shadow-sm ${userReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
-                        >
-                            <ArrowBigUp size={18} fill={userReaction === 'like' ? 'currentColor' : 'none'} />
-                        </button>
-                        <span className={`text-[11px] font-bold min-w-[1rem] text-center ${
-                            reactionCount > 0 ? 'text-green-600' : 
-                            reactionCount < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-500'
-                        }`}>
-                            {reactionCount}
-                        </span>
-                        <button 
-                            onClick={() => handleReaction('dislike')}
-                            className={`p-1 rounded-full transition-all flex items-center justify-center w-7 h-7 hover:bg-white dark:hover:bg-black hover:shadow-sm ${userReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-600'}`}
-                        >
-                            <ArrowBigUp size={18} className={`rotate-180 ${userReaction === 'dislike' ? 'fill-current' : ''}`} fill={userReaction === 'dislike' ? 'currentColor' : 'none'} />
-                        </button>
-                    </div>
-                    <button
-                        onClick={toggleComments}
-                        className="flex items-center gap-1.5 text-xs font-bold hover:text-black dark:hover:text-white transition-colors"
-                    >
-                        <MessageSquare size={16} />
-                        <span>{post.comment_count && post.comment_count > 0 ? post.comment_count : 'Yorumlar'}</span>
-                    </button>
-                    <button className="flex items-center gap-1.5 text-xs font-bold hover:text-black dark:hover:text-white transition-colors ml-auto">
-                        <Share2 size={16} />
-                    </button>
-                </div>
             </div>
-
-            {/* Comments Section */}
-            {showComments && (
-                <div className="bg-neutral-50 dark:bg-neutral-950/30 p-4 border-t-2 border-black dark:border-neutral-700 relative">
-                    {loadingComments && comments.length === 0 ? (
-                        <div className="text-center py-4">
-                            <Loader2 size={24} className="animate-spin mx-auto text-black dark:text-white opacity-20" />
-                        </div>
-                    ) : (
-                        <div className="space-y-4 mb-4 overflow-visible">
-                            {comments.map((comment) => (
-                                <CommentItem 
-                                    key={comment.id}
-                                    comment={comment}
-                                    post={post}
-                                    currentUserId={currentUserId}
-                                    communityAdminId={communityAdminId}
-                                    onCommentAction={refreshComments}
-                                    replyingTo={replyingTo}
-                                    setReplyingTo={setReplyingTo}
-                                    submittingComment={submittingComment}
-                                />
-                            ))}
-                            {comments.length === 0 && (
-                                <div className="text-center py-4 border-2 border-dashed border-neutral-200 dark:border-neutral-800">
-                                    <p className="text-xs text-neutral-400 italic font-serif">Henüz hiç yorum yapılmamış. İlk yorumu sen yap!</p>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {!replyingTo && (
-                        <form onSubmit={(e) => handleComment(e)} className="flex gap-2">
-                            <textarea
-                                className="flex-1 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 px-3 py-2 text-sm focus:outline-none font-serif min-h-[42px] max-h-32 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]"
-                                placeholder="Bir şeyler yaz..."
-                                rows={1}
-                                value={commentContent}
-                                onChange={(e) => setCommentContent(e.target.value)}
-                                disabled={submittingComment}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        handleComment(e as any);
-                                    }
-                                }}
-                            />
-                            <button
-                                type="submit"
-                                disabled={!commentContent.trim() || submittingComment}
-                                className="bg-black dark:bg-white text-white dark:text-black w-10 h-10 flex items-center justify-center disabled:opacity-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] flex-shrink-0"
-                            >
-                                <Send size={18} />
-                            </button>
-                        </form>
-                    )}
-                </div>
-            )}
         </div>
     );
 }
@@ -439,7 +468,10 @@ function CommentItem({
     depth = 0,
     replyingTo,
     setReplyingTo,
-    submittingComment
+    submittingComment,
+    containerRef,
+    offsetX = 0,
+    onAvatarRef
 }: { 
     comment: CommunityPostComment; 
     post: CommunityPost;
@@ -450,7 +482,17 @@ function CommentItem({
     replyingTo: string | null;
     setReplyingTo: (id: string | null) => void;
     submittingComment: boolean;
+    containerRef?: React.RefObject<HTMLDivElement | null>;
+    offsetX?: number;
+    onAvatarRef?: (el: HTMLDivElement | null) => void;
 }) {
+    const avatarRef = useRef<HTMLDivElement>(null);
+    const childContainerRef = useRef<HTMLDivElement>(null);
+    const childAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    useEffect(() => {
+        if (onAvatarRef) onAvatarRef(avatarRef.current);
+    }, [onAvatarRef]);
 
     const isOwner = comment.user_id === currentUserId;
     const isCommunityAdminComment = communityAdminId === comment.user_id;
@@ -506,12 +548,11 @@ function CommentItem({
         }
     };
 
-    const handleReply = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!replyContent.trim()) return;
+    const handleSubmitReply = async (content: string) => {
+        if (!content.trim()) return;
         
         try {
-            const result = await createComment(post.id, replyContent, comment.id);
+            const result = await createComment(post.id, content, comment.id);
             if (result.success) {
                 setReplyContent('');
                 setReplyingTo(null);
@@ -525,17 +566,36 @@ function CommentItem({
         }
     };
 
+    const isReplying = replyingTo === comment.id;
+
     return (
-        <div className={`flex flex-col gap-2 ${depth > 0 ? 'ml-7 mt-2' : ''}`}>
-            <div className="flex gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex-shrink-0 border border-black dark:border-neutral-800">
-                    <img
-                        src={comment.profiles?.avatar_url || '/placeholder-user.jpg'}
-                        className="w-full h-full object-cover"
-                        alt="User"
+        <div className="flex flex-col relative">
+            <div className="flex gap-3 relative group/comment">
+                {/* Branch line to this avatar (if within a thread) */}
+                {containerRef && (
+                    <BranchConnector 
+                        containerRef={containerRef}
+                        avatarRef={avatarRef}
+                        offsetX={offsetX}
                     />
+                )}
+
+                {/* Avatar Column */}
+                <div className="flex flex-col items-center shrink-0">
+                    <div 
+                        ref={avatarRef}
+                        className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex-shrink-0 border border-black dark:border-neutral-800 z-20"
+                    >
+                        <img
+                            src={comment.profiles?.avatar_url || '/placeholder-user.jpg'}
+                            className="w-full h-full object-cover"
+                            alt="User"
+                        />
+                    </div>
                 </div>
-                <div className="bg-white dark:bg-[#0a0a0a] px-4 py-3 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] rounded-xl relative group">
+
+                {/* Content Column */}
+                <div className="bg-white dark:bg-[#0a0a0a] px-4 py-3 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] rounded-xl relative group z-20">
                     <div className="flex justify-between items-baseline mb-1">
                         <div className="flex items-center gap-1 flex-wrap">
                             <span className="font-bold text-[11px] text-neutral-900 dark:text-neutral-200">
@@ -631,21 +691,31 @@ function CommentItem({
                 </div>
             </div>
 
-            {/* Reply Input */}
-            {replyingTo === comment.id && (
-                <div className="ml-7 mt-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                    <form onSubmit={handleReply} className="flex gap-2">
+            {/* Reply Form */}
+            {isReplying && (
+                <div className="mt-2 ml-2 relative">
+                    <div className="absolute top-0 -left-[calc(1.75rem+2px)] w-8 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-10" />
+                    <form 
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmitReply(replyContent);
+                            setReplyContent('');
+                            setReplyingTo(null);
+                        }} 
+                        className="flex gap-2 animate-in fade-in slide-in-from-top-1 relative z-20 pt-1"
+                    >
                         <input
+                            type="text"
                             autoFocus
-                            className="flex-1 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 px-3 py-1.5 text-xs focus:outline-none font-serif shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]"
-                            placeholder={`${comment.profiles?.full_name} kullanıcısına yanıt ver...`}
                             value={replyContent}
                             onChange={(e) => setReplyContent(e.target.value)}
+                            placeholder={`@${comment.profiles?.full_name} yanıt ver...`}
+                            className="flex-1 px-3 py-1.5 bg-white dark:bg-neutral-800 border-2 border-black dark:border-neutral-700 text-xs focus:outline-none focus:border-[#ff4b2b] dark:focus:border-[#ff6b4b] font-serif dark:text-white transition-colors rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]"
                         />
-                        <button
+                        <button 
                             type="submit"
-                            disabled={!replyContent.trim() || submittingComment}
-                            className="bg-black dark:bg-white text-white dark:text-black px-3 flex items-center justify-center disabled:opacity-50 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]"
+                            disabled={submittingComment || !replyContent.trim()}
+                            className="p-1.5 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors rounded-lg border-2 border-black dark:border-neutral-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)]"
                         >
                             <Send size={14} />
                         </button>
@@ -655,20 +725,32 @@ function CommentItem({
 
             {/* Children */}
             {comment.children && comment.children.length > 0 && (
-                <div className="flex flex-col gap-2">
-                    {comment.children.map((child) => (
-                        <CommentItem 
-                            key={child.id}
-                            comment={child}
-                            post={post}
-                            currentUserId={currentUserId}
-                            communityAdminId={communityAdminId}
-                            onCommentAction={onCommentAction}
-                            depth={depth + 1}
-                            replyingTo={replyingTo}
-                            setReplyingTo={setReplyingTo}
-                            submittingComment={submittingComment}
-                        />
+                <div ref={childContainerRef} className="relative mt-4 ml-7">
+                    <ThreadConnector 
+                        containerRef={childContainerRef}
+                        startRef={avatarRef}
+                        endRefs={childAvatarRefs}
+                        offsetX={16 - 28} // Aligns with parent's avatar rail center
+                    />
+                    
+                    {comment.children.map((child, idx) => (
+                        <div key={child.id} className="relative mb-4">
+                            <CommentItem 
+                                key={child.id}
+                                comment={child}
+                                post={post}
+                                currentUserId={currentUserId}
+                                communityAdminId={communityAdminId}
+                                onCommentAction={onCommentAction}
+                                depth={depth + 1}
+                                replyingTo={replyingTo}
+                                setReplyingTo={setReplyingTo}
+                                submittingComment={submittingComment}
+                                containerRef={childContainerRef}
+                                offsetX={16 - 28}
+                                onAvatarRef={(el) => { childAvatarRefs.current[idx] = el; }}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
