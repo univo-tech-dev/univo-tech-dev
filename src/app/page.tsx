@@ -1,5 +1,4 @@
 'use client';
-// Vercel Deployment Trigger: 2026-01-20 23:18
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -14,14 +13,14 @@ import { useEffect, useState } from 'react';
 function HomeContent() {
   const searchParams = useSearchParams();
   const view = searchParams?.get('view') || 'community';
-  const { user, loading } = useAuth();
+  const { user, authLoading } = useAuth();
   const router = useRouter();
   const [isGuest, setIsGuest] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
   // Check auth and guest status
   useEffect(() => {
-    if (!loading) {
+    if (!authLoading) {
       const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
       setIsGuest(guestMode);
       
@@ -31,7 +30,7 @@ function HomeContent() {
         setIsChecking(false);
       }
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
   const renderView = () => {
     switch (view) {
