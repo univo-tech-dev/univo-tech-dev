@@ -1,7 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import NotificationCenter from '../NotificationCenter';
@@ -1467,11 +1467,23 @@ export default function VoiceView() {
     const diffTime = current.getTime() - start.getTime();
     
     // In Global Mode, 'issueNumber' represents Active Topics count instead of Day Number
-    const activeTopicCount = allTags.filter(t => (t as any).count > 0).length;
+    const activeTopicCount = useMemo(() => 
+        allTags.filter(t => (t as any).count > 0).length
+    , [allTags]);
+
+    const lastActiveTopicCount = useRef(11);
+    useEffect(() => {
+        if (activeTopicCount > 0) {
+            lastActiveTopicCount.current = activeTopicCount;
+        }
+    }, [activeTopicCount]);
     
-    const issueNumber = isGlobalMode 
-        ? activeTopicCount 
-        : (Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
+    const issueNumber = useMemo(() => {
+        if (isGlobalMode) {
+            return activeTopicCount > 0 ? activeTopicCount : lastActiveTopicCount.current;
+        }
+        return (Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
+    }, [isGlobalMode, activeTopicCount, diffTime]);
 
     const formattedDate = today.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
