@@ -600,6 +600,27 @@ export default function VoiceView() {
     const [university, setUniversity] = useState('metu');
     const [isAdminSession, setIsAdminSession] = useState(false);
 
+    // Helper: Robust Poll ID Generation
+    const getPollId = (question: string) => {
+        if (!question) return 'unknown_poll';
+        // Legacy: Try old method primarily to keep old votes if it worked
+        // But for "Global" questions which might crash it, fallback to safe hash
+        const legacySlug = question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+        
+        // If legacy slug is too weird (e.g. mostly underscores due to Turkish chars), use hash
+        const meaningfulChars = legacySlug.replace(/_/g, '').length;
+        if (meaningfulChars > 5) return legacySlug;
+
+        // Fallback: Simple numeric hash of the full question string
+        let hash = 0;
+        for (let i = 0; i < question.length; i++) {
+            const char = question.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return `poll_${Math.abs(hash)}`;
+    };
+
     // Check admin session
     useEffect(() => {
         const checkAdmin = async () => {
@@ -1555,7 +1576,7 @@ export default function VoiceView() {
         // Prevent spam clicking while processing
         if (pollLoading) return;
 
-        const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+        const pollId = getPollId(activePoll.question);
 
         // Snapshot for rollback
         const previousResults = [...pollResults];
@@ -1616,7 +1637,7 @@ export default function VoiceView() {
     };
 
     const fetchPollResults = async (poll: { question: string, options: string[] }) => {
-        const pollId = poll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+        const pollId = getPollId(poll.question);
         const { data, error } = await supabase
             .from('poll_votes')
             .select('option_index, user_id, profiles:user_id!inner(id, is_archived)')
@@ -1658,7 +1679,7 @@ export default function VoiceView() {
         setSelectedVoterOption(0);
         setShowVotersModal(true);
         try {
-            const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+            const pollId = getPollId(activePoll.question);
             const res = await fetch(`/api/poll/${pollId}/voters`);
             const data = await res.json();
             if (data.voters) {
@@ -1779,10 +1800,10 @@ export default function VoiceView() {
                                     </h3>
 
                                     <div className="flex items-center gap-4">
-                                        {filters.tags[0] && (
+                                        {filters.tags.length > 0 && (
                                             <button
                                                 onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
-                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
+                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm hover:opacity-90 text-white"
                                                 style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                                             >
                                                 <span>{filters.tags[0].startsWith('#') ? filters.tags[0] : `#${filters.tags[0]}`}</span>
