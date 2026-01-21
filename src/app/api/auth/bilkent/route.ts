@@ -106,13 +106,16 @@ export async function POST(request: Request) {
         // 3. TITLE Case & Normalization
         if (fullName) {
             fullName = fullName.trim();
+            // Remove titles like "Sayın", "Öğrenci" if they appear
+            fullName = fullName.replace(/^(Sayın|Öğrenci|Mr\.|Ms\.)\s+/i, '');
             fullName = toTitleCase(fullName);
         } else if (username === 'bilkent_test') {
             fullName = 'Bilkent Test Kullanıcısı';
         } else {
-            // Log for debugging if fail (only in dev/admin view context)
+            // Log for debugging if fail
             console.warn(`[ROBUST SCRAPE] Could not find name for ${username}. HTML sample: ${loginRes.data.substring(0, 500)}`);
-            fullName = 'Bilkent Öğrencisi';
+            // Fallback to student ID if name really can't be found, better than a placeholder label
+            fullName = `Bilkent No: ${username}`;
         }
         
         // --- COURSE SCRAPING ---
@@ -252,7 +255,7 @@ export async function POST(request: Request) {
             studentInfo: {
                 fullName: fullName?.trim(),
                 username: username,
-                department: 'Bilkent Öğrencisi'
+                department: detectedDept || 'Bilkent Üniversitesi'
             },
             session: sessionData.session ? {
                 access_token: sessionData.session.access_token,
