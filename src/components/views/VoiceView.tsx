@@ -636,6 +636,7 @@ export default function VoiceView() {
     }, [user, showSkeleton, isModeInitialized]);
 
     const handleModeSwitch = (global: boolean) => {
+        setPostsLoading(true);
         setIsGlobalMode(global);
         setVoices([]); // Clear voices immediately to prevent flash
     };
@@ -1690,7 +1691,7 @@ export default function VoiceView() {
                             <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
                                  {/* ODTÜ Button */}
                                  <button 
-                                     onClick={() => { handleModeSwitch(false); setUniversity('metu'); }} 
+                                     onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }} 
                                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                      title="ODTÜ Kampüsü"
                                  >
@@ -1700,7 +1701,7 @@ export default function VoiceView() {
                                  
                                  {/* Bilkent Button */}
                                  <button 
-                                     onClick={() => { handleModeSwitch(false); setUniversity('bilkent'); }} 
+                                     onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }} 
                                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                      title="Bilkent Kampüsü"
                                  >
@@ -1713,7 +1714,7 @@ export default function VoiceView() {
 
                                  {/* Global Button */}
                                  <button 
-                                     onClick={() => handleModeSwitch(true)} 
+                                     onClick={() => { setPostsLoading(true); handleModeSwitch(true); }} 
                                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                      title="Global Gündem"
                                  >
@@ -1725,7 +1726,7 @@ export default function VoiceView() {
                         <div className="flex items-center gap-3">
                             <div 
                                 className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
-                                onClick={() => handleModeSwitch(!isGlobalMode)}
+                                onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
                                 title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
                             >
                                     <div 
