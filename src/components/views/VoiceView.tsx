@@ -591,7 +591,7 @@ interface Voice {
     }>;
 }
 
-const INITIAL_TAGS = ['#kampüs', '#yemekhane', '#kütüphane', '#ulaşım', '#sınav', '#etkinlik', '#spor'];
+const INITIAL_TAGS = ['kampüs', 'yemekhane', 'kütüphane', 'ulaşım', 'sınav', 'etkinlik', 'spor'];
 
 export default function VoiceView() {
     const { user, profile, setViewLoading, loading: showSkeleton } = useAuth();
@@ -979,9 +979,11 @@ export default function VoiceView() {
 
                     data.voices.forEach((v: Voice) => {
                         if (v.tags) {
-                            v.tags.forEach(t => {
-                                const lower = t.toLowerCase();
-                                tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
+                            // Normalize tags from each voice (remove # and lowercase)
+                            // and use a Set to ensure one post only counts once per tag
+                            const uniquePostTags = new Set(v.tags.map(t => t.toLowerCase().replace('#', '')));
+                            uniquePostTags.forEach(t => {
+                                tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
                             });
                         }
                     });
@@ -1090,12 +1092,15 @@ export default function VoiceView() {
             if (!session) return toast.error('Oturum hatası');
 
             const extractedTagsMatches = newStatus.match(/#[\w\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c7]+/g);
-            let finalTags: string[] = extractedTagsMatches ? Array.from(extractedTagsMatches) : [];
+            // Deduplicate and normalize to lowercase without #
+            let finalTags: string[] = extractedTagsMatches 
+                ? Array.from(new Set(extractedTagsMatches.map(t => t.toLowerCase().replace('#', '')))) 
+                : [];
 
             if (isGlobalMode) {
-                // Ensure #global tag exists
-                if (!finalTags.some((t) => t.toLowerCase() === '#global')) {
-                    finalTags = [...finalTags, '#global'];
+                // Ensure 'global' tag exists
+                if (!finalTags.includes('global')) {
+                    finalTags = [...finalTags, 'global'];
                 }
             }
 
@@ -1447,8 +1452,11 @@ export default function VoiceView() {
                 }
             }
 
-            // Extract hashtags
-            const extractedTags = Array.from(new Set(editContent.match(/#[a-zA-Z\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c70-9]+/g) || [])).map(t => t.toLowerCase());
+            // Extract hashtags and normalize (lowercase, deduplicate, remove #)
+            const extractedTagsMatches = editContent.match(/#[\w\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c70-9]+/g);
+            const extractedTags = extractedTagsMatches 
+                ? Array.from(new Set(extractedTagsMatches.map(t => t.toLowerCase().replace('#', '')))) 
+                : [];
 
             const res = await fetch(`/api/voices/${vId}`, {
                 method: 'PUT',
