@@ -4,20 +4,25 @@ import imaps from 'imap-simple';
 
 // Helper to fetch emails (Reusable for GET and POST)
 async function fetchRecentEmails(username: string, password: string, extraUids: number[] = []) {
-    // Normalize username: Remove domain if present, as ODTÜ IMAP usually expects NetID
-    const cleanUsername = username.includes('@') ? username.split('@')[0] : username;
+    // Determine University and Server
+    const isBilkent = username.toLowerCase().endsWith('@bilkent.edu.tr') || username.toLowerCase().endsWith('@ug.bilkent.edu.tr');
+    const host = isBilkent ? 'mail.bilkent.edu.tr' : 'imap.metu.edu.tr';
+    
+    // Normalize username: 
+    // ODTÜ IMAP expects NetID (e123456), Bilkent expects FULL email.
+    const cleanUsername = isBilkent ? username.toLowerCase() : (username.includes('@') ? username.split('@')[0] : username);
 
     const config = {
       imap: {
         user: cleanUsername,
         password: password,
-        host: 'imap.metu.edu.tr',
+        host: host,
         port: 993,
         tls: true,
         authTimeout: 20000,
         tlsOptions: { 
             rejectUnauthorized: false,
-            servername: 'imap.metu.edu.tr'
+            servername: host
         }
       }
     };

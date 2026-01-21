@@ -111,9 +111,17 @@ export async function POST(request: Request) {
         }
         
         // --- 3. UNIVO AUTHENTICATION ---
-        // For consistency, we normalize all Bilkent emails to the standard domain
+        // For consistency, we use the user's provided domain if valid, otherwise fallback to standard
         const normalizedStarsId = username.split('@')[0];
-        const eduEmail = `${normalizedStarsId}@bilkent.edu.tr`;
+        let eduEmail = `${normalizedStarsId}@bilkent.edu.tr`;
+        
+        if (username.includes('@')) {
+            const domain = username.split('@')[1].toLowerCase();
+            if (domain === 'ug.bilkent.edu.tr' || domain === 'bilkent.edu.tr') {
+                eduEmail = username.toLowerCase();
+            }
+        }
+
         const supabaseAdmin = getSupabaseAdmin();
         
         // Find user
@@ -130,7 +138,7 @@ export async function POST(request: Request) {
             if (error || !pageUsers || pageUsers.length === 0) {
                 hasNextPage = false;
             } else {
-                user = pageUsers.find(u => u.email === eduEmail);
+                user = pageUsers.find(u => u.email?.toLowerCase() === eduEmail.toLowerCase());
                 if (!user && pageUsers.length < 1000) {
                     hasNextPage = false;
                 }

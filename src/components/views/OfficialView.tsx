@@ -279,7 +279,7 @@ export default function OfficialView() {
                             source: senderName, // Use sender name instead of 'ODTÜ E-Posta'
                             date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
                             summary: `E-posta içeriği için tıklayınız.`,
-                            link: `https://metumail.metu.edu.tr/`,
+                            link: isBilkent ? `https://newmail.bilkent.edu.tr/` : `https://metumail.metu.edu.tr/`,
                             timestamp: msg.timestamp || new Date(msg.date).getTime()
                         };
                     });
@@ -344,7 +344,7 @@ export default function OfficialView() {
                     source: senderName,
                     date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
                     summary: `E-posta içeriği için tıklayınız.`,
-                    link: `https://metumail.metu.edu.tr/`,
+                    link: isBilkent ? `https://newmail.bilkent.edu.tr/` : `https://metumail.metu.edu.tr/`,
                     timestamp: msg.timestamp || new Date(msg.date).getTime()
                 };
             });
@@ -867,7 +867,10 @@ export default function OfficialView() {
                                         ...(!isBilkent ? [
                                             { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
                                             { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> }
-                                        ] : []),
+                                        ] : [
+                                            { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
+                                            { id: 'odtuclass', label: 'STARS/SRS', count: 0, icon: <GraduationCap size={14} className="shrink-0" /> }
+                                        ]),
                                         { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="shrink-0" /> },
                                         { id: 'history', label: '', icon: <Trash2 size={14} className="shrink-0" />, count: readIds.length }
                                     ].map(tab => {
@@ -1050,7 +1053,7 @@ export default function OfficialView() {
                                                                             <span className={`text-xs font-bold uppercase transition-colors duration-300 ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
                                                                                 {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
                                                                             </span>
-                                                                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
+                                                                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source === 'ODTÜClass' && isBilkent ? 'STARS/SRS' : item.source}</span>
 
                                                                             {subscribedSources.includes(item.source) && (
                                                                                 <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-700 dark:text-emerald-400 rounded uppercase">
@@ -1268,18 +1271,19 @@ export default function OfficialView() {
                                     <div className="relative">
                                             <input
                                             type="text"
-                                            placeholder={isBilkent ? "2210XXXX" : "e123456"}
+                                            placeholder={isBilkent ? "Bilkent ID" : "e123456"}
                                             className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:outline-none focus:border-black dark:focus:border-white transition-colors font-mono dark:text-white"
                                             value={loginForm.username}
                                             onChange={e => {
-                                                // Auto-strip domain if user pastes it
+                                                // Auto-strip domain if user pastes it (Except for Bilkent where we might want the full email)
                                                 let val = e.target.value;
-                                                if (val.includes('@')) val = val.split('@')[0];
+                                                const hasAt = val.includes('@');
+                                                if (hasAt && !isBilkent) val = val.split('@')[0];
                                                 setLoginForm({ ...loginForm, username: val });
                                             }}
                                             disabled={loadingEmails}
                                         />
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? 'ug.bilkent.edu.tr' : 'metu.edu.tr'}</span>
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? (loginForm.username.includes('@') ? '' : 'ug.bilkent.edu.tr') : 'metu.edu.tr'}</span>
                                     </div>
                                 </div>
                                 <div>
