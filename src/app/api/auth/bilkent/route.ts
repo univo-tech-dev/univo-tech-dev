@@ -70,6 +70,7 @@ export async function POST(request: Request) {
         
         // --- ROBUST NAME EXTRACTION ---
         // 1. Core SELECTORS (Top priority)
+        // STARS and SRS use different layouts. We cover both.
         const selectors = [
             '.user-name', 
             '#user-menu-button', 
@@ -79,43 +80,52 @@ export async function POST(request: Request) {
             '.navbar-user',
             '.srs-user',
             'header .user-info',
-            '.dropdown-toggle span'
+            '.dropdown-toggle span',
+            '#user-fullname',
+            '.fullname',
+            '.welcome-message b',
+            '#ctl00_lblUser',
+            '#lblName'
         ];
         
         let fullName = '';
+        const html = loginRes.data;
+        const $ = cheerio.load(html);
+
         for (const selector of selectors) {
-            const text = $dash(selector).text().trim();
-            if (text && !text.includes('Logout') && !text.includes('Giriş')) {
+            const text = $(selector).text().trim();
+            if (text && !/Logout|Giriş|Çıkış|Welcome|Hoş\s+geldin/i.test(text)) {
                 fullName = text;
                 break;
             }
         }
 
-        // 2. TEXT-BASED Search (If selectors fail)
+        // 2. SEARCH specifically for SRS-style name containers
         if (!fullName) {
-            // Find "Hoş geldin" pattern
-            const welcomeText = $dash(':contains("Hoş geldin")').text() || $dash(':contains("Welcome")').text();
-            if (welcomeText) {
-                const match = welcomeText.match(/(?:Hoş geldin|Welcome),?\s+([^!.,\n]+)/i);
-                if (match && match[1]) {
-                    fullName = match[1].trim();
-                }
-            }
+             const welcomeBox = $('div:contains("Hoş geldin"), div:contains("Welcome")').first();
+             if (welcomeBox.length > 0) {
+                 const text = welcomeBox.text().trim();
+                 const match = text.match(/(?:Hoş geldin|Welcome),?\s+([^!.,\n\(]+)/i);
+                 if (match && match[1]) {
+                     fullName = match[1].trim();
+                 }
+             }
         }
 
         // 3. TITLE Case & Normalization
         if (fullName) {
             fullName = fullName.trim();
-            // Remove titles like "Sayın", "Öğrenci" if they appear
-            fullName = fullName.replace(/^(Sayın|Öğrenci|Mr\.|Ms\.)\s+/i, '');
+            // Remove titles or prefixes
+            fullName = fullName.replace(/^(Sayın|Öğrenci|Mr\.|Ms\.|Dear)\s+/i, '');
+            // Some systems might put the ID next to the name in paren: Ahmed Zafer (22501234)
+            fullName = fullName.split('(')[0].trim();
             fullName = toTitleCase(fullName);
         } else if (username === 'bilkent_test') {
             fullName = 'Bilkent Test Kullanıcısı';
         } else {
-            // Log for debugging if fail
-            console.warn(`[ROBUST SCRAPE] Could not find name for ${username}. HTML sample: ${loginRes.data.substring(0, 500)}`);
-            // Fallback to student ID if name really can't be found, better than a placeholder label
-            fullName = `Bilkent No: ${username}`;
+            // If we STILL can't find it, we try to get it from a potential profile link
+            console.warn(`[ROBUST SCRAPE] Name extraction failed for ${username}.`);
+            fullName = username; // Last resort fallback to student ID
         }
         
         // --- COURSE SCRAPING ---
