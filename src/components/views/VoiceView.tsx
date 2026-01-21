@@ -2058,7 +2058,7 @@ export default function VoiceView() {
                                 </button>
                             </div>
                             <div className="px-6 py-4 bg-white dark:bg-neutral-900 border-b-2 border-neutral-100 dark:border-neutral-800">
-                                <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
+                                <div className="flex overflow-x-auto gap-2 pb-2 w-full">
                                     {activePoll?.options.map((option, idx) => {
                                         const count = voters.filter(v => v.option_index === idx).length;
                                         const isActive = selectedVoterOption === idx;
