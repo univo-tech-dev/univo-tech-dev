@@ -20,10 +20,11 @@ function HomeContent() {
 
   // Check auth and guest status - redirect to login immediately if not authenticated
   useEffect(() => {
+    // Check localStorage first for immediate decision (no waiting for Supabase)
+    const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
+    setIsGuest(guestMode);
+
     if (!authLoading) {
-      const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
-      setIsGuest(guestMode);
-      
       if (!user && !guestMode) {
         router.replace('/login');
         return;
@@ -44,11 +45,18 @@ function HomeContent() {
     }
   };
 
-  // Don't render content while checking - but show the layout so Header works
-  if (isChecking || authLoading) {
+  // If still checking auth - show nothing (will redirect quickly)
+  // This prevents flash of content before redirect
+  if (authLoading || isChecking) {
+    // If no guest mode and we're checking, just return null to avoid flash
+    const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
+    if (!guestMode) {
+      return null; // Quick redirect will happen
+    }
+    // For guests, show a minimal loader
     return (
-      <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] transition-colors duration-300 overflow-x-hidden">
-        {/* Empty div - Header will still render normally */}
+      <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a]">
+        {/* Minimal placeholder for guest loading */}
       </div>
     );
   }

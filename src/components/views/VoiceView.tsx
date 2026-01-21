@@ -620,23 +620,20 @@ export default function VoiceView() {
 
     // Enforce Mode Logic: Global for Guests, University for Users (on start)
     useEffect(() => {
-        if (!showSkeleton) {
+        if (!showSkeleton && !isModeInitialized) {
             if (!user) {
                 setIsGlobalMode(true);
             } else {
-                // User logged in: Start with University mode as requested
-                // This runs once when user loads. 
-                // We rely on React State to keep it during session if they switch.
-                // To prevent resetting it on minor user updates, we could check isModeInitialized 
-                // but the requirement "always university on start" implies strictly defaulting to false is fine
-                // IF this effect doesn't run too often.
-                // 'user' object reference changes? Likely.
-                // But setting state to same value doesn't cause re-render loop.
+                // Only set to false (University Mode) on FIRST load
                 setIsGlobalMode(false);
             }
             setIsModeInitialized(true);
         }
-    }, [user, showSkeleton]);
+        // If user logs out dynamically (rare here, but safe to handle)
+        if (!user && isModeInitialized) {
+             setIsGlobalMode(true);
+        }
+    }, [user, showSkeleton, isModeInitialized]);
 
     const handleModeSwitch = (global: boolean) => {
         setIsGlobalMode(global);
