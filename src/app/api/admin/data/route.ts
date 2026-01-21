@@ -29,14 +29,23 @@ export async function GET(req: NextRequest) {
 
         if (authError) throw authError;
 
-        // Merge email into profiles
+        // Merge email into profiles and identify orphans
+        const orphans: string[] = [];
         const users = profiles.map(profile => {
             const authUser = authUsers.find(u => u.id === profile.id);
+            if (!authUser) orphans.push(profile.id);
             return {
                 ...profile,
-                email: authUser?.email
+                email: authUser?.email,
+                is_orphaned: !authUser
             };
         });
+
+        // Background Cleanup: Delete orphans if found
+        if (orphans.length > 0) {
+            console.log(`Cleaning up ${orphans.length} orphaned profiles...`);
+            await supabase.from('profiles').delete().in('id', orphans);
+        }
 
         // 2. Fetch Settings
         const { data: settings, error: settingsError } = await supabase

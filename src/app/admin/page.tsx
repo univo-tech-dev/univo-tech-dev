@@ -18,6 +18,7 @@ interface User {
     ban_category?: string;
     banned_by?: string;
     university?: string;
+    is_orphaned?: boolean;
 }
 
 interface Stats {

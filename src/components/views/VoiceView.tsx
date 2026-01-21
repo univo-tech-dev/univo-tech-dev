@@ -1902,12 +1902,10 @@ export default function VoiceView() {
                                             <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
                                         </div>
                                     ) : (
-                                        <AnimatePresence mode="wait">
                                             <motion.div
                                                 key="voices-list"
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                exit={{ opacity: 0, x: 20 }}
                                                 transition={{ duration: 0.3 }}
                                                 className="space-y-4"
                                             >
@@ -1958,7 +1956,6 @@ export default function VoiceView() {
                                                     />
                                                 ))}
                                             </motion.div>
-                                        </AnimatePresence>
                                     )}
                                 </div>
                             </div>

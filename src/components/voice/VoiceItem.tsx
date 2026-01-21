@@ -111,7 +111,11 @@ export default function VoiceItem({
     const score = likeCount - dislikeCount;
 
     return (
-        <article 
+        <motion.article 
+            layout
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
             className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}
             ref={el => { containerRefs.current[voice.id] = el as HTMLDivElement | null; }}
         >
@@ -450,6 +454,6 @@ export default function VoiceItem({
                     )}
                 </div>
             </div>
-        </article>
+        </motion.article>
     );
 };
