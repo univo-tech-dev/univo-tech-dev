@@ -63,14 +63,23 @@ export async function POST(
       .eq('id', currentUserId)
       .single();
 
-    await supabase
-      .from('notifications')
-      .insert({
-        user_id: targetUserId,
-        type: 'follow',
-        actor_id: currentUserId,
-        message: `${followerProfile?.full_name || 'Bir kullanıcı'} seni takip etmeye başladı`
-      });
+    const { data: targetProfile } = await supabase
+      .from('profiles')
+      .select('notification_settings')
+      .eq('id', targetUserId)
+      .single();
+
+    const settings = targetProfile?.notification_settings as any;
+    if (settings?.follows !== false) {
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: targetUserId,
+          type: 'follow',
+          actor_id: currentUserId,
+          message: `${followerProfile?.full_name || 'Bir kullanıcı'} seni takip etmeye başladı`
+        });
+    }
 
     const { count } = await supabase
       .from('user_follows')

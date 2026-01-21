@@ -59,8 +59,7 @@ interface VoiceItemProps {
     imageFile: File | null;
     setImageFile: (val: File | null) => void;
     handleImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    // Assume user will pass mediaType or we detect it?
-    // Since we only get voice object, we should detect from URL.
+    isGlobalMode?: boolean;
 }
 
 export default function VoiceItem({
@@ -102,7 +101,8 @@ export default function VoiceItem({
     setImagePreview,
     imageFile,
     setImageFile,
-    handleImageSelect
+    handleImageSelect,
+    isGlobalMode = false
 }: VoiceItemProps) {
     const reactions = voice.reactions || [];
     const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
@@ -156,11 +156,11 @@ export default function VoiceItem({
                                 {voice.user?.full_name || 'Kullanıcı'}
                             </Link>
                         )}
-                        {(voice.user?.department || voice.user?.class_year || voice.user?.university) && (
+                        {(voice.user?.department || voice.user?.class_year || (isGlobalMode && voice.user?.university)) && (
                             <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
                                 {(() => {
                                     const uni = voice.user?.university === 'bilkent' ? 'Bilkent' : (voice.user?.university === 'metu' || !voice.user?.university) ? 'ODTÜ' : voice.user?.university;
-                                    return [uni, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ');
+                                    return [isGlobalMode ? uni : null, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ');
                                 })()}
                             </span>
                         )}
