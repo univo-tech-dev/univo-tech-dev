@@ -1628,7 +1628,8 @@ export default function VoiceView() {
 
         } catch (e) {
             console.error('Vote Error:', e);
-            toast.error('Oylama sırasında bir hata oluştu.');
+            const errorMessage = (e as any)?.message || 'Bilinmeyen hata';
+            toast.error(`Oylama hatası: ${errorMessage}`);
 
             // Revert State on Error
             setPollResults(previousResults);
