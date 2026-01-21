@@ -969,21 +969,35 @@ export default function VoiceView() {
             const data = await res.json();
             
             if (data.voices) {
-                setVoices(data.voices);
+                // Ensure voices are unique by ID to prevent duplication glitches
+                const uniqueVoices = Array.from(new Map(data.voices.map((v: any) => [v.id, v])).values()) as Voice[];
+                setVoices(uniqueVoices);
                 
                 if (filters.tags.length === 0) {
                     // Update tag counts for sidebar only if no tag filter is active
                     // This keeps the "Agenda" list stable while drilling down
                     const tagCounts = new Map<string, number>();
-                    INITIAL_TAGS.forEach(t => tagCounts.set(t.replace('#', ''), 0));
+                    INITIAL_TAGS.forEach(t => tagCounts.set(t.toLowerCase().replace('#', ''), 0));
+
+                    // Track which post IDs we've already counted for which tag
+                    // This prevents double/triple counting if API returns duplicates
+                    const postTrackingByTag = new Map<string, Set<string>>();
 
                     data.voices.forEach((v: Voice) => {
-                        if (v.tags) {
-                            // Normalize tags from each voice (remove # and lowercase)
-                            // and use a Set to ensure one post only counts once per tag
-                            const uniquePostTags = new Set(v.tags.map(t => t.toLowerCase().replace('#', '')));
-                            uniquePostTags.forEach(t => {
-                                tagCounts.set(t, (tagCounts.get(t) || 0) + 1);
+                        if (v.id && v.tags) {
+                            // Normalize all tags (remove # and lowercase)
+                            const uniqueInPost = new Set(v.tags.map(t => t.toLowerCase().replace('#', '')));
+                            
+                            uniqueInPost.forEach(tag => {
+                                if (!postTrackingByTag.has(tag)) {
+                                    postTrackingByTag.set(tag, new Set());
+                                }
+                                
+                                const seenPostsForThisTag = postTrackingByTag.get(tag)!;
+                                if (!seenPostsForThisTag.has(v.id)) {
+                                    seenPostsForThisTag.add(v.id);
+                                    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+                                }
                             });
                         }
                     });
