@@ -39,7 +39,8 @@ function HeaderContent() {
 
   // Use authLoading instead of global loading. 
   // Global loading includes view transitions (setViewLoading), but Header should stay visible during those.
-  const showSkeleton = authLoading;
+  // Also wait for profile if user is logged in to prevent F5 placeholder flash.
+  const showSkeleton = authLoading || (!!user && !profile);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
