@@ -1859,9 +1859,8 @@ export default function VoiceView() {
                                             <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
                                         </div>
                                     ) : (
-                                        <AnimatePresence mode="popLayout">
+                                        <AnimatePresence mode="wait">
                                             <motion.div
-                                                layout
                                                 key="voices-list"
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}
