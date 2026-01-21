@@ -951,23 +951,100 @@ export default function OfficialView() {
                                                     (!user) || 
                                                     (user && university === (isBilkent ? 'bilkent' : 'metu') && (activeTab === 'emails' ? (emails.length === 0) : (universitySystemData.length === 0)))
                                                 ) ? (
-                                                    <div className="space-y-3">
-                                                        <Lock size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
-                                                        <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-xs mx-auto">
-                                                            {activeTab === 'emails'
-                                                                ? `${isBilkent ? 'Bilkent' : 'ODTÜ'} e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.`
-                                                                : activeTab === 'odtuclass'
-                                                                    ? `${isBilkent ? 'STARS/SRS' : 'ODTÜClass'} derslerinizi ve ödevlerinizi takip etmek için giriş yapın.`
-                                                                    : 'Yıldızladığınız ve okuduğunuz içerikleri görmek için giriş yapın.'
-                                                            }
-                                                        </p>
-                                                        <button
-                                                            onClick={() => setShowLoginModal(true)}
-                                                            className="inline-flex items-center gap-2 px-4 py-2 font-bold text-sm uppercase rounded hover:opacity-90 transition-opacity"
-                                                            style={{ backgroundColor: 'var(--primary-color, #C8102E)', color: 'white' }}
-                                                        >
-                                                            {user ? 'Şimdi Bağla' : 'Giriş Yap'}
-                                                        </button>
+                                                    <div className="w-full">
+                                                        {isBilkent && activeTab === 'emails' && user ? (
+                                                            /* Inline Login for Bilkent E-posta */
+                                                            <div className="max-w-md mx-auto w-full p-8 bg-white dark:bg-neutral-950 border-4 border-black dark:border-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                                                <div className="text-center mb-8">
+                                                                    <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center mx-auto mb-4 rounded-2xl rotate-3 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                                                                        <Mail size={32} />
+                                                                    </div>
+                                                                    <h3 className="text-2xl font-black uppercase tracking-tighter dark:text-white mb-2 italic">Bilkent Webmail Bağla</h3>
+                                                                    <p className="text-sm text-neutral-500 font-medium">SRS şifrenizle kampüs e-postalarınıza anında erişin.</p>
+                                                                </div>
+
+                                                                <form onSubmit={handleImapLogin} className="space-y-6">
+                                                                    <div className="space-y-2">
+                                                                        <label className="block text-xs font-black uppercase text-neutral-400 tracking-widest ml-1">Bilkent E-posta Adresi</label>
+                                                                        <div className="relative group">
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="isim.soyisim"
+                                                                                className="w-full p-4 pr-32 border-2 border-black dark:border-white bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:bg-white dark:focus:bg-black transition-all font-mono font-bold dark:text-white"
+                                                                                value={loginForm.username}
+                                                                                onChange={e => {
+                                                                                    let val = e.target.value;
+                                                                                    if (val.includes('@')) val = val.split('@')[0];
+                                                                                    setLoginForm({ ...loginForm, username: val });
+                                                                                }}
+                                                                                disabled={loadingEmails}
+                                                                            />
+                                                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-black select-none pointer-events-none text-xs tracking-tighter">
+                                                                                @{loginForm.username.includes('.') ? 'bilkent.edu.tr' : 'ug.bilkent.edu.tr'}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div className="space-y-2">
+                                                                        <label className="block text-xs font-black uppercase text-neutral-400 tracking-widest ml-1">SRS Şifresi</label>
+                                                                        <div className="relative">
+                                                                            <input 
+                                                                                type="password" 
+                                                                                required 
+                                                                                placeholder="••••••••" 
+                                                                                className="w-full p-4 border-2 border-black dark:border-white bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:bg-white dark:focus:bg-black transition-all font-mono font-bold dark:text-white" 
+                                                                                value={loginForm.password} 
+                                                                                onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} 
+                                                                            />
+                                                                            <Lock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400" />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {loginError && (
+                                                                        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-black border-2 border-red-600 flex items-center gap-3 animate-shake">
+                                                                            <ShieldAlert size={16} />
+                                                                            <span className="uppercase">{loginError}</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    <div className="p-4 bg-neutral-100 dark:bg-neutral-800 border-2 border-black dark:border-neutral-700 text-[10px] text-neutral-600 dark:text-neutral-400 font-bold leading-relaxed">
+                                                                        <p className="font-black mb-1 uppercase flex items-center gap-1 text-black dark:text-white"><ShieldCheck size={12} /> Güvenlik Protokolü</p>
+                                                                        Şifreniz yalnızca bağlantı kurmak için anlık kullanılır ve sunucularımıza asla kaydedilmez.
+                                                                    </div>
+
+                                                                    <button 
+                                                                        type="submit" 
+                                                                        disabled={loadingEmails} 
+                                                                        className="w-full py-5 bg-black dark:bg-white text-white dark:text-black font-black text-base uppercase tracking-widest hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[0px] active:translate-y-[0px] shadow-[4px_4px_0px_0px_rgba(200,16,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(200,16,46,1)] transition-all flex justify-center items-center gap-3 disabled:opacity-50"
+                                                                    >
+                                                                        {loadingEmails ? (
+                                                                            <><Loader2 size={24} className="animate-spin" /> BAĞLANTI KURULUYOR...</>
+                                                                        ) : (
+                                                                            <><Power size={20} /> E-POSTALARI ÇEK</>
+                                                                        )}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="space-y-3">
+                                                                <Lock size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
+                                                                <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-xs mx-auto">
+                                                                    {activeTab === 'emails'
+                                                                        ? `${isBilkent ? 'Bilkent' : 'ODTÜ'} e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.`
+                                                                        : activeTab === 'odtuclass'
+                                                                            ? `${isBilkent ? 'STARS/SRS' : 'ODTÜClass'} derslerinizi ve ödevlerinizi takip etmek için giriş yapın.`
+                                                                            : 'Yıldızladığınız ve okuduğunuz içerikleri görmek için giriş yapın.'
+                                                                    }
+                                                                </p>
+                                                                <button
+                                                                    onClick={() => setShowLoginModal(true)}
+                                                                    className="inline-flex items-center gap-2 px-4 py-2 font-bold text-sm uppercase rounded hover:opacity-90 transition-opacity"
+                                                                    style={{ backgroundColor: 'var(--primary-color, #C8102E)', color: 'white' }}
+                                                                >
+                                                                    {user ? 'Şimdi Bağla' : 'Giriş Yap'}
+                                                                </button>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ) : (
                                                     <p className="text-neutral-400 dark:text-neutral-500 font-bold uppercase">Bu listede içerik bulunmuyor.</p>
