@@ -63,7 +63,7 @@ export async function GET(request: Request) {
     }
 
     // Always sort by newest first by default or specified
-    query = query.order('created_at', { ascending: false });
+    query = query.order('created_at', { ascending: false }).limit(100);
 
     let { data, error } = await query as any;
 
@@ -102,7 +102,7 @@ export async function GET(request: Request) {
         fallbackQuery = fallbackQuery.is('image_url', null);
       }
       
-      fallbackQuery = fallbackQuery.order('created_at', { ascending: false });
+      fallbackQuery = fallbackQuery.order('created_at', { ascending: false }).limit(100);
       
       const fallbackResult = await fallbackQuery as any;
       data = fallbackResult.data;

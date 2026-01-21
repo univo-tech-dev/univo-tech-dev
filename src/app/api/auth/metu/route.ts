@@ -119,7 +119,9 @@ export async function POST(request: Request) {
         }
 
         // --- 3. UNIVO AUTHENTICATION ---
-        const eduEmail = `${username}@metu.edu.tr`;
+        // Normalize username
+        const normalizedUsername = username.toLowerCase().trim();
+        const eduEmail = `${normalizedUsername}@metu.edu.tr`;
         const supabaseAdmin = getSupabaseAdmin();
         
         // Pagination handling to find user by email
@@ -136,7 +138,8 @@ export async function POST(request: Request) {
             if (error || !pageUsers || pageUsers.length === 0) {
                 hasNextPage = false;
             } else {
-                user = pageUsers.find(u => u.email === eduEmail);
+                // Case-insensitive match
+                user = pageUsers.find(u => u.email?.toLowerCase() === eduEmail.toLowerCase());
                 if (!user && pageUsers.length < 1000) {
                     hasNextPage = false;
                 }

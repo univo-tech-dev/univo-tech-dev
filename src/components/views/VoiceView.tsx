@@ -600,6 +600,27 @@ export default function VoiceView() {
     const [university, setUniversity] = useState('metu');
     const [isAdminSession, setIsAdminSession] = useState(false);
 
+    // Helper: Robust Poll ID Generation
+    const getPollId = (question: string) => {
+        if (!question) return 'unknown_poll';
+        // Legacy: Try old method primarily to keep old votes if it worked
+        // But for "Global" questions which might crash it, fallback to safe hash
+        const legacySlug = question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+        
+        // If legacy slug is too weird (e.g. mostly underscores due to Turkish chars), use hash
+        const meaningfulChars = legacySlug.replace(/_/g, '').length;
+        if (meaningfulChars > 5) return legacySlug;
+
+        // Fallback: Simple numeric hash of the full question string
+        let hash = 0;
+        for (let i = 0; i < question.length; i++) {
+            const char = question.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return `poll_${Math.abs(hash)}`;
+    };
+
     // Check admin session
     useEffect(() => {
         const checkAdmin = async () => {
@@ -620,25 +641,23 @@ export default function VoiceView() {
 
     // Enforce Mode Logic: Global for Guests, University for Users (on start)
     useEffect(() => {
-        if (!showSkeleton) {
+        if (!showSkeleton && !isModeInitialized) {
             if (!user) {
                 setIsGlobalMode(true);
             } else {
-                // User logged in: Start with University mode as requested
-                // This runs once when user loads. 
-                // We rely on React State to keep it during session if they switch.
-                // To prevent resetting it on minor user updates, we could check isModeInitialized 
-                // but the requirement "always university on start" implies strictly defaulting to false is fine
-                // IF this effect doesn't run too often.
-                // 'user' object reference changes? Likely.
-                // But setting state to same value doesn't cause re-render loop.
+                // Only set to false (University Mode) on FIRST load
                 setIsGlobalMode(false);
             }
             setIsModeInitialized(true);
         }
-    }, [user, showSkeleton]);
+        // If user logs out dynamically (rare here, but safe to handle)
+        if (!user && isModeInitialized) {
+             setIsGlobalMode(true);
+        }
+    }, [user, showSkeleton, isModeInitialized]);
 
     const handleModeSwitch = (global: boolean) => {
+        setPostsLoading(true);
         setIsGlobalMode(global);
         setVoices([]); // Clear voices immediately to prevent flash
     };
@@ -664,13 +683,6 @@ export default function VoiceView() {
     const loadMoreComments = (voiceId: string) => {
         setVisibleCommentsCount(prev => ({ ...prev, [voiceId]: (prev[voiceId] || 10) + 10 }));
     };
-
-    // Force global mode for guest users
-    useEffect(() => {
-        if (!user) {
-            setIsGlobalMode(true);
-        }
-    }, [user]);
 
     const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
     const [newComment, setNewComment] = useState('');
@@ -1564,7 +1576,7 @@ export default function VoiceView() {
         // Prevent spam clicking while processing
         if (pollLoading) return;
 
-        const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+        const pollId = getPollId(activePoll.question);
 
         // Snapshot for rollback
         const previousResults = [...pollResults];
@@ -1595,20 +1607,22 @@ export default function VoiceView() {
             setPollResults(newResults);
 
             // Perform DB Operation
-            if (action === 'retract') {
-                const { error } = await supabase
-                    .from('poll_votes')
-                    .delete()
-                    .eq('user_id', user.id)
-                    .eq('poll_id', pollId);
+            // Step 1: Always clear any previous vote for this poll to ensure state consistency
+            const { error: deleteError } = await supabase
+                .from('poll_votes')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('poll_id', pollId);
 
-                if (error) throw error;
-            } else {
-                const { error } = await supabase
-                    .from('poll_votes')
-                    .upsert({ user_id: user.id, poll_id: pollId, option_index: index }, { onConflict: 'user_id, poll_id' });
+            if (deleteError) throw deleteError;
 
-                if (error) throw error;
+            // Step 2: If we aren't retracting, insert the new vote
+            if (action === 'vote') {
+                const { error: insertError } = await supabase
+                    .from('poll_votes')
+                    .insert({ user_id: user.id, poll_id: pollId, option_index: index });
+
+                if (insertError) throw insertError;
             }
 
             // Success: No need to re-fetch immediately as we trust our optimistic update.
@@ -1616,7 +1630,8 @@ export default function VoiceView() {
 
         } catch (e) {
             console.error('Vote Error:', e);
-            toast.error('Oylama sırasında bir hata oluştu.');
+            const errorMessage = (e as any)?.message || 'Bilinmeyen hata';
+            toast.error(`Oylama hatası: ${errorMessage}`);
 
             // Revert State on Error
             setPollResults(previousResults);
@@ -1625,7 +1640,7 @@ export default function VoiceView() {
     };
 
     const fetchPollResults = async (poll: { question: string, options: string[] }) => {
-        const pollId = poll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+        const pollId = getPollId(poll.question);
         const { data, error } = await supabase
             .from('poll_votes')
             .select('option_index, user_id, profiles:user_id!inner(id, is_archived)')
@@ -1667,7 +1682,7 @@ export default function VoiceView() {
         setSelectedVoterOption(0);
         setShowVotersModal(true);
         try {
-            const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
+            const pollId = getPollId(activePoll.question);
             const res = await fetch(`/api/poll/${pollId}/voters`);
             const data = await res.json();
             if (data.voters) {
@@ -1695,70 +1710,86 @@ export default function VoiceView() {
 
                     {/* Global Mode Switch - Moved Here */}
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) - Hidden for Guests */}
-                    {user && (
-                         isAdminSession ? (
-                            <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
-                                 {/* ODTÜ Button */}
-                                 <button 
-                                     onClick={() => { handleModeSwitch(false); setUniversity('metu'); }} 
-                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                     title="ODTÜ Kampüsü"
-                                 >
-                                     <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
-                                     {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                                 </button>
-                                 
-                                 {/* Bilkent Button */}
-                                 <button 
-                                     onClick={() => { handleModeSwitch(false); setUniversity('bilkent'); }} 
-                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                     title="Bilkent Kampüsü"
-                                 >
-                                                                           <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
-                                          <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
-                                      </div>
-
-                                     {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                                 </button>
-
-                                 {/* Global Button */}
-                                 <button 
-                                     onClick={() => handleModeSwitch(true)} 
-                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                     title="Global Gündem"
-                                 >
-                                    <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
-                                    {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                                 </button>
-                            </div>
-                        ) : (
+                    {!user ? (
+                        /* Guest View: Locked Global Switch */
                         <div className="flex items-center gap-3">
                             <div 
-                                className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
-                                onClick={() => handleModeSwitch(!isGlobalMode)}
-                                title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                                className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2 group active:scale-95 transition-transform"
+                                onClick={() => toast.info('Üniversite moduna geçmek için giriş yapmalısınız.', {
+                                    icon: 'ℹ️',
+                                    description: 'Kendi kampüsünüze özel içerikleri görmek için üye olun.'
+                                })}
+                                title="Misafirler için sadece Global mod"
                             >
-                                    <div 
-                                        className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
-                                        style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
-                                    >
-                                    {/* Front: Uni Logo */}
-                                    <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
-                                         <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                                             <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
-                                         </div>
-                                    </div>
-                                    {/* Back: Global */}
-                                    <div 
-                                        className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
-                                        style={{ transform: 'rotateY(180deg)' }}
-                                    >
+                                <div className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out" style={{ transform: 'rotateY(180deg)' }}>
+                                    <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center">
                                         <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        )
+                    ) : isAdminSession ? (
+                        <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
+                             {/* ODTÜ Button */}
+                             <button 
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }} 
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="ODTÜ Kampüsü"
+                             >
+                                 <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
+                                 {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+                             
+                             {/* Bilkent Button */}
+                             <button 
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }} 
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="Bilkent Kampüsü"
+                             >
+                                                                       <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                      <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
+                                  </div>
+
+                                 {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+
+                             {/* Global Button */}
+                             <button 
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(true); }} 
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="Global Gündem"
+                             >
+                                <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
+                                {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+                        </div>
+                    ) : (
+                    <div className="flex items-center gap-3">
+                        <div 
+                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
+                            onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
+                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                        >
+                                <div 
+                                    className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
+                                    style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+                                >
+                                {/* Front: Uni Logo */}
+                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
+                                     <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                     </div>
+                                </div>
+                                {/* Back: Global */}
+                                <div 
+                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
+                                    style={{ transform: 'rotateY(180deg)' }}
+                                >
+                                    <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     )}
                 </div>
 
@@ -1788,10 +1819,10 @@ export default function VoiceView() {
                                     </h3>
 
                                     <div className="flex items-center gap-4">
-                                        {filters.tags[0] && (
+                                        {filters.tags.length > 0 && (
                                             <button
                                                 onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
-                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
+                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm hover:opacity-90 text-white"
                                                 style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                                             >
                                                 <span>{filters.tags[0].startsWith('#') ? filters.tags[0] : `#${filters.tags[0]}`}</span>
@@ -1868,9 +1899,8 @@ export default function VoiceView() {
                                             <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
                                         </div>
                                     ) : (
-                                        <AnimatePresence mode="popLayout">
+                                        <AnimatePresence mode="wait">
                                             <motion.div
-                                                layout
                                                 key="voices-list"
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}

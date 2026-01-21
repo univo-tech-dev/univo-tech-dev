@@ -74,21 +74,23 @@ export default function CommunityView() {
   const { user, profile, setViewLoading, loading: showSkeleton } = useAuth();
   const [isGlobalMode, setIsGlobalMode] = useState(false);
   const [isAdminSession, setIsAdminSession] = useState(false);
+  const [modeInitialized, setModeInitialized] = useState(false);
 
   const [university, setUniversity] = useState(profile?.university || 'metu');
   const isBilkent = university === 'bilkent';
 
-  // Enforce Mode Logic: Global for Guests, University for Users (on start)
+  // Enforce Mode Logic: Global for Guests, University for Users (ONLY on initial load)
   useEffect(() => {
-      if (!showSkeleton) {
+      if (!showSkeleton && !modeInitialized) {
           if (!user) {
               setIsGlobalMode(true);
           } else {
               // User logged in: Start with University mode
               setIsGlobalMode(false);
           }
+          setModeInitialized(true);
       }
-  }, [user, showSkeleton]);
+  }, [user, showSkeleton, modeInitialized]);
 
   // Check admin session
   useEffect(() => {
@@ -277,13 +279,13 @@ export default function CommunityView() {
             )
           )}
         </div>
-      </div>
-    </div>
+        </div>
 
-    <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
-        <span>SAYI: {issueNumber}</span>
-        <span>ÖĞRENCİ BÜLTENİ</span>
-        <span>{formattedDate.toUpperCase()}</span>
+        <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
+          <span>SAYI: {issueNumber}</span>
+          <span>ÖĞRENCİ BÜLTENİ</span>
+          <span>{formattedDate.toUpperCase()}</span>
+        </div>
       </div>
 
       {showSkeleton ? (

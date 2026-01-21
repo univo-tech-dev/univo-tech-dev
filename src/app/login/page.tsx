@@ -188,7 +188,6 @@ export default function LoginPage() {
                     
                     toast.success(`Hoş geldin, ${welcomeName}!`, { duration: 2000 });
                     router.push('/');
-                    router.refresh();
                     return; // Exit early
                 }
             } else {

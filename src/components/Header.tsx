@@ -24,7 +24,7 @@ function HeaderContent() {
   const [isAtTop, setIsAtTop] = useState(true);
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { user, profile, signOut, loading } = useAuth();
+  const { user, profile, signOut, loading, authLoading } = useAuth();
   const router = useRouter();
   const currentView = searchParams?.get('view') || 'community';
 
@@ -37,8 +37,10 @@ function HeaderContent() {
   const [unreadCount, setUnreadCount] = useState(0);
 
 
-  // No longer needed: centralized in AuthContext
-  const showSkeleton = loading;
+  // Use authLoading instead of global loading. 
+  // Global loading includes view transitions (setViewLoading), but Header should stay visible during those.
+  // Also wait for profile if user is logged in to prevent F5 placeholder flash.
+  const showSkeleton = authLoading || (!!user && !profile);
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);

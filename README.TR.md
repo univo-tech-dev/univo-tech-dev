@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Sürüm-v1.2.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Sürüm](https://img.shields.io/badge/Sürüm-v1.3.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/univo-tech-dev/univo-tech-dev)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -20,9 +20,64 @@
 </p>
 
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Sürüm Notları: v1.3.0 → v1.3.1 (Veri Bütünlüğü ve Domain)
+**📅 21 Ocak 2026**
+
+Bu güncelleme, özel Veri Göçü Motoru, ODTÜClass entegrasyonu ve `univo.com.tr` alan adı altyapısının resmi açılışıyla platformun geleceğini güvence altına alıyor.
+
+### ✨ Öne Çıkan Değişiklikler
+- **💾 Veri Göçü Motoru (Legacy Recovery):**
+    - **Sıfır Veri Kaybı:** Eski sistemden kalan verileri kurtaran ve yeni hesaplara bağlayan özel bir motor (`migrate-full-data.js`) geliştirildi.
+    - **Akıllı Eşleştirme:** Kullanıcıları e-posta ile eşleştirerek "Yeni UUID" sorununu çözdü ve geçmiş verilerin sahipliğini geri kazandırdı.
+- **🏛️ Derin ODTÜClass Entegrasyonu:**
+    - **Canlı Ders Senkronizasyonu:** **Aktif Ders Programınızı** senkronize etmek için ODTÜClass'a bağlanır.
+    - **Akıllı Kimlik:** Öğrenci durumunu doğrular ve bölüm/sınıf bilgilerini otomatik günceller.
+- **🛡️ Kurumsal Domain Lansmanı:**
+    - **univo.com.tr:** Özel alan adı resmen devreye alındı.
+    - Yüksek teslimat oranlı e-postalar için DKIM/SPF doğrulamalı **Resend** entegrasyonu yapıldı.
+- **🔐 Yetkilendirme Güçlendirmesi:**
+    - **Büyük/Küçük Harf Düzeltmesi:** Çift hesap oluşumunu engellemek için giriş mantığı normalize edildi.
+    - **Kimlik Füzyonu:** Üniversite kimlik bilgilerini Supabase oturumlarıyla sorunsuz birleştirir.
+
+### 🛠️️ Teknik İyileştirmeler (Changelog)
+> **v1.3.1**
+> * `feat(migration)`: Yinelemeli tablo ve depolama göçü için `migrate-full-data.js` uygulandı.
+> * `feat(integration)`: `metu/route.ts` dosyasına ODTÜClass scraper eklendi.
+> * `feat(infra)`: `univo.com.tr` için Resend DNS kayıtları yapılandırıldı.
+> * `style(ui)`: Profil verisi onayı için üniversite temalı "Tespit Kartı" eklendi.
+
+---
+
+## 🚀 Sürüm Notları: v1.2.0 → v1.3.0 (Küresel Genişleme)
+**📅 20 Ocak 2026**
+
+Bu güncelleme, **kurumsal düzeyde bir organizasyona** geçişimizi simgeler; ekosistemi birleştirir ve küresel erişimi başlatır.
+
+### ✨ Öne Çıkan Değişiklikler
+- **🏛️ Kapsamlı Göç ve Merkezi Yönetim:**
+    - Kod tabanı `univo-tech-dev` **GitHub Organizasyonu** altında birleştirildi.
+    - 29 senkronize tablosu olan özel bir **Supabase** örneğine geçildi.
+- **👤 Üst Seviye Misafir Modu (Global Erişim):**
+    - Kayıtlı olmayan kullanıcılar artık **Global** kampüs içeriğine göz atabilir.
+    - Üniversiteye özel akışlar (ODTÜ/Bilkent) gizlilik için kısıtlı kalır.
+- **🏫 Çoklu Üniversite Mimarisi:**
+    - **Akıllı Üniversite Algılama:** Kayıt sırasında üniversite otomatik tanımlanır (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Bilkent Entegrasyonu:** Bilkent Üniversitesi altyapısı için tam destek eklendi.
+- **🛡️ Arayüz Kararlılığı:**
+    - **Sıfır Beklemeli Yönlendirme:** "Yükleniyor ekranında takılma" sorunu giderildi.
+    - **Bütünleşik İskeletler:** Premium bir his için yükleme ekranları harmonize edildi.
+
+### 🛠️ Teknik İyileştirmeler (Changelog)
+> **v1.3.0**
+> * `feat(ux)`: `HomeContent` sonsuz yükleme döngülerini önleyecek şekilde yeniden yazıldı.
+> * `style(views)`: Görünümler yetkisiz oturumlar için Global Modu zorunlu kılacak şekilde güncellendi.
+> * `chore(github)`: Remote repo organizasyon deposuna taşındı.
 
 ---
 

@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Status-v1.2.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Status](https://img.shields.io/badge/Status-v1.3.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/univo-tech-dev/univo-tech-dev)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -23,6 +23,61 @@
   <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Release Notes: v1.3.0 → v1.3.1 (Data Integrity & Domain)
+**📅 January 21, 2026**
+
+This update secures the platform's future with a custom Data Migration Engine, ODTÜClass integration, and the official launch of our `univo.com.tr` domain infrastructure.
+
+### ✨ Highlights
+- **💾 Data Migration Engine (Legacy Recovery):**
+    - **Zero Data Loss:** Developed a custom migration engine (`migrate-full-data.js`) that successfully recovered and mapped **orphaned user data** from the legacy system to new Auth accounts.
+    - **Smart Reconciliation:** Solved the "New UUID" conflict by automatically matching users via email and restoring historical data ownership.
+- **🏛️ Deep ODTÜClass Integration:**
+    - **Live Course Sync:** Connects to ODTÜClass to synchronize your **Active Course Schedule**.
+    - **Intelligent Identity:** Validates student status and updates department/class info based on scraped data.
+- **📧 Commercial Domain Launch:**
+    - **univo.com.tr:** Officially launched the custom domain.
+    - Integrated **Resend** with DKIM/SPF verification for high-deliverability transactional emails.
+- **🔐 Authorization Hardening:**
+    - **Case-Insensitivity Fixed:** Normalized input logic to prevent duplicate accounts (`Duplicate Account` bug resolved).
+    - **Identity Fusion:** Merges university credentials with Supabase Auth sessions seamlessly.
+
+### 🛠️ Technical Changelog
+> **v1.3.1**
+> * `feat(migration)`: Implemented `migrate-full-data.js` for recursive table and storage migration.
+> * `feat(integration)`: Added ODTÜClass scraper to `metu/route.ts`.
+> * `feat(infra)`: Configured Resend DNS records for `univo.com.tr`.
+> * `style(ui)`: Added university-themed "Detection Card" for profile data confirmation.
+
+---
+
+## 🚀 Release Notes: v1.2.0 → v1.3.0 (The Global Expansion)
+**📅 January 20, 2026**
+
+This update marks our transition to a **commercial-grade organization**, unifying the ecosystem and introducing global access.
+
+### ✨ Highlights
+- **🏛️ Pro-Migration & Centralization:**
+    - Unified codebase under `univo-tech-dev` **GitHub Organization**.
+    - Migrated to dedicated **Supabase** instance with 29 synchronized tables.
+- **👤 Elite Guest Mode (Global Access):**
+    - Non-registered users can now browse **Global** campus content.
+    - University-specific feeds (METU/Bilkent) remain restricted for privacy.
+- **🏫 Multi-University Architecture:**
+    - **Smart Domain Auto-Detection:** Registration now automatically identifies a student's university (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Bilkent Integration:** Added full support for Bilkent University infrastructure.
+- **🛡️ UI Hardening:**
+    - **Zero-Wait Redirection:** Eliminated "Stuck at Loading" bug.
+    - **Unified Skeletons:** Harmonized loaders for a premium feel.
+
+### 🛠️ Technical Changelog
+> **v1.3.0**
+> * `feat(ux)`: Refactored `HomeContent` to break circular loading dependencies.
+> * `style(views)`: Unified views to enforce Global Mode for unauthorized sessions.
+> * `chore(github)`: Migrated remote origin to organizational repository.
 
 ---
 

@@ -924,38 +924,61 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
                     {/* 3. AI Profile Detection Card */}
                     {isOwnProfile && showDetectionCard && detectionResult && (
-                        <div className="bg-primary/5 dark:bg-primary/10 border-2 border-primary/30 rounded-xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-500">
-                            <div className="absolute top-0 right-0 p-2 opacity-10">
-                                <GraduationCap size={80} className="rotate-12" />
+                        <div className="bg-white dark:bg-neutral-900 border-l-4 border-[var(--primary-color)] rounded-r-xl shadow-sm p-6 relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-500">
+                            <div className="absolute top-0 right-0 p-2 opacity-5 pointer-events-none">
+                                <GraduationCap size={120} className="rotate-12 text-[var(--primary-color)]" />
                             </div>
 
-                            <h3 className="text-lg font-bold font-serif mb-2 text-primary dark:text-primary-light flex items-center gap-2">
-                                <span className="p-1 bg-primary text-white rounded-md"><BookOpen size={16} /></span>
-                                Profilini Güncelleyelim mi?
+                            <h3 className="text-lg font-bold font-serif mb-3 text-neutral-900 dark:text-white flex items-center gap-2">
+                                <span className="p-1.5 bg-[var(--primary-color)] text-white rounded-md shadow-sm"><BookOpen size={18} /></span>
+                                ODTÜClass Bilgilerin
                             </h3>
-                            <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
-                                ODTÜClass derslerini analiz ettik. Bilgilerin şu şekilde görünüyor:
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
+                                Ders programından şu bilgileri tespit ettik:
                             </p>
-                            <div className="flex gap-2">
+
+                            {/* Detaylar Kartı */}
+                            <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-lg p-4 border border-neutral-100 dark:border-neutral-800 mb-5 relative z-10">
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">Bölüm</span>
+                                        <span className="text-sm font-bold text-neutral-900 dark:text-white text-right">
+                                            {detectionResult.detectedDepartment || profile?.department || 'Bilinmiyor'}
+                                        </span>
+                                    </div>
+                                    <div className="w-full h-px bg-neutral-200 dark:bg-neutral-700/50"></div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">Sınıf</span>
+                                        <span className="text-sm font-bold text-neutral-900 dark:text-white text-right">
+                                            {detectionResult.detectedClass || profile?.class_year || 'Bilinmiyor'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3 relative z-10">
                                 <button
                                     onClick={confirmDetection}
-                                    className="flex-1 py-2 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity"
+                                    className="flex-1 py-2.5 bg-[var(--primary-color)] text-white rounded-lg text-sm font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-[var(--primary-color)]/20"
                                 >
-                                    Evet, Doğru
+                                    Bilgileri Onayla
                                 </button>
                                 <button
                                     onClick={dismissDetection}
-                                    className="flex-1 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                                    className="px-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg text-sm font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 active:scale-95 transition-all"
                                 >
                                     Kapat
                                 </button>
                             </div>
-                            <button
-                                onClick={() => router.push(`/profile/${targetId}/edit`)}
-                                className="w-full mt-2 py-1.5 text-xs text-neutral-500 hover:text-primary transition-colors hover:underline"
-                            >
-                                Bilgiler Yanlış, Kendim Düzenleyeceğim
-                            </button>
+                            
+                            <div className="mt-3 text-center relative z-10">
+                                <button
+                                    onClick={() => router.push(`/profile/${targetId}/edit`)}
+                                    className="text-xs font-medium text-neutral-400 hover:text-[var(--primary-color)] transition-colors"
+                                >
+                                    Yanlış mı? Düzenle
+                                </button>
+                            </div>
                         </div>
                     )}
 

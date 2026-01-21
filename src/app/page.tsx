@@ -13,24 +13,25 @@ import { useEffect, useState } from 'react';
 function HomeContent() {
   const searchParams = useSearchParams();
   const view = searchParams?.get('view') || 'community';
-  const { user, loading } = useAuth();
+  const { user, authLoading } = useAuth();
   const router = useRouter();
   const [isGuest, setIsGuest] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
-  // Check auth and guest status
+  // Check auth and guest status - redirect to login immediately if not authenticated
   useEffect(() => {
-    if (!loading) {
-      const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
-      setIsGuest(guestMode);
-      
+    // Check localStorage first for immediate decision (no waiting for Supabase)
+    const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
+    setIsGuest(guestMode);
+
+    if (!authLoading) {
       if (!user && !guestMode) {
-        router.push('/login');
-      } else {
-        setIsChecking(false);
+        router.replace('/login');
+        return;
       }
+      setIsChecking(false);
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
   const renderView = () => {
     switch (view) {
@@ -44,15 +45,20 @@ function HomeContent() {
     }
   };
 
-  if (loading || isChecking) {
-       return (
-         <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center">
-             <div className="animate-pulse flex flex-col items-center gap-4">
-                 <div className="h-12 w-12 rounded-full border-4 border-neutral-200 border-t-black dark:border-neutral-800 dark:border-t-white animate-spin"></div>
-                 <p className="text-sm font-medium text-neutral-500">Univo Başlatılıyor...</p>
-             </div>
-         </div>
-       );
+  // If still checking auth - show nothing (will redirect quickly)
+  // This prevents flash of content before redirect
+  if (authLoading || isChecking) {
+    // If no guest mode and we're checking, just return null to avoid flash
+    const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
+    if (!guestMode) {
+      return null; // Quick redirect will happen
+    }
+    // For guests, show a minimal loader
+    return (
+      <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a]">
+        {/* Minimal placeholder for guest loading */}
+      </div>
+    );
   }
 
   return (
