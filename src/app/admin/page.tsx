@@ -32,7 +32,7 @@ export default function AdminPage() {
     const [search, setSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'banned'>('all');
-    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent' | 'cankaya'>('all');
     const [banModalOpen, setBanModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [banReason, setBanReason] = useState('');
@@ -173,6 +173,8 @@ export default function AdminPage() {
                 matchesUni = u.university === 'bilkent' || !!isBilkentEmail;
             } else if (uniFilter === 'metu') {
                 matchesUni = (u.university === 'metu' || !u.university) && !isBilkentEmail;
+            } else if (uniFilter === 'cankaya') {
+                matchesUni = u.university === 'cankaya' || u.email?.includes('@cankaya.edu.tr');
             }
         }
 
@@ -281,7 +283,8 @@ export default function AdminPage() {
                                 {[
                                     { id: 'all', label: 'Tümü' },
                                     { id: 'metu', label: 'ODTÜ' },
-                                    { id: 'bilkent', label: 'Bilkent' }
+                                    { id: 'bilkent', label: 'Bilkent' },
+                                    { id: 'cankaya', label: 'Çankaya' }
                                 ].map((btn) => (
                                     <button
                                         key={btn.id}
@@ -365,6 +368,10 @@ export default function AdminPage() {
                                         {user.university === 'bilkent' || (user.email?.includes('bilkent.edu.tr')) ? (
                                             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-bold border border-blue-100 dark:border-blue-800">
                                                 Bilkent
+                                            </span>
+                                        ) : user.university === 'cankaya' || (user.email?.includes('@cankaya.edu.tr')) ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-bold border border-purple-100 dark:border-purple-800">
+                                                Çankaya
                                             </span>
                                         ) : user.university === 'metu' || !user.university ? (
                                             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-bold border border-red-100 dark:border-red-800">

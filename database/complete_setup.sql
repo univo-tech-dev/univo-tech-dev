@@ -490,10 +490,11 @@ BEGIN
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'),
     NEW.raw_user_meta_data->>'avatar_url',
-    CASE 
+    CASE
       WHEN NEW.email LIKE '%@bilkent.edu.tr' THEN 'bilkent'
       WHEN NEW.email LIKE '%@ug.bilkent.edu.tr' THEN 'bilkent'
       WHEN NEW.email LIKE '%@metu.edu.tr' THEN 'metu'
+      WHEN NEW.email LIKE '%@cankaya.edu.tr' THEN 'cankaya'
       ELSE 'metu' -- Default fallback
     END
   );
@@ -542,5 +543,11 @@ INSERT INTO public.communities (name, description, university) VALUES
   ('Müzik Kulübü', 'Üniversite müzik topluluğu', 'metu'),
   ('Bilgisayar Mühendisliği Topluluğu', 'Bilgisayar mühendisliği öğrencileri', 'metu'),
   ('Bilkent IEEE', 'Bilkent IEEE Öğrenci Kolu', 'bilkent'),
-  ('Bilkent Sinema Topluluğu', 'Sinema severler', 'bilkent');
+  ('Bilkent Sinema Topluluğu', 'Sinema severler', 'bilkent'),
+  ('Çankaya ACM', 'Çankaya Üniversitesi ACM Öğrenci Kolu', 'cankaya'),
+  ('Çankaya IEEE', 'Çankaya Üniversitesi IEEE Öğrenci Kolu', 'cankaya'),
+  ('Çankaya Yapay Zeka ve Robotik Kulübü', 'Yapay zeka ve robotik çalışmaları', 'cankaya'),
+  ('Çankaya Girişimcilik Kulübü', 'Startup ve girişimcilik etkinlikleri', 'cankaya'),
+  ('Çankaya Müzik Kulübü', 'Müzik severler topluluğu', 'cankaya'),
+  ('Çankaya Spor Kulübü', 'Spor etkinlikleri ve turnuvalar', 'cankaya');
 

@@ -208,7 +208,7 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
                                 <div>
                                     <p className="text-xs font-bold uppercase text-neutral-400 mb-0.5">Üniversite</p>
                                     <p className="text-sm font-medium">
-                                        {user.university === 'bilkent' ? 'Bilkent Üniversitesi' : (user.university === 'metu' || !user.university) ? 'Orta Doğu Teknik Üniversitesi' : user.university}
+                                        {user.university === 'bilkent' ? 'Bilkent Üniversitesi' : user.university === 'cankaya' ? 'Çankaya Üniversitesi' : (user.university === 'metu' || !user.university) ? 'Orta Doğu Teknik Üniversitesi' : user.university}
                                     </p>
                                 </div>
                             </div>

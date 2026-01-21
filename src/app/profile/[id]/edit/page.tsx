@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Save, User, BookOpen, Heart, Quote, Globe, Lock, Eye, EyeOff, Linkedin, Github, Twitter, Instagram, Camera, Upload, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { METU_DEPARTMENTS, BILKENT_DEPARTMENTS } from '@/lib/constants';
+import { METU_DEPARTMENTS, BILKENT_DEPARTMENTS, CANKAYA_DEPARTMENTS } from '@/lib/constants';
 import Image from 'next/image';
 
 interface SocialLinks {
@@ -333,7 +333,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
               {/* Added Email Field (Read Only) */}
               <div>
                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
-                    E-Posta ({profile?.university === 'bilkent' ? 'Bilkent' : 'ODTÜ'})
+                    E-Posta ({profile?.university === 'bilkent' ? 'Bilkent' : profile?.university === 'cankaya' ? 'Çankaya' : 'ODTÜ'})
                   </label>
                  <input 
                     type="text" 
@@ -411,7 +411,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                     className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded-md focus:ring-2 focus:ring-[#C8102E] focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white"
                   >
                     <option value="">Seçiniz</option>
-                    {(profile?.university === 'bilkent' ? BILKENT_DEPARTMENTS : METU_DEPARTMENTS).map(dept => (
+                    {(profile?.university === 'bilkent' ? BILKENT_DEPARTMENTS : profile?.university === 'cankaya' ? CANKAYA_DEPARTMENTS : METU_DEPARTMENTS).map(dept => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
                   </select>
@@ -441,7 +441,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                     name="nickname"
                     value={formData.nickname}
                     onChange={handleChange}
-                    placeholder={`Kampüs Kedisi, ${profile?.university === 'bilkent' ? "Bilkent'li" : "ODTÜ'lü"}...`}
+                    placeholder={`Kampüs Kedisi, ${profile?.university === 'bilkent' ? "Bilkent'li" : profile?.university === 'cankaya' ? "Çankaya'lı" : "ODTÜ'lü"}...`}
                     className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded-md focus:ring-2 focus:ring-[#C8102E] focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white"
                   />
                 </div>

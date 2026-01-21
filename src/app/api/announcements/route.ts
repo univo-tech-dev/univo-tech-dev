@@ -20,6 +20,13 @@ export async function GET(request: Request) {
 
     if (university === 'bilkent') {
         return await fetchBilkentAnnouncements();
+    } else if (university === 'cankaya') {
+        // Çankaya duyuruları - şimdilik boş döndür
+        return NextResponse.json({
+            success: true,
+            announcements: [],
+            message: 'Çankaya Üniversitesi duyuruları yakında eklenecek.'
+        });
     }
 
     return await fetchMetuAnnouncements();

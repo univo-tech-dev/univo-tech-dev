@@ -1,4 +1,4 @@
-import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap, Heart, BookOpen, Globe, ShieldAlert, ShieldCheck, Power } from 'lucide-react';
+import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap, Heart, BookOpen, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
 import Link from 'next/link';
@@ -67,6 +67,14 @@ export default function OfficialView() {
     const [isAdminSession, setIsAdminSession] = React.useState(false);
     const [university, setUniversity] = React.useState(profile?.university || 'metu');
     const isBilkent = university === 'bilkent';
+    const isCankaya = university === 'cankaya';
+
+    // Update university when profile loads
+    React.useEffect(() => {
+        if (profile?.university) {
+            setUniversity(profile.university);
+        }
+    }, [profile?.university]);
 
     // Enforce Mode Logic: Global for Guests, University for Users (on start)
     React.useEffect(() => {
@@ -126,6 +134,9 @@ export default function OfficialView() {
     } else if (isBilkent) {
          // Bilkent Start Date: Jan 18, 2026 (Month is 0)
          start = new Date(2026, 0, 18);
+    } else if (isCankaya) {
+         // Çankaya Start Date: Jan 21, 2026 (Month is 0)
+         start = new Date(2026, 0, 21);
     }
     
     const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -279,7 +290,7 @@ export default function OfficialView() {
                             source: senderName, // Use sender name instead of 'ODTÜ E-Posta'
                             date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
                             summary: `E-posta içeriği için tıklayınız.`,
-                            link: isBilkent ? `https://newmail.bilkent.edu.tr/` : `https://metumail.metu.edu.tr/`,
+                            link: `https://metumail.metu.edu.tr/`,
                             timestamp: msg.timestamp || new Date(msg.date).getTime()
                         };
                     });
@@ -344,7 +355,7 @@ export default function OfficialView() {
                     source: senderName,
                     date: new Date(msg.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
                     summary: `E-posta içeriği için tıklayınız.`,
-                    link: isBilkent ? `https://newmail.bilkent.edu.tr/` : `https://metumail.metu.edu.tr/`,
+                    link: `https://metumail.metu.edu.tr/`,
                     timestamp: msg.timestamp || new Date(msg.date).getTime()
                 };
             });
@@ -581,78 +592,69 @@ export default function OfficialView() {
         return scoreB - scoreA;
     });
 
-    // University System Data (ODTÜClass or STARS) - Only show if user is logged in
-    const realCourses = isBilkent ? user?.user_metadata?.bilkent_courses : user?.user_metadata?.odtu_courses;
-    const universitySystemName = isBilkent ? 'STARS/SRS' : 'ODTÜClass';
-    const universityBaseUrl = isBilkent ? 'https://stars.bilkent.edu.tr/srs' : 'https://odtuclass2025f.metu.edu.tr';
-
-    const universitySystemData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => {
+    // ODTUClass Data (Real or Mock) - Only show if user is logged in
+    const realCourses = user?.user_metadata?.odtu_courses;
+    const odtuClassData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => {
         // Ensure absolute and clean URL
         let cleanLink = c.url;
+        const baseUrl = 'https://odtuclass2025f.metu.edu.tr';
 
-        if (!cleanLink.startsWith('http') && cleanLink !== '#') {
-            cleanLink = cleanLink.startsWith('/') ? `${universityBaseUrl}${cleanLink}` : `${universityBaseUrl}/${cleanLink}`;
+        if (!cleanLink.startsWith('http')) {
+            cleanLink = cleanLink.startsWith('/') ? `${baseUrl}${cleanLink}` : `${baseUrl}/${cleanLink}`;
         }
 
-        // Extracts only for ODTUClass
-        if (!isBilkent) {
-            const idMatch = cleanLink.match(/id=(\d+)/);
-            if (idMatch && idMatch[1]) {
-                cleanLink = `${universityBaseUrl}/course/view.php?id=${idMatch[1]}`;
-            }
+        // Extract ID to reconstruct a clean course link (removes session keys/anchors)
+        const idMatch = cleanLink.match(/id=(\d+)/);
+        if (idMatch && idMatch[1]) {
+            cleanLink = `${baseUrl}/course/view.php?id=${idMatch[1]}`;
         }
 
         return {
-            id: `sys-${c.url}-${c.name}`,
+            id: `oc-${c.url}`,
             title: c.name,
-            source: universitySystemName,
+            source: 'ODTÜClass',
             type: 'grade', // Use 'grade' type styling (Violet) for courses
             course: c.name.split(' ')[0], // Heuristic for short code
-            date: '2024-2025 Bahar',
-            summary: isBilkent ? 'Öğrenci Bilgi Sistemi (STARS/SRS) üzerinden ders bilgileriniz çekilmiştir.' : 'ODTÜClass üzerinden ders bilgileriniz çekilmiştir.',
+            date: 'Güz 2025',
+            summary: 'Ders sayfasına gitmek için tıklayınız.',
             link: cleanLink
         };
     }) : [
-        // Mock data for ODTU
-        ...(!isBilkent ? [
-            {
-                id: 'oc1',
-                title: 'PHYS105 - Midterm 2 Sonuçları',
-                source: 'ODTÜClass',
-                type: 'grade',
-                course: 'PHYS105',
-                date: 'Bugün, 14:30',
-                summary: '2. Ara sınav sonuçları açıklanmıştır. Kağıtlarınızı 8 Ocak Çarşamba 13:30-15:30 arasında P-102 ofisinde görebilirsiniz.',
-                link: 'https://odtuclass2025f.metu.edu.tr/my/'
-            },
-            {
-                id: 'oc2',
-                title: 'MATH119 - Yeni Ödev Eklendi',
-                source: 'ODTÜClass',
-                type: 'assignment',
-                course: 'MATH119',
-                date: 'Dün',
-                summary: 'WebWork Assignment 5 sisteme yüklenmiştir. Son teslim tarihi: 12 Ocak 23:59.',
-                link: 'https://odtuclass2025f.metu.edu.tr/my/'
-            }
-        ] : [
-            // Mock data for Bilkent
-            {
-                id: 'bs1',
-                title: 'CS 201 - Homework 2 Graded',
-                source: 'STARS/SRS',
-                type: 'grade',
-                course: 'CS 201',
-                date: 'Bugün, 10:00',
-                summary: 'Your homework 2 has been graded. You can check your score on STARS.',
-                link: 'https://stars.bilkent.edu.tr/srs'
-            }
-        ])
+        {
+            id: 'oc1',
+            title: 'PHYS105 - Midterm 2 Sonuçları',
+            source: 'ODTÜClass',
+            type: 'grade',
+            course: 'PHYS105',
+            date: 'Bugün, 14:30',
+            summary: '2. Ara sınav sonuçları açıklanmıştır. Kağıtlarınızı 8 Ocak Çarşamba 13:30-15:30 arasında P-102 ofisinde görebilirsiniz.',
+            link: 'https://odtuclass2025f.metu.edu.tr/my/'
+        },
+        {
+            id: 'oc2',
+            title: 'MATH119 - Yeni Ödev Eklendi',
+            source: 'ODTÜClass',
+            type: 'assignment',
+            course: 'MATH119',
+            date: 'Dün',
+            summary: 'WebWork Assignment 5 sisteme yüklenmiştir. Son teslim tarihi: 12 Ocak 23:59.',
+            link: 'https://odtuclass2025f.metu.edu.tr/my/'
+        },
+        {
+            id: 'oc3',
+            title: 'CENG140 - Lab 3 Duyurusu',
+            source: 'ODTÜClass',
+            type: 'announcement',
+            course: 'CENG140',
+            date: '3 gün önce',
+            summary: 'Bu haftaki laboratuvar dersi online yapılacaktır. Zoom linki ders sayfasında paylaşılmıştır.',
+            link: 'https://odtuclass2025f.metu.edu.tr/my/'
+        }
     ]);
 
     // Filtered Lists Logic
     const getDisplayedItems = () => {
-        if (activeTab === 'odtuclass') return universitySystemData;
+        if (activeTab === 'odtuclass') return odtuClassData;
 
         if (activeTab === 'starred') {
             // Special handling for Starred tab to show GHOST ITEMS
@@ -712,7 +714,7 @@ export default function OfficialView() {
             <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 min-h-[240px]">
                 <div className="flex flex-col items-center justify-center gap-4">
                     <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">
-                        {isBilkent ? 'Kampüs Gündemi' : 'Resmi Gündem'}
+                        {isBilkent ? 'Kampüs Gündemi' : isCankaya ? 'Çankaya Gündemi' : 'Resmi Gündem'}
                     </h2>
 
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
@@ -731,8 +733,8 @@ export default function OfficialView() {
                           </button>
                           
                           {/* Bilkent Button */}
-                          <button 
-                              onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }} 
+                          <button
+                              onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }}
                               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'bilkent' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                               title="Bilkent Kampüsü"
                           >
@@ -740,6 +742,18 @@ export default function OfficialView() {
                                   <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
                               </div>
                               {!isGlobalMode && university === 'bilkent' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                          </button>
+
+                          {/* Çankaya Button */}
+                          <button
+                              onClick={() => { setIsGlobalMode(false); setUniversity('cankaya'); }}
+                              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'cankaya' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                              title="Çankaya Kampüsü"
+                          >
+                              <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                  <img src="/universities/cankaya_logo.png" className="w-full h-full object-contain" />
+                              </div>
+                              {!isGlobalMode && university === 'cankaya' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                           </button>
 
                           {/* Global Button */}
@@ -765,7 +779,7 @@ export default function OfficialView() {
                                 {/* Front: Uni Logo */}
                                 <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
                                      <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : isCankaya ? "/universities/cankaya_logo.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
                                      </div>
                                 </div>
                                 {/* Back: Global */}
@@ -870,13 +884,16 @@ export default function OfficialView() {
 
                                 {/* Tab Navigation - Icons always visible, active tab shows label */}
                                 <div className="flex border-b-2 border-black dark:border-white mb-6 gap-1 sm:gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
-                                        {[
-                                            { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0" /> },
+                                    {[
+                                        { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0" /> },
+                                        // Conditional Tabs - METU only
+                                        ...(!isBilkent && !isCankaya ? [
                                             { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
-                                            { id: 'odtuclass', label: isBilkent ? 'STARS/SRS' : 'ODTÜCLASS', count: universitySystemData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> },
-                                            { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="shrink-0" /> },
-                                            { id: 'history', label: '', icon: <Trash2 size={14} className="shrink-0" />, count: readIds.length }
-                                        ].map(tab => {
+                                            { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> }
+                                        ] : []),
+                                        { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="shrink-0" /> },
+                                        { id: 'history', label: '', icon: <Trash2 size={14} className="shrink-0" />, count: readIds.length }
+                                    ].map(tab => {
                                         const isActive = activeTab === tab.id && !isContentCollapsed;
                                         // Define colors for each tab type with transition
                                         const iconColor = isActive ? (
@@ -937,114 +954,24 @@ export default function OfficialView() {
                                     <div className="grid gap-6">
                                         {paginatedItems.length === 0 ? (
                                             <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900 border-2 border-dashed border-neutral-200 dark:border-neutral-800 transition-colors">
-                                                {/* Admin View for other university */}
-                                                {isAdminSession && user?.user_metadata?.university !== university && (activeTab === 'emails' || activeTab === 'odtuclass') ? (
-                                                    <div className="space-y-3 px-6">
-                                                        <ShieldAlert size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
-                                                        <h4 className="font-black text-black dark:text-white uppercase tracking-tighter">Admin Yetkisi Sınırlı</h4>
-                                                        <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-sm mx-auto">
-                                                            Şu anda {university === 'bilkent' ? 'Bilkent' : 'ODTÜ'} gündemine Admin olarak bakıyorsunuz. 
-                                                            Güvenlik gereği, başka üniversiteye ait kişisel e-posta ve ders verilerine erişiminiz bulunmamaktadır.
+                                                {!user && (activeTab === 'emails' || activeTab === 'odtuclass' || activeTab === 'starred' || activeTab === 'history') ? (
+                                                    <div className="space-y-3">
+                                                        <Lock size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
+                                                        <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-xs mx-auto">
+                                                            {activeTab === 'emails'
+                                                                ? `${isBilkent ? 'Bilkent' : 'ODTÜ'} e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.`
+                                                                : activeTab === 'odtuclass'
+                                                                    ? `${isBilkent ? 'Moodle' : 'ODTÜClass'} derslerinizi ve ödevlerinizi takip etmek için giriş yapın.`
+                                                                    : 'Yıldızladığınız ve okuduğunuz içerikleri görmek için giriş yapın.'
+                                                            }
                                                         </p>
-                                                    </div>
-                                                ) : (activeTab === 'emails' || activeTab === 'odtuclass') && (
-                                                    (!user) || 
-                                                    (user && university === (isBilkent ? 'bilkent' : 'metu') && (activeTab === 'emails' ? (emails.length === 0) : (universitySystemData.length === 0)))
-                                                ) ? (
-                                                    <div className="w-full">
-                                                        {isBilkent && activeTab === 'emails' && user ? (
-                                                            /* Inline Login for Bilkent E-posta */
-                                                            <div className="max-w-md mx-auto w-full p-8 bg-white dark:bg-neutral-950 border-4 border-black dark:border-white shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.1)] animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                                                <div className="text-center mb-8">
-                                                                    <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center mx-auto mb-4 rounded-2xl rotate-3 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                                                                        <Mail size={32} />
-                                                                    </div>
-                                                                    <h3 className="text-2xl font-black uppercase tracking-tighter dark:text-white mb-2 italic">Bilkent Webmail Bağla</h3>
-                                                                    <p className="text-sm text-neutral-500 font-medium">SRS şifrenizle kampüs e-postalarınıza anında erişin.</p>
-                                                                </div>
-
-                                                                <form onSubmit={handleImapLogin} className="space-y-6">
-                                                                    <div className="space-y-2">
-                                                                        <label className="block text-xs font-black uppercase text-neutral-400 tracking-widest ml-1">Bilkent E-posta Adresi</label>
-                                                                        <div className="relative group">
-                                                                            <input
-                                                                                type="text"
-                                                                                placeholder="isim.soyisim"
-                                                                                className="w-full p-4 pr-32 border-2 border-black dark:border-white bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:bg-white dark:focus:bg-black transition-all font-mono font-bold dark:text-white"
-                                                                                value={loginForm.username}
-                                                                                onChange={e => {
-                                                                                    let val = e.target.value;
-                                                                                    if (val.includes('@')) val = val.split('@')[0];
-                                                                                    setLoginForm({ ...loginForm, username: val });
-                                                                                }}
-                                                                                disabled={loadingEmails}
-                                                                            />
-                                                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-black select-none pointer-events-none text-xs tracking-tighter">
-                                                                                @{loginForm.username.includes('.') ? 'bilkent.edu.tr' : 'ug.bilkent.edu.tr'}
-                                                                            </span>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div className="space-y-2">
-                                                                        <label className="block text-xs font-black uppercase text-neutral-400 tracking-widest ml-1">SRS Şifresi</label>
-                                                                        <div className="relative">
-                                                                            <input 
-                                                                                type="password" 
-                                                                                required 
-                                                                                placeholder="••••••••" 
-                                                                                className="w-full p-4 border-2 border-black dark:border-white bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:bg-white dark:focus:bg-black transition-all font-mono font-bold dark:text-white" 
-                                                                                value={loginForm.password} 
-                                                                                onChange={e => setLoginForm({ ...loginForm, password: e.target.value })} 
-                                                                            />
-                                                                            <Lock size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400" />
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {loginError && (
-                                                                        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-black border-2 border-red-600 flex items-center gap-3 animate-shake">
-                                                                            <ShieldAlert size={16} />
-                                                                            <span className="uppercase">{loginError}</span>
-                                                                        </div>
-                                                                    )}
-
-                                                                    <div className="p-4 bg-neutral-100 dark:bg-neutral-800 border-2 border-black dark:border-neutral-700 text-[10px] text-neutral-600 dark:text-neutral-400 font-bold leading-relaxed">
-                                                                        <p className="font-black mb-1 uppercase flex items-center gap-1 text-black dark:text-white"><ShieldCheck size={12} /> Güvenlik Protokolü</p>
-                                                                        Şifreniz yalnızca bağlantı kurmak için anlık kullanılır ve sunucularımıza asla kaydedilmez.
-                                                                    </div>
-
-                                                                    <button 
-                                                                        type="submit" 
-                                                                        disabled={loadingEmails} 
-                                                                        className="w-full py-5 bg-black dark:bg-white text-white dark:text-black font-black text-base uppercase tracking-widest hover:translate-x-[-2px] hover:translate-y-[-2px] active:translate-x-[0px] active:translate-y-[0px] shadow-[4px_4px_0px_0px_rgba(200,16,46,1)] hover:shadow-[6px_6px_0px_0px_rgba(200,16,46,1)] transition-all flex justify-center items-center gap-3 disabled:opacity-50"
-                                                                    >
-                                                                        {loadingEmails ? (
-                                                                            <><Loader2 size={24} className="animate-spin" /> BAĞLANTI KURULUYOR...</>
-                                                                        ) : (
-                                                                            <><Power size={20} /> E-POSTALARI ÇEK</>
-                                                                        )}
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="space-y-3">
-                                                                <Lock size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
-                                                                <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-xs mx-auto">
-                                                                    {activeTab === 'emails'
-                                                                        ? `${isBilkent ? 'Bilkent' : 'ODTÜ'} e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.`
-                                                                        : activeTab === 'odtuclass'
-                                                                            ? `${isBilkent ? 'STARS/SRS' : 'ODTÜClass'} derslerinizi ve ödevlerinizi takip etmek için giriş yapın.`
-                                                                            : 'Yıldızladığınız ve okuduğunuz içerikleri görmek için giriş yapın.'
-                                                                    }
-                                                                </p>
-                                                                <button
-                                                                    onClick={() => setShowLoginModal(true)}
-                                                                    className="inline-flex items-center gap-2 px-4 py-2 font-bold text-sm uppercase rounded hover:opacity-90 transition-opacity"
-                                                                    style={{ backgroundColor: 'var(--primary-color, #C8102E)', color: 'white' }}
-                                                                >
-                                                                    {user ? 'Şimdi Bağla' : 'Giriş Yap'}
-                                                                </button>
-                                                            </div>
-                                                        )}
+                                                        <a
+                                                            href="/login"
+                                                            className="inline-flex items-center gap-2 px-4 py-2 font-bold text-sm uppercase rounded hover:opacity-90 transition-opacity"
+                                                            style={{ backgroundColor: 'var(--primary-color, #C8102E)', color: 'white' }}
+                                                        >
+                                                            Giriş Yap
+                                                        </a>
                                                     </div>
                                                 ) : (
                                                     <p className="text-neutral-400 dark:text-neutral-500 font-bold uppercase">Bu listede içerik bulunmuyor.</p>
@@ -1146,7 +1073,7 @@ export default function OfficialView() {
                                                                             <span className={`text-xs font-bold uppercase transition-colors duration-300 ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : (item.type === 'grade' || item.type === 'assignment') ? 'text-violet-600' : 'text-emerald-600'}`}>
                                                                                 {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : (item.type === 'grade' || item.type === 'assignment') ? item.course : 'Duyuru'}
                                                                             </span>
-                                                                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source === 'ODTÜClass' && isBilkent ? 'STARS/SRS' : item.source}</span>
+                                                                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
 
                                                                             {subscribedSources.includes(item.source) && (
                                                                                 <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-700 dark:text-emerald-400 rounded uppercase">
@@ -1355,7 +1282,7 @@ export default function OfficialView() {
                             <button onClick={() => setShowLoginModal(false)} className="absolute right-4 top-4 text-black dark:text-white hover:rotate-90 transition-transform"><X size={24} strokeWidth={3} /></button>
                             <div className="text-center mb-8">
                                 <div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mx-auto mb-4 border-2 border-transparent"><Lock size={32} /></div>
-                                <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">{isBilkent ? 'Bilkent Giriş' : 'ODTÜ Giriş'}</h3>
+                                <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">{isBilkent ? 'Bilkent Giriş' : isCankaya ? 'Çankaya Giriş' : 'ODTÜ Giriş'}</h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 font-medium">E-postalarınıza erişmek için {isBilkent ? 'Bilkent ID' : 'ODTÜ kullanıcı kodunuzu'} kullanın.</p>
                             </div>
                             <form onSubmit={handleImapLogin} className="space-y-6">
@@ -1364,19 +1291,18 @@ export default function OfficialView() {
                                     <div className="relative">
                                             <input
                                             type="text"
-                                            placeholder={isBilkent ? "Bilkent ID" : "e123456"}
+                                            placeholder={isBilkent ? "2210XXXX" : isCankaya ? "ogrenciadi" : "e123456"}
                                             className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:outline-none focus:border-black dark:focus:border-white transition-colors font-mono dark:text-white"
                                             value={loginForm.username}
                                             onChange={e => {
-                                                // Auto-strip domain if user pastes it (Except for Bilkent where we might want the full email)
+                                                // Auto-strip domain if user pastes it
                                                 let val = e.target.value;
-                                                const hasAt = val.includes('@');
-                                                if (hasAt && !isBilkent) val = val.split('@')[0];
+                                                if (val.includes('@')) val = val.split('@')[0];
                                                 setLoginForm({ ...loginForm, username: val });
                                             }}
                                             disabled={loadingEmails}
                                         />
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? (loginForm.username.includes('@') ? '' : 'ug.bilkent.edu.tr') : 'metu.edu.tr'}</span>
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? 'ug.bilkent.edu.tr' : isCankaya ? 'student.cankaya.edu.tr' : 'metu.edu.tr'}</span>
                                     </div>
                                 </div>
                                 <div>

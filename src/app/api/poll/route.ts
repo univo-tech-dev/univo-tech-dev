@@ -28,6 +28,9 @@ const FALLBACK_POLLS: Record<string, { question: string, options: string[] }[]> 
         { question: "Üniversite hayatının en zorlayıcı yanı sence hangisi?", options: ["Ekonomik Zorluklar", "Akademik Baskı", "Gelecek Kaygısı", "Sosyalleşme Problemleri"] },
         { question: "Sınav dönemlerinde en büyük motivasyon kaynağın nedir?", options: ["Mezuniyet Hayali", "Arkadaşlar", "Kahve/Enerji İçeceği", "Aile Baskısı"] },
         { question: "Yurtdışında eğitim/staj imkanlarını yeterince takip edebiliyor musun?", options: ["Evet, çok ilgiliyim", "Arada bakıyorum", "Hiç fikrim yok", "İstiyorum ama fırsat yok"] }
+    ],
+    cankaya: [
+        { question: "Çankaya kampüsünde en çok vakit geçirdiğin yer?", options: ["Kütüphane", "Kafeterya", "Spor Salonu", "Bahçe"] }
     ]
 };
 
@@ -43,7 +46,7 @@ function getWeekId() {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const uni = searchParams.get('uni') || 'metu';
-  const effectiveUni = (uni === 'bilkent' || uni === 'global') ? uni : 'metu';
+  const effectiveUni = (uni === 'bilkent' || uni === 'cankaya' || uni === 'global') ? uni : 'metu';
   const uniFallbacks = FALLBACK_POLLS[effectiveUni];
 
   const getRandomFallback = () => uniFallbacks[Math.floor(Math.random() * uniFallbacks.length)];
