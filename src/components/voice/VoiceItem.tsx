@@ -156,9 +156,12 @@ export default function VoiceItem({
                                 {voice.user?.full_name || 'Kullanıcı'}
                             </Link>
                         )}
-                        {(voice.user?.department || voice.user?.class_year) && (
+                        {(voice.user?.department || voice.user?.class_year || voice.user?.university) && (
                             <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
-                                {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
+                                {(() => {
+                                    const uni = voice.user?.university === 'bilkent' ? 'Bilkent' : (voice.user?.university === 'metu' || !voice.user?.university) ? 'ODTÜ' : voice.user?.university;
+                                    return [uni, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ');
+                                })()}
                             </span>
                         )}
                         <div className="ml-auto relative">

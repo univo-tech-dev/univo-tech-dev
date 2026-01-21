@@ -335,7 +335,25 @@ export default function NotificationCenter() {
 
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-neutral-800 dark:text-neutral-200 mb-1">
-                        {notification.message}
+                        {notification.type === 'friend_request' ? (
+                          <>
+                            <span className="font-bold">{notification.actor?.full_name || 'Bir kullanıcı'}</span> sana arkadaşlık isteği gönderdi
+                          </>
+                        ) : notification.type === 'friend_request_accepted' ? (
+                          <>
+                            <span className="font-bold">{notification.actor?.full_name || 'Bir kullanıcı'}</span> arkadaşlık isteğini kabul etti!
+                          </>
+                         ) : notification.type === 'post_reaction' ? (
+                           <>
+                             <span className="font-bold">{notification.actor?.full_name || 'Bir kullanıcı'}</span> paylaşımını beğendi
+                           </>
+                         ) : notification.type === 'comment' ? (
+                           <>
+                             <span className="font-bold">{notification.actor?.full_name || 'Bir kullanıcı'}</span> paylaşımına yorum yaptı
+                           </>
+                        ) : (
+                          notification.message
+                        )}
                       </p>
                       
                       {notification.type === 'friend_request' && !notification.read && notification.actor ? (

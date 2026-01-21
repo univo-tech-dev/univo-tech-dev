@@ -58,7 +58,7 @@ export default function CommunityFollowersModal({ communityId, isOpen, onClose }
                  const userIds = data.map(f => f.user_id);
                  const { data: profiles, error: profilesError } = await supabase
                     .from('profiles')
-                    .select('id, full_name, avatar_url, department, class_year')
+                    .select('id, full_name, avatar_url, department, class_year, university')
                     .in('id', userIds);
                 
                 if (profilesError) throw profilesError;
@@ -120,7 +120,10 @@ export default function CommunityFollowersModal({ communityId, isOpen, onClose }
                                             {follower.full_name}
                                         </h4>
                                         <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                            {follower.department ? follower.department : 'Öğrenci'}
+                                            {(() => {
+                                                const uni = follower.university === 'bilkent' ? 'Bilkent' : (follower.university === 'metu' || !follower.university) ? 'ODTÜ' : follower.university;
+                                                return [uni, follower.department, follower.class_year].filter(Boolean).join(' • ');
+                                            })() || 'Öğrenci'}
                                         </p>
                                     </div>
                                 </div>

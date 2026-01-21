@@ -242,10 +242,13 @@ function VoiceItem({
                                 {voice.user?.full_name || 'Kullanıcı'}
                             </Link>
                         )}
-                        {(voice.user?.department || voice.user?.class_year || (isGlobalMode && voice.user?.university)) && (
+                        {(voice.user?.department || voice.user?.class_year || voice.user?.university) && (
                             <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium capitalize">
                                 <span className="mx-1 opacity-50">|</span>
-                                {[isGlobalMode ? voice.user?.university : null, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
+                                {(() => {
+                                    const uni = voice.user?.university === 'bilkent' ? 'Bilkent' : (voice.user?.university === 'metu' || !voice.user?.university) ? 'ODTÜ' : voice.user?.university;
+                                    return [uni, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ');
+                                })()}
                             </span>
                         )}
                         <span className="text-xs text-neutral-400 dark:text-neutral-500 font-serif">

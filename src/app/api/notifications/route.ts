@@ -34,7 +34,8 @@ export async function GET(request: Request) {
         actor:profiles!notifications_actor_id_fkey (
           id,
           full_name,
-          avatar_url
+          avatar_url,
+          university
         )
       `)
       .eq('user_id', user.id)
