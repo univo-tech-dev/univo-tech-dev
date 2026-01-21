@@ -1,4 +1,4 @@
-import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap, Heart, BookOpen, Globe } from 'lucide-react';
+import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap, Heart, BookOpen, Globe, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
 import Link from 'next/link';
@@ -581,69 +581,78 @@ export default function OfficialView() {
         return scoreB - scoreA;
     });
 
-    // ODTUClass Data (Real or Mock) - Only show if user is logged in
-    const realCourses = user?.user_metadata?.odtu_courses;
-    const odtuClassData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => {
+    // University System Data (ODTÜClass or STARS) - Only show if user is logged in
+    const realCourses = isBilkent ? user?.user_metadata?.bilkent_courses : user?.user_metadata?.odtu_courses;
+    const universitySystemName = isBilkent ? 'STARS/SRS' : 'ODTÜClass';
+    const universityBaseUrl = isBilkent ? 'https://stars.bilkent.edu.tr/srs' : 'https://odtuclass2025f.metu.edu.tr';
+
+    const universitySystemData = !user ? [] : ((realCourses && realCourses.length > 0) ? realCourses.map((c: any) => {
         // Ensure absolute and clean URL
         let cleanLink = c.url;
-        const baseUrl = 'https://odtuclass2025f.metu.edu.tr';
 
-        if (!cleanLink.startsWith('http')) {
-            cleanLink = cleanLink.startsWith('/') ? `${baseUrl}${cleanLink}` : `${baseUrl}/${cleanLink}`;
+        if (!cleanLink.startsWith('http') && cleanLink !== '#') {
+            cleanLink = cleanLink.startsWith('/') ? `${universityBaseUrl}${cleanLink}` : `${universityBaseUrl}/${cleanLink}`;
         }
 
-        // Extract ID to reconstruct a clean course link (removes session keys/anchors)
-        const idMatch = cleanLink.match(/id=(\d+)/);
-        if (idMatch && idMatch[1]) {
-            cleanLink = `${baseUrl}/course/view.php?id=${idMatch[1]}`;
+        // Extracts only for ODTUClass
+        if (!isBilkent) {
+            const idMatch = cleanLink.match(/id=(\d+)/);
+            if (idMatch && idMatch[1]) {
+                cleanLink = `${universityBaseUrl}/course/view.php?id=${idMatch[1]}`;
+            }
         }
 
         return {
-            id: `oc-${c.url}`,
+            id: `sys-${c.url}-${c.name}`,
             title: c.name,
-            source: 'ODTÜClass',
+            source: universitySystemName,
             type: 'grade', // Use 'grade' type styling (Violet) for courses
             course: c.name.split(' ')[0], // Heuristic for short code
-            date: 'Güz 2025',
-            summary: 'Ders sayfasına gitmek için tıklayınız.',
+            date: '2024-2025 Bahar',
+            summary: isBilkent ? 'Öğrenci Bilgi Sistemi (STARS/SRS) üzerinden ders bilgileriniz çekilmiştir.' : 'ODTÜClass üzerinden ders bilgileriniz çekilmiştir.',
             link: cleanLink
         };
     }) : [
-        {
-            id: 'oc1',
-            title: 'PHYS105 - Midterm 2 Sonuçları',
-            source: 'ODTÜClass',
-            type: 'grade',
-            course: 'PHYS105',
-            date: 'Bugün, 14:30',
-            summary: '2. Ara sınav sonuçları açıklanmıştır. Kağıtlarınızı 8 Ocak Çarşamba 13:30-15:30 arasında P-102 ofisinde görebilirsiniz.',
-            link: 'https://odtuclass2025f.metu.edu.tr/my/'
-        },
-        {
-            id: 'oc2',
-            title: 'MATH119 - Yeni Ödev Eklendi',
-            source: 'ODTÜClass',
-            type: 'assignment',
-            course: 'MATH119',
-            date: 'Dün',
-            summary: 'WebWork Assignment 5 sisteme yüklenmiştir. Son teslim tarihi: 12 Ocak 23:59.',
-            link: 'https://odtuclass2025f.metu.edu.tr/my/'
-        },
-        {
-            id: 'oc3',
-            title: 'CENG140 - Lab 3 Duyurusu',
-            source: 'ODTÜClass',
-            type: 'announcement',
-            course: 'CENG140',
-            date: '3 gün önce',
-            summary: 'Bu haftaki laboratuvar dersi online yapılacaktır. Zoom linki ders sayfasında paylaşılmıştır.',
-            link: 'https://odtuclass2025f.metu.edu.tr/my/'
-        }
+        // Mock data for ODTU
+        ...(!isBilkent ? [
+            {
+                id: 'oc1',
+                title: 'PHYS105 - Midterm 2 Sonuçları',
+                source: 'ODTÜClass',
+                type: 'grade',
+                course: 'PHYS105',
+                date: 'Bugün, 14:30',
+                summary: '2. Ara sınav sonuçları açıklanmıştır. Kağıtlarınızı 8 Ocak Çarşamba 13:30-15:30 arasında P-102 ofisinde görebilirsiniz.',
+                link: 'https://odtuclass2025f.metu.edu.tr/my/'
+            },
+            {
+                id: 'oc2',
+                title: 'MATH119 - Yeni Ödev Eklendi',
+                source: 'ODTÜClass',
+                type: 'assignment',
+                course: 'MATH119',
+                date: 'Dün',
+                summary: 'WebWork Assignment 5 sisteme yüklenmiştir. Son teslim tarihi: 12 Ocak 23:59.',
+                link: 'https://odtuclass2025f.metu.edu.tr/my/'
+            }
+        ] : [
+            // Mock data for Bilkent
+            {
+                id: 'bs1',
+                title: 'CS 201 - Homework 2 Graded',
+                source: 'STARS/SRS',
+                type: 'grade',
+                course: 'CS 201',
+                date: 'Bugün, 10:00',
+                summary: 'Your homework 2 has been graded. You can check your score on STARS.',
+                link: 'https://stars.bilkent.edu.tr/srs'
+            }
+        ])
     ]);
 
     // Filtered Lists Logic
     const getDisplayedItems = () => {
-        if (activeTab === 'odtuclass') return odtuClassData;
+        if (activeTab === 'odtuclass') return universitySystemData;
 
         if (activeTab === 'starred') {
             // Special handling for Starred tab to show GHOST ITEMS
@@ -861,19 +870,13 @@ export default function OfficialView() {
 
                                 {/* Tab Navigation - Icons always visible, active tab shows label */}
                                 <div className="flex border-b-2 border-black dark:border-white mb-6 gap-1 sm:gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
-                                    {[
-                                        { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0" /> },
-                                        // Conditional Tabs
-                                        ...(!isBilkent ? [
+                                        {[
+                                            { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0" /> },
                                             { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
-                                            { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> }
-                                        ] : [
-                                            { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
-                                            { id: 'odtuclass', label: 'STARS/SRS', count: 0, icon: <GraduationCap size={14} className="shrink-0" /> }
-                                        ]),
-                                        { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="shrink-0" /> },
-                                        { id: 'history', label: '', icon: <Trash2 size={14} className="shrink-0" />, count: readIds.length }
-                                    ].map(tab => {
+                                            { id: 'odtuclass', label: isBilkent ? 'STARS/SRS' : 'ODTÜCLASS', count: universitySystemData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> },
+                                            { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="shrink-0" /> },
+                                            { id: 'history', label: '', icon: <Trash2 size={14} className="shrink-0" />, count: readIds.length }
+                                        ].map(tab => {
                                         const isActive = activeTab === tab.id && !isContentCollapsed;
                                         // Define colors for each tab type with transition
                                         const iconColor = isActive ? (
@@ -934,24 +937,37 @@ export default function OfficialView() {
                                     <div className="grid gap-6">
                                         {paginatedItems.length === 0 ? (
                                             <div className="text-center py-12 bg-neutral-50 dark:bg-neutral-900 border-2 border-dashed border-neutral-200 dark:border-neutral-800 transition-colors">
-                                                {!user && (activeTab === 'emails' || activeTab === 'odtuclass' || activeTab === 'starred' || activeTab === 'history') ? (
+                                                {/* Admin View for other university */}
+                                                {isAdminSession && user?.user_metadata?.university !== university && (activeTab === 'emails' || activeTab === 'odtuclass') ? (
+                                                    <div className="space-y-3 px-6">
+                                                        <ShieldAlert size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
+                                                        <h4 className="font-black text-black dark:text-white uppercase tracking-tighter">Admin Yetkisi Sınırlı</h4>
+                                                        <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-sm mx-auto">
+                                                            Şu anda {university === 'bilkent' ? 'Bilkent' : 'ODTÜ'} gündemine Admin olarak bakıyorsunuz. 
+                                                            Güvenlik gereği, başka üniversiteye ait kişisel e-posta ve ders verilerine erişiminiz bulunmamaktadır.
+                                                        </p>
+                                                    </div>
+                                                ) : (activeTab === 'emails' || activeTab === 'odtuclass') && (
+                                                    (!user) || 
+                                                    (user && university === (isBilkent ? 'bilkent' : 'metu') && (activeTab === 'emails' ? (emails.length === 0) : (universitySystemData.length === 0)))
+                                                ) ? (
                                                     <div className="space-y-3">
                                                         <Lock size={32} className="mx-auto text-neutral-300 dark:text-neutral-600" />
                                                         <p className="text-neutral-600 dark:text-neutral-400 font-medium max-w-xs mx-auto">
                                                             {activeTab === 'emails'
                                                                 ? `${isBilkent ? 'Bilkent' : 'ODTÜ'} e-posta hesabınızı bağlayarak kütüphane, öğrenci işleri ve bölüm duyurularını buradan takip edin.`
                                                                 : activeTab === 'odtuclass'
-                                                                    ? `${isBilkent ? 'Moodle' : 'ODTÜClass'} derslerinizi ve ödevlerinizi takip etmek için giriş yapın.`
+                                                                    ? `${isBilkent ? 'STARS/SRS' : 'ODTÜClass'} derslerinizi ve ödevlerinizi takip etmek için giriş yapın.`
                                                                     : 'Yıldızladığınız ve okuduğunuz içerikleri görmek için giriş yapın.'
                                                             }
                                                         </p>
-                                                        <a
-                                                            href="/login"
+                                                        <button
+                                                            onClick={() => setShowLoginModal(true)}
                                                             className="inline-flex items-center gap-2 px-4 py-2 font-bold text-sm uppercase rounded hover:opacity-90 transition-opacity"
                                                             style={{ backgroundColor: 'var(--primary-color, #C8102E)', color: 'white' }}
                                                         >
-                                                            Giriş Yap
-                                                        </a>
+                                                            {user ? 'Şimdi Bağla' : 'Giriş Yap'}
+                                                        </button>
                                                     </div>
                                                 ) : (
                                                     <p className="text-neutral-400 dark:text-neutral-500 font-bold uppercase">Bu listede içerik bulunmuyor.</p>

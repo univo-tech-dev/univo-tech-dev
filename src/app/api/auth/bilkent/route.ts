@@ -5,6 +5,7 @@ import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 import * as cheerio from 'cheerio';
 import getSupabaseAdmin from '@/lib/supabase-admin';
+import { analyzeCourses } from '@/lib/course-analyzer';
 import { toTitleCase } from '@/lib/utils';
 
 export async function POST(request: Request) {
@@ -114,6 +115,36 @@ export async function POST(request: Request) {
             fullName = 'Bilkent Öğrencisi';
         }
         
+        // --- COURSE SCRAPING ---
+        let courses: { name: string, url: string }[] = [];
+        try {
+            // STARS usually has courses on the main page after login, or in specific tables.
+            // We search for patterns like "CS 101", "MATH 106" in table cells or links.
+            const courseElements = $dash('a, td, span').filter((_, el) => {
+                const text = $dash(el).text().trim();
+                return /^[A-Z]{2,4}\s?\d{3}/.test(text); // Matches CS 101, MATH106 etc.
+            });
+
+            courseElements.each((_, el) => {
+                const name = $dash(el).text().trim();
+                let url = $dash(el).attr('href') || '#';
+                
+                if (name && !courses.find(c => c.name === name)) {
+                    courses.push({ name, url });
+                }
+            });
+        } catch (scrapeErr) {
+            console.warn('[Bilkent SCRAPE] Could not scrape courses:', scrapeErr);
+        }
+
+        let detectedDept = '';
+        let detectedClass = '';
+        if (courses.length > 0) {
+            const results = analyzeCourses(courses);
+            detectedDept = results.detectedDepartment || '';
+            detectedClass = results.detectedClass || '';
+        }
+        
         // --- 3. UNIVO AUTHENTICATION ---
         // For Bilkent, we use internal identifiers like ID@bilkent.univo since emails are inconsistent
         const normalizedStarsId = username.split('@')[0];
@@ -154,6 +185,9 @@ export async function POST(request: Request) {
                     is_university_verified: true,
                     university: 'bilkent',
                     student_username: username,
+                    department: detectedDept,
+                    class_year: detectedClass,
+                    bilkent_courses: courses
                 }
             });
 
@@ -165,6 +199,8 @@ export async function POST(request: Request) {
                     id: user.id,
                     full_name: fullName || username,
                     student_id: username,
+                    department: detectedDept || null,
+                    class_year: detectedClass || null,
                     is_university_verified: true,
                     role: 'student',
                     university: 'bilkent'
@@ -173,19 +209,27 @@ export async function POST(request: Request) {
         } else {
              // Update Metadata
              const updates: any = {};
-             if (fullName && user.user_metadata.full_name !== fullName) updates.full_name = fullName;
-             if (!user.user_metadata.is_university_verified) updates.is_university_verified = true;
-             
-             if (Object.keys(updates).length > 0) {
-                 await supabaseAdmin.auth.admin.updateUserById(user.id, {
-                     user_metadata: { ...user.user_metadata, ...updates }
-                 });
-             }
-             
-             // Update Profile
-             if (fullName) {
-                 await supabaseAdmin.from('profiles').update({ full_name: fullName }).eq('id', user.id);
-             }
+              if (fullName && user.user_metadata.full_name !== fullName) updates.full_name = fullName;
+              if (!user.user_metadata.is_university_verified) updates.is_university_verified = true;
+              if (detectedDept && !user.user_metadata.department) updates.department = detectedDept;
+              if (detectedClass && !user.user_metadata.class_year) updates.class_year = detectedClass;
+              if (courses.length > 0) updates.bilkent_courses = courses;
+              
+              if (Object.keys(updates).length > 0) {
+                  await supabaseAdmin.auth.admin.updateUserById(user.id, {
+                      user_metadata: { ...user.user_metadata, ...updates }
+                  });
+              }
+              
+              // Update Profile
+              const pUpdates: any = {};
+              if (fullName) pUpdates.full_name = fullName;
+              if (detectedDept) pUpdates.department = detectedDept;
+              if (detectedClass) pUpdates.class_year = detectedClass;
+
+              if (Object.keys(pUpdates).length > 0) {
+                  await supabaseAdmin.from('profiles').update(pUpdates).eq('id', user.id);
+              }
         }
 
         // --- DIRECT SESSION CREATION ---
