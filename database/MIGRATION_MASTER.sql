@@ -370,10 +370,11 @@ BEGIN
             COALESCE(NEW.raw_user_meta_data->>'full_name', 'User'), 
             NEW.raw_user_meta_data->>'avatar_url', 
             NEW.email,
-            CASE 
+            CASE
                 WHEN NEW.email LIKE '%@bilkent.edu.tr' THEN 'bilkent'
                 WHEN NEW.email LIKE '%@ug.bilkent.edu.tr' THEN 'bilkent'
                 WHEN NEW.email LIKE '%@metu.edu.tr' THEN 'metu'
+                WHEN NEW.email LIKE '%@cankaya.edu.tr' THEN 'cankaya'
                 ELSE 'metu'
             END
         )

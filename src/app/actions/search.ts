@@ -55,7 +55,7 @@ export async function searchContent(query: string): Promise<SearchResults> {
   // Note: Values in .or() filters should be double-quoted if they contain special characters
   const usersPromise = supabase
       .from('profiles')
-      .select('id, full_name, avatar_url, department, class_year')
+      .select('id, full_name, avatar_url, department, class_year, university')
       .or(`full_name.ilike."${searchQuery}",full_name.ilike."${searchTrUpper}"`)
       .not('full_name', 'in', '("Ali Yılmaz","Ayşe Demir","Mehmet Kaya","Sanat Kulübü Başkanı")')
       .limit(5);

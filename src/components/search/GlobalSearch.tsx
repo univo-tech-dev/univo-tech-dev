@@ -217,7 +217,10 @@ export default function GlobalSearch() {
                                     <div className="flex-1 min-w-0">
                                         <h4 className="font-bold text-neutral-900 dark:text-white truncate">{toTitleCase(user.full_name)}</h4>
                                         <p className="text-xs text-neutral-500 truncate">
-                                            {user.department || user.class_year || 'Öğrenci'}
+                                            {(() => {
+                                                const uni = user.university === 'bilkent' ? 'Bilkent' : (user.university === 'metu' || !user.university) ? 'ODTÜ' : user.university;
+                                                return [uni, user.department, user.class_year].filter(Boolean).join(' • ');
+                                            })() || 'Öğrenci'}
                                         </p>
                                     </div>
                                     <ChevronRight size={16} className="text-neutral-300 group-hover:text-[var(--primary-color)]" />

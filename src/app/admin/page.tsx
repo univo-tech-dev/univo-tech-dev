@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Search, Ban, CheckCircle, MoreHorizontal, X, AlertTriangle, Users, Filter, ChevronDown } from 'lucide-react';
+import { Search, Ban, CheckCircle, MoreHorizontal, X, AlertTriangle, Users, Filter, ChevronDown, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { BAN_CATEGORIES } from '@/lib/constants';
 
@@ -18,6 +18,7 @@ interface User {
     ban_category?: string;
     banned_by?: string;
     university?: string;
+    is_orphaned?: boolean;
 }
 
 interface Stats {
@@ -31,12 +32,13 @@ export default function AdminPage() {
     const [search, setSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'banned'>('all');
-    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent' | 'cankaya'>('all');
     const [banModalOpen, setBanModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [banReason, setBanReason] = useState('');
     const [banCategory, setBanCategory] = useState('');
     const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -93,6 +95,35 @@ export default function AdminPage() {
         setSelectedUser(null);
     };
 
+    const openDeleteModal = (user: User) => {
+        setSelectedUser(user);
+        setDeleteModalOpen(true);
+    };
+
+    const handleDeleteUser = async () => {
+        if (!selectedUser) return;
+        setIsLoading(true);
+
+        try {
+            const res = await fetch('/api/admin/actions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete_user', userId: selectedUser.id })
+            });
+
+            if (!res.ok) throw new Error('Silme işlemi başarısız');
+
+            toast.success('Kullanıcı tamamen silindi.');
+            setUsers(users.filter(u => u.id !== selectedUser.id));
+            setDeleteModalOpen(false);
+            setSelectedUser(null);
+        } catch (err) {
+            toast.error('Silme işlemi sırasında hata oluştu.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const handleToggleBan = async (userId: string, currentStatus: boolean, reason?: string, category?: string) => {
         try {
             const res = await fetch('/api/admin/actions', {
@@ -142,6 +173,8 @@ export default function AdminPage() {
                 matchesUni = u.university === 'bilkent' || !!isBilkentEmail;
             } else if (uniFilter === 'metu') {
                 matchesUni = (u.university === 'metu' || !u.university) && !isBilkentEmail;
+            } else if (uniFilter === 'cankaya') {
+                matchesUni = u.university === 'cankaya' || u.email?.includes('@cankaya.edu.tr');
             }
         }
 
@@ -250,7 +283,8 @@ export default function AdminPage() {
                                 {[
                                     { id: 'all', label: 'Tümü' },
                                     { id: 'metu', label: 'ODTÜ' },
-                                    { id: 'bilkent', label: 'Bilkent' }
+                                    { id: 'bilkent', label: 'Bilkent' },
+                                    { id: 'cankaya', label: 'Çankaya' }
                                 ].map((btn) => (
                                     <button
                                         key={btn.id}
@@ -335,6 +369,10 @@ export default function AdminPage() {
                                             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-bold border border-blue-100 dark:border-blue-800">
                                                 Bilkent
                                             </span>
+                                        ) : user.university === 'cankaya' || (user.email?.includes('@cankaya.edu.tr')) ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-bold border border-purple-100 dark:border-purple-800">
+                                                Çankaya
+                                            </span>
                                         ) : user.university === 'metu' || !user.university ? (
                                             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-bold border border-red-100 dark:border-red-800">
                                                 ODTÜ
@@ -363,15 +401,23 @@ export default function AdminPage() {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => user.is_banned ? handleToggleBan(user.id, true) : openBanModal(user)}
-                                            className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${user.is_banned
-                                                ? 'border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                                                : 'border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'
-                                                }`}
-                                        >
-                                            {user.is_banned ? 'Yasağı Kaldır' : 'Yasakla'}
-                                        </button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button
+                                                onClick={() => user.is_banned ? handleToggleBan(user.id, true) : openBanModal(user)}
+                                                className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${user.is_banned
+                                                    ? 'border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                                                    : 'border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'
+                                                    }`}
+                                            >
+                                                {user.is_banned ? 'Yasağı Kaldır' : 'Yasakla'}
+                                            </button>
+                                            <button
+                                                onClick={() => openDeleteModal(user)}
+                                                className="text-xs font-bold px-3 py-1.5 rounded-lg border border-red-600 bg-red-600 text-white hover:bg-red-700 transition-colors shadow-sm"
+                                            >
+                                                Sil
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -441,6 +487,58 @@ export default function AdminPage() {
                             >
                                 Yasakla
                             </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Modal */}
+            {deleteModalOpen && selectedUser && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+                    <div className="bg-white dark:bg-neutral-900 border-4 border-red-600 w-full max-w-md overflow-hidden shadow-[12px_12px_0px_0px_rgba(220,38,38,0.2)]">
+                        <div className="p-4 bg-red-600 text-white flex justify-between items-center">
+                            <h3 className="font-black uppercase tracking-tighter flex items-center gap-2">
+                                <AlertTriangle size={20} /> KRİTİK İŞLEM: KULLANICI SİLME
+                            </h3>
+                            <button onClick={() => setDeleteModalOpen(false)} className="hover:rotate-90 transition-transform">
+                                <X size={24} />
+                            </button>
+                        </div>
+                        <div className="p-8 space-y-6">
+                            <div className="flex flex-col items-center text-center gap-4">
+                                <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center rounded-full animate-bounce">
+                                    <Trash2 size={40} />
+                                </div>
+                                <div>
+                                    <p className="text-lg font-black dark:text-white uppercase tracking-tight">{selectedUser.full_name}</p>
+                                    <p className="text-sm text-neutral-500 font-bold">{selectedUser.email || selectedUser.student_id}</p>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg">
+                                <p className="text-xs text-red-700 dark:text-red-400 font-bold leading-relaxed">
+                                    <span className="block font-black uppercase mb-1 underline">DİKKAT!</span>
+                                    Bu işlem kullanıcının tüm verilerini (paylaşımlar, mesajlar, profil) 
+                                    <span className="font-black"> KALICI OLARAK </span> 
+                                    siler ve bu işlem geri döndürülemez.
+                                </p>
+                            </div>
+
+                            <div className="space-y-3">
+                                <button
+                                    onClick={handleDeleteUser}
+                                    disabled={isLoading}
+                                    className="w-full py-4 bg-red-600 text-white font-black uppercase tracking-widest hover:bg-black transition-all flex justify-center items-center gap-2 group"
+                                >
+                                    {isLoading ? 'SİLİNİYOR...' : 'EVET, KALICI OLARAK SİL'}
+                                </button>
+                                <button
+                                    onClick={() => setDeleteModalOpen(false)}
+                                    className="w-full py-4 border-2 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 font-black uppercase tracking-widest hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all"
+                                >
+                                    VAZGEÇ
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

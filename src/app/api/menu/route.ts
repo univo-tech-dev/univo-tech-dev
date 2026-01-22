@@ -11,6 +11,13 @@ export async function GET(request: Request) {
 
     if (university === 'bilkent') {
         return await fetchBilkentMenu();
+    } else if (university === 'cankaya') {
+        // Çankaya doesn't have a public menu API - return empty
+        return NextResponse.json({
+            success: true,
+            menu: null,
+            message: 'Çankaya Üniversitesi yemekhane menüsü şu an için desteklenmiyor.'
+        });
     }
 
     // Default: METU

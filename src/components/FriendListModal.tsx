@@ -168,7 +168,10 @@ export default function FriendListModal({ userId, isOpen, onClose, isOwnProfile 
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-neutral-900 dark:text-white truncate">{friend.full_name}</h4>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                      {friend.department || (friend.university || 'Öğrenci')}
+                      {(() => {
+                          const uni = friend.university === 'bilkent' ? 'Bilkent' : (friend.university === 'metu' || !friend.university) ? 'ODTÜ' : friend.university;
+                          return [uni, friend.department].filter(Boolean).join(' • ') || 'Öğrenci';
+                      })()}
                     </p>
                   </div>
 

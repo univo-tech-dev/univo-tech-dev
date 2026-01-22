@@ -98,9 +98,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data.university === 'bilkent') {
           localStorage.setItem('themeColor', '#002D72');
           document.documentElement.style.setProperty('--primary-rgb', '0 45 114'); // #002D72
+          document.documentElement.style.setProperty('--primary-color', '#002D72');
+      } else if (data.university === 'cankaya') {
+          localStorage.setItem('themeColor', '#1E3A5F');
+          document.documentElement.style.setProperty('--primary-rgb', '30 58 95'); // #1E3A5F
+          document.documentElement.style.setProperty('--primary-color', '#1E3A5F');
       } else if (data.university === 'metu' || !data.university) {
           localStorage.setItem('themeColor', '#C8102E');
           document.documentElement.style.setProperty('--primary-rgb', '200 16 46'); // #C8102E
+          document.documentElement.style.setProperty('--primary-color', '#C8102E');
       }
     } catch (error) {
       console.error('Error fetching profile:', error);

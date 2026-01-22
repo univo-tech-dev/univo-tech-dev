@@ -59,8 +59,7 @@ interface VoiceItemProps {
     imageFile: File | null;
     setImageFile: (val: File | null) => void;
     handleImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    // Assume user will pass mediaType or we detect it?
-    // Since we only get voice object, we should detect from URL.
+    isGlobalMode?: boolean;
 }
 
 export default function VoiceItem({
@@ -102,7 +101,8 @@ export default function VoiceItem({
     setImagePreview,
     imageFile,
     setImageFile,
-    handleImageSelect
+    handleImageSelect,
+    isGlobalMode = false
 }: VoiceItemProps) {
     const reactions = voice.reactions || [];
     const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
@@ -111,7 +111,11 @@ export default function VoiceItem({
     const score = likeCount - dislikeCount;
 
     return (
-        <article 
+        <motion.article 
+            layout
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
             className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}
             ref={el => { containerRefs.current[voice.id] = el as HTMLDivElement | null; }}
         >
@@ -156,9 +160,12 @@ export default function VoiceItem({
                                 {voice.user?.full_name || 'Kullanıcı'}
                             </Link>
                         )}
-                        {(voice.user?.department || voice.user?.class_year) && (
+                        {(voice.user?.department || voice.user?.class_year || (isGlobalMode && voice.user?.university)) && (
                             <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
-                                {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
+                                {(() => {
+                                    const uni = voice.user?.university === 'bilkent' ? 'Bilkent' : (voice.user?.university === 'metu' || !voice.user?.university) ? 'ODTÜ' : voice.user?.university;
+                                    return [isGlobalMode ? uni : null, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ');
+                                })()}
                             </span>
                         )}
                         <div className="ml-auto relative">
@@ -447,6 +454,6 @@ export default function VoiceItem({
                     )}
                 </div>
             </div>
-        </article>
+        </motion.article>
     );
 };

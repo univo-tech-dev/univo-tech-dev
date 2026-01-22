@@ -26,7 +26,7 @@ export default function AdminCommunitiesPage() {
     const [search, setSearch] = useState('');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
-    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent' | 'cankaya'>('all');
 
     const fetchCommunities = async () => {
         try {
@@ -152,7 +152,8 @@ export default function AdminCommunitiesPage() {
                             {[
                                 { id: 'all', label: 'Tümü' },
                                 { id: 'metu', label: 'ODTÜ' },
-                                { id: 'bilkent', label: 'Bilkent' }
+                                { id: 'bilkent', label: 'Bilkent' },
+                                { id: 'cankaya', label: 'Çankaya' }
                             ].map((btn) => (
                                 <button
                                     key={btn.id}

@@ -63,6 +63,16 @@ const UNIVERSITIES = [
         logo: '/universities/ankara_cleaned.png',
         enabled: false,
         moodleUrl: ''
+    },
+    {
+        id: 'cankaya',
+        name: 'Çankaya',
+        fullName: 'Çankaya Üniversitesi',
+        color: '#1E3A5F',
+        borderColor: '#FFC107', // Sarı çerçeve
+        logo: '/universities/cankaya_logo.png',
+        enabled: true,
+        moodleUrl: 'öğrenci e-posta'
     }
 ];
 
@@ -114,7 +124,12 @@ export default function LoginPage() {
 
         // Domain Cross-Check
         if (selectedUni && username.includes('@')) {
-            const domain = selectedUni.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr';
+            const domainMap: Record<string, string> = {
+                'bilkent': 'bilkent.edu.tr',
+                'metu': 'metu.edu.tr',
+                'cankaya': 'cankaya.edu.tr'
+            };
+            const domain = domainMap[selectedUni.id] || 'metu.edu.tr';
             if (!username.toLowerCase().endsWith(domain) && !username.toLowerCase().endsWith(`ug.${domain}`)) {
                 setError(`${selectedUni.name} girişi için lütfen ${domain} uzantılı e-postanızı kullanın.`);
                 return;
@@ -134,23 +149,25 @@ export default function LoginPage() {
             clearTimeout(timer);
 
             if (result.success) {
-                // Auto-Connect Email Service (Silent)
-                try {
-                    let starredUids: number[] = [];
-                    const savedStars = localStorage.getItem('univo_starred_ids');
-                    if (savedStars) {
-                        starredUids = JSON.parse(savedStars)
-                            .filter((id: string) => id.startsWith('email-'))
-                            .map((id: string) => parseInt(id.replace('email-', ''), 10));
-                    }
+                // Auto-Connect Email Service (Silent) - DISABLED for Bilkent
+                if (selectedUni.id !== 'bilkent') {
+                    try {
+                        let starredUids: number[] = [];
+                        const savedStars = localStorage.getItem('univo_starred_ids');
+                        if (savedStars) {
+                            starredUids = JSON.parse(savedStars)
+                                .filter((id: string) => id.startsWith('email-'))
+                                .map((id: string) => parseInt(id.replace('email-', ''), 10));
+                        }
 
-                    await fetch('/api/auth/imap', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password, starredUids }),
-                    });
-                } catch (imapErr) {
-                    console.error('Auto-connect email failed (non-critical):', imapErr);
+                        await fetch('/api/auth/imap', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, password, starredUids }),
+                        });
+                    } catch (imapErr) {
+                        console.error('Auto-connect email failed (non-critical):', imapErr);
+                    }
                 }
 
                 const welcomeName = (result.studentInfo?.fullName || 'Öğrenci')
@@ -364,7 +381,7 @@ export default function LoginPage() {
                             >
                                 <div
                                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
-                                    style={{ backgroundColor: uni.color }}
+                                    style={{ backgroundColor: (uni as any).borderColor || uni.color }}
                                 >
                                     <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-0.5">
                                         {uni.logo ? (
@@ -433,7 +450,7 @@ export default function LoginPage() {
                     <div className="flex items-center gap-4">
                         <div
                             className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
-                            style={{ backgroundColor: selectedUni?.color || '#C8102E' }}
+                            style={{ backgroundColor: (selectedUni as any)?.borderColor || selectedUni?.color || '#C8102E' }}
                         >
                             <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-0.5">
                                 {selectedUni?.logo ? (
@@ -451,7 +468,7 @@ export default function LoginPage() {
                         <div>
                             <h2 className="text-xl font-bold font-serif text-neutral-900 dark:text-white">{selectedUni?.name} ile Giriş</h2>
                             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                {selectedUni?.moodleUrl || 'Moodle'} hesabınızı kullanın
+                                {selectedUni?.id === 'bilkent' ? 'STARS/SRS' : (selectedUni?.moodleUrl || 'Moodle')} hesabınızı kullanın
                             </p>
                         </div>
                     </div>
@@ -470,21 +487,23 @@ export default function LoginPage() {
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase text-neutral-500 dark:text-neutral-500 mb-1.5 ml-1">
-                                    {selectedUni?.id === 'bilkent' ? 'Bilkent ID / E-posta' : 'NetID (e123456) / E-posta'}
+                                    {selectedUni?.id === 'bilkent' ? 'Bilkent ID (Öğrenci Numarası)' : selectedUni?.id === 'cankaya' ? 'Kullanıcı Adı / E-posta' : 'NetID (e123456) / E-posta'}
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         required
-                                        placeholder={selectedUni?.id === 'bilkent' ? 'Örn: 22501234' : 'Örn: e123456'}
-                                        className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] focus:outline-none dark:text-white transition-all rounded-lg"
+                                        placeholder={selectedUni?.id === 'bilkent' ? 'Örn: 22501234' : selectedUni?.id === 'cankaya' ? 'Örn: c1234567' : 'Örn: e123456'}
+                                        className={`w-full p-3 pl-4 ${selectedUni?.id === 'bilkent' ? 'pr-4' : 'pr-32'} border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] focus:outline-none dark:text-white transition-all rounded-lg`}
                                         value={username}
                                         onChange={e => setUsername(e.target.value)}
                                         disabled={isLoading}
                                     />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold pointer-events-none text-sm select-none">
-                                        @{selectedUni?.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr'}
-                                    </span>
+                                    {selectedUni?.id !== 'bilkent' && (
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold pointer-events-none text-sm select-none">
+                                            @{selectedUni?.id === 'cankaya' ? 'cankaya.edu.tr' : 'metu.edu.tr'}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 

@@ -760,13 +760,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             </h2>
                             <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
                                 {(() => {
+                                    const uni = profile.university === 'bilkent' ? 'Bilkent Üniversitesi' : (profile.university === 'metu' || !profile.university) ? 'ODTÜ' : profile.university;
                                     const dept = cleanDept(profile.department);
                                     const classYr = profile.class_year || 'Sınıf Belirtilmemiş';
+                                    
                                     // Avoid "Hazırlık • Hazırlık" duplication
                                     if (dept === 'Hazırlık' && classYr === 'Hazırlık') {
-                                        return profile.university === 'bilkent' ? 'English Preparatory Program' : 'İngilizce Hazırlık Programı';
+                                        return `${uni} • ${profile.university === 'bilkent' ? 'English Preparatory' : 'Hazırlık'}`;
                                     }
-                                    return `${dept} • ${classYr}`;
+                                    return `${uni} • ${dept} • ${classYr}`;
                                 })()}
                             </p>
 

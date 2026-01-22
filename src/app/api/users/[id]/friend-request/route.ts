@@ -79,14 +79,23 @@ export async function POST(
       .single();
 
     // Create notification
-    await supabase
-      .from('notifications')
-      .insert({
-        user_id: receiverId,
-        type: 'friend_request',
-        actor_id: requesterId,
-        message: `${requesterProfile?.full_name || 'Bir kullanıcı'} sana arkadaşlık isteği gönderdi`
-      });
+    const { data: receiverProfile } = await supabase
+      .from('profiles')
+      .select('notification_settings')
+      .eq('id', receiverId)
+      .single();
+
+    const settings = receiverProfile?.notification_settings as any;
+    if (settings?.friend_requests !== false) {
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: receiverId,
+          type: 'friend_request',
+          actor_id: requesterId,
+          message: `${requesterProfile?.full_name || 'Bir kullanıcı'} sana arkadaşlık isteği gönderdi`
+        });
+    }
 
     return NextResponse.json({ 
       message: 'Friend request sent successfully',

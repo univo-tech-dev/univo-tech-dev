@@ -65,10 +65,11 @@ Bu güncelleme, **kurumsal düzeyde bir organizasyona** geçişimizi simgeler; e
     - 29 senkronize tablosu olan özel bir **Supabase** örneğine geçildi.
 - **👤 Üst Seviye Misafir Modu (Global Erişim):**
     - Kayıtlı olmayan kullanıcılar artık **Global** kampüs içeriğine göz atabilir.
-    - Üniversiteye özel akışlar (ODTÜ/Bilkent) gizlilik için kısıtlı kalır.
+    - Üniversiteye özel akışlar (ODTÜ/Bilkent/Çankaya) gizlilik için kısıtlı kalır.
 - **🏫 Çoklu Üniversite Mimarisi:**
-    - **Akıllı Üniversite Algılama:** Kayıt sırasında üniversite otomatik tanımlanır (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Akıllı Üniversite Algılama:** Kayıt sırasında üniversite otomatik tanımlanır (`@metu.edu.tr`, `@bilkent.edu.tr`, `@cankaya.edu.tr`).
     - **Bilkent Entegrasyonu:** Bilkent Üniversitesi altyapısı için tam destek eklendi.
+    - **Çankaya Entegrasyonu:** Çankaya Üniversitesi altyapısı için tam destek eklendi.
 - **🛡️ Arayüz Kararlılığı:**
     - **Sıfır Beklemeli Yönlendirme:** "Yükleniyor ekranında takılma" sorunu giderildi.
     - **Bütünleşik İskeletler:** Premium bir his için yükleme ekranları harmonize edildi.

@@ -101,6 +101,37 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ success: true, message: 'Topluluk silindi.' });
         }
 
+        // Action: Delete User (Permanent)
+        if (action === 'delete_user') {
+            const { userId } = body;
+
+            // 1. Delete from Auth (This should trigger profile deletion via cascade if set, but we handle it anyway for certainty)
+            const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(userId);
+            
+            // If user is not found in Auth, we should still try to delete the profile if it exists
+            if (deleteAuthError && !deleteAuthError.message.includes('User not found') && !deleteAuthError.message.includes('not found')) {
+                throw deleteAuthError;
+            }
+
+            // 2. Explicitly delete from profiles (just in case cascade failed or it's an orphan)
+            const { error: profileDeleteError } = await supabase
+                .from('profiles')
+                .delete()
+                .eq('id', userId);
+            
+            if (profileDeleteError) throw profileDeleteError;
+
+            // 3. Audit Log
+            await supabase.from('admin_audit_logs').insert({
+                admin_name: session.adminName,
+                action: 'USER_DELETE',
+                target_user_id: userId,
+                details: 'Kullanıcı kalıcı olarak silindi.'
+            });
+
+            return NextResponse.json({ success: true, message: 'Kullanıcı tamamen silindi.' });
+        }
+
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     } catch (err: any) {
         console.error('Admin action error:', err);

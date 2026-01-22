@@ -15,6 +15,7 @@ export default function Footer() {
   }
 
   const isBilkent = university === 'bilkent';
+  const isCankaya = university === 'cankaya';
   
   return (
     <footer className="bg-white dark:bg-neutral-900 mt-20 pb-12 transition-colors">
@@ -62,6 +63,14 @@ export default function Footer() {
                   <li><a href="https://bilkent.edu.tr/bilkent/academic-calendar/" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Akademik Takvim</a></li>
                   <li><a href="https://stars.bilkent.edu.tr/srs" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Stars SRS</a></li>
                 </>
+              ) : isCankaya ? (
+                <>
+                  <li><a href="https://webonline.cankaya.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">WebOnline (Moodle)</a></li>
+                  <li><a href="https://sql.cankaya.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Öğrenci Bilgi Sistemi</a></li>
+                  <li><a href="https://kutuphane.cankaya.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Kütüphane</a></li>
+                  <li><a href="https://www.cankaya.edu.tr/akademik_takvim/" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Akademik Takvim</a></li>
+                  <li><a href="https://www.cankaya.edu.tr/duyuru/servis.php" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Servis Saatleri</a></li>
+                </>
               ) : (
                 <>
                   <li><a href="/?view=official" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Yemekhane Menüsü</a></li>
@@ -83,6 +92,12 @@ export default function Footer() {
                   Bilkent Üniversitesi<br />
                   Üniversiteler Mah.<br />
                   06800 Bilkent/Ankara
+                </>
+              ) : isCankaya ? (
+                <>
+                  Çankaya Üniversitesi<br />
+                  Eskişehir Yolu 29. Km<br />
+                  06790 Etimesgut/Ankara
                 </>
               ) : (
                 <>

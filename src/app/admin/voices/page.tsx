@@ -33,7 +33,7 @@ export default function AdminVoicesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [privacyFilter, setPrivacyFilter] = useState<'all' | 'anonymous' | 'public'>('all');
-    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent'>('all');
+    const [uniFilter, setUniFilter] = useState<'all' | 'metu' | 'bilkent' | 'cankaya'>('all');
     const [mediaFilter, setMediaFilter] = useState<'all' | 'photo' | 'video' | 'text'>('all');
     const [showFilters, setShowFilters] = useState(false);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -161,6 +161,8 @@ export default function AdminVoicesPage() {
                     matchesUni = v.profiles?.university === 'bilkent';
                 } else if (uniFilter === 'metu') {
                     matchesUni = v.profiles?.university === 'metu' || !v.profiles?.university;
+                } else if (uniFilter === 'cankaya') {
+                    matchesUni = v.profiles?.university === 'cankaya';
                 }
             }
 
@@ -343,7 +345,8 @@ export default function AdminVoicesPage() {
                                     {[
                                         { id: 'all', label: 'Tümü' },
                                         { id: 'metu', label: 'ODTÜ' },
-                                        { id: 'bilkent', label: 'Bilkent' }
+                                        { id: 'bilkent', label: 'Bilkent' },
+                                        { id: 'cankaya', label: 'Çankaya' }
                                     ].map((btn) => (
                                         <button
                                             key={btn.id}

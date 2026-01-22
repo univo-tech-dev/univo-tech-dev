@@ -67,6 +67,14 @@ export default function OfficialView() {
     const [isAdminSession, setIsAdminSession] = React.useState(false);
     const [university, setUniversity] = React.useState(profile?.university || 'metu');
     const isBilkent = university === 'bilkent';
+    const isCankaya = university === 'cankaya';
+
+    // Update university when profile loads
+    React.useEffect(() => {
+        if (profile?.university) {
+            setUniversity(profile.university);
+        }
+    }, [profile?.university]);
 
     // Enforce Mode Logic: Global for Guests, University for Users (on start)
     React.useEffect(() => {
@@ -126,6 +134,9 @@ export default function OfficialView() {
     } else if (isBilkent) {
          // Bilkent Start Date: Jan 18, 2026 (Month is 0)
          start = new Date(2026, 0, 18);
+    } else if (isCankaya) {
+         // Çankaya Start Date: Jan 21, 2026 (Month is 0)
+         start = new Date(2026, 0, 21);
     }
     
     const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -703,7 +714,7 @@ export default function OfficialView() {
             <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 min-h-[240px]">
                 <div className="flex flex-col items-center justify-center gap-4">
                     <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">
-                        {isBilkent ? 'Kampüs Gündemi' : 'Resmi Gündem'}
+                        {isBilkent ? 'Kampüs Gündemi' : isCankaya ? 'Çankaya Gündemi' : 'Resmi Gündem'}
                     </h2>
 
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
@@ -722,8 +733,8 @@ export default function OfficialView() {
                           </button>
                           
                           {/* Bilkent Button */}
-                          <button 
-                              onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }} 
+                          <button
+                              onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }}
                               className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'bilkent' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                               title="Bilkent Kampüsü"
                           >
@@ -731,6 +742,18 @@ export default function OfficialView() {
                                   <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
                               </div>
                               {!isGlobalMode && university === 'bilkent' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                          </button>
+
+                          {/* Çankaya Button */}
+                          <button
+                              onClick={() => { setIsGlobalMode(false); setUniversity('cankaya'); }}
+                              className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'cankaya' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                              title="Çankaya Kampüsü"
+                          >
+                              <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                  <img src="/universities/cankaya_logo.png" className="w-full h-full object-contain" />
+                              </div>
+                              {!isGlobalMode && university === 'cankaya' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                           </button>
 
                           {/* Global Button */}
@@ -756,7 +779,7 @@ export default function OfficialView() {
                                 {/* Front: Uni Logo */}
                                 <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
                                      <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : isCankaya ? "/universities/cankaya_logo.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
                                      </div>
                                 </div>
                                 {/* Back: Global */}
@@ -863,8 +886,8 @@ export default function OfficialView() {
                                 <div className="flex border-b-2 border-black dark:border-white mb-6 gap-1 sm:gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
                                     {[
                                         { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0" /> },
-                                        // Conditional Tabs
-                                        ...(!isBilkent ? [
+                                        // Conditional Tabs - METU only
+                                        ...(!isBilkent && !isCankaya ? [
                                             { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
                                             { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> }
                                         ] : []),
@@ -1259,7 +1282,7 @@ export default function OfficialView() {
                             <button onClick={() => setShowLoginModal(false)} className="absolute right-4 top-4 text-black dark:text-white hover:rotate-90 transition-transform"><X size={24} strokeWidth={3} /></button>
                             <div className="text-center mb-8">
                                 <div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mx-auto mb-4 border-2 border-transparent"><Lock size={32} /></div>
-                                <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">{isBilkent ? 'Bilkent Giriş' : 'ODTÜ Giriş'}</h3>
+                                <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">{isBilkent ? 'Bilkent Giriş' : isCankaya ? 'Çankaya Giriş' : 'ODTÜ Giriş'}</h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 font-medium">E-postalarınıza erişmek için {isBilkent ? 'Bilkent ID' : 'ODTÜ kullanıcı kodunuzu'} kullanın.</p>
                             </div>
                             <form onSubmit={handleImapLogin} className="space-y-6">
@@ -1268,7 +1291,7 @@ export default function OfficialView() {
                                     <div className="relative">
                                             <input
                                             type="text"
-                                            placeholder={isBilkent ? "2210XXXX" : "e123456"}
+                                            placeholder={isBilkent ? "2210XXXX" : isCankaya ? "ogrenciadi" : "e123456"}
                                             className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:outline-none focus:border-black dark:focus:border-white transition-colors font-mono dark:text-white"
                                             value={loginForm.username}
                                             onChange={e => {
@@ -1279,7 +1302,7 @@ export default function OfficialView() {
                                             }}
                                             disabled={loadingEmails}
                                         />
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? 'ug.bilkent.edu.tr' : 'metu.edu.tr'}</span>
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? 'ug.bilkent.edu.tr' : isCankaya ? 'student.cankaya.edu.tr' : 'metu.edu.tr'}</span>
                                     </div>
                                 </div>
                                 <div>

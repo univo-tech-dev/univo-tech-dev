@@ -245,7 +245,10 @@ function VoiceItem({
                         {(voice.user?.department || voice.user?.class_year || (isGlobalMode && voice.user?.university)) && (
                             <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium capitalize">
                                 <span className="mx-1 opacity-50">|</span>
-                                {[isGlobalMode ? voice.user?.university : null, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
+                                {(() => {
+                                    const uni = voice.user?.university === 'bilkent' ? 'Bilkent' : (voice.user?.university === 'metu' || !voice.user?.university) ? 'ODTÜ' : voice.user?.university;
+                                    return [isGlobalMode ? uni : null, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ');
+                                })()}
                             </span>
                         )}
                         <span className="text-xs text-neutral-400 dark:text-neutral-500 font-serif">
@@ -588,7 +591,7 @@ interface Voice {
     }>;
 }
 
-const INITIAL_TAGS = ['#kampüs', '#yemekhane', '#kütüphane', '#ulaşım', '#sınav', '#etkinlik', '#spor'];
+const INITIAL_TAGS = ['kampüs', 'yemekhane', 'kütüphane', 'ulaşım', 'sınav', 'etkinlik', 'spor'];
 
 export default function VoiceView() {
     const { user, profile, setViewLoading, loading: showSkeleton } = useAuth();
@@ -663,6 +666,7 @@ export default function VoiceView() {
     };
 
     const isBilkent = university === 'bilkent';
+    const isCankaya = university === 'cankaya';
 
     const [newStatus, setNewStatus] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
@@ -966,19 +970,35 @@ export default function VoiceView() {
             const data = await res.json();
             
             if (data.voices) {
-                setVoices(data.voices);
+                // Ensure voices are unique by ID to prevent duplication glitches
+                const uniqueVoices = Array.from(new Map(data.voices.map((v: any) => [v.id, v])).values()) as Voice[];
+                setVoices(uniqueVoices);
                 
                 if (filters.tags.length === 0) {
                     // Update tag counts for sidebar only if no tag filter is active
                     // This keeps the "Agenda" list stable while drilling down
                     const tagCounts = new Map<string, number>();
-                    INITIAL_TAGS.forEach(t => tagCounts.set(t.replace('#', ''), 0));
+                    INITIAL_TAGS.forEach(t => tagCounts.set(t.toLowerCase().replace('#', ''), 0));
+
+                    // Track which post IDs we've already counted for which tag
+                    // This prevents double/triple counting if API returns duplicates
+                    const postTrackingByTag = new Map<string, Set<string>>();
 
                     data.voices.forEach((v: Voice) => {
-                        if (v.tags) {
-                            v.tags.forEach(t => {
-                                const lower = t.toLowerCase();
-                                tagCounts.set(lower, (tagCounts.get(lower) || 0) + 1);
+                        if (v.id && v.tags) {
+                            // Normalize all tags (remove # and lowercase)
+                            const uniqueInPost = new Set(v.tags.map(t => t.toLowerCase().replace('#', '')));
+                            
+                            uniqueInPost.forEach(tag => {
+                                if (!postTrackingByTag.has(tag)) {
+                                    postTrackingByTag.set(tag, new Set());
+                                }
+                                
+                                const seenPostsForThisTag = postTrackingByTag.get(tag)!;
+                                if (!seenPostsForThisTag.has(v.id)) {
+                                    seenPostsForThisTag.add(v.id);
+                                    tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+                                }
                             });
                         }
                     });
@@ -1087,12 +1107,15 @@ export default function VoiceView() {
             if (!session) return toast.error('Oturum hatası');
 
             const extractedTagsMatches = newStatus.match(/#[\w\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c7]+/g);
-            let finalTags: string[] = extractedTagsMatches ? Array.from(extractedTagsMatches) : [];
+            // Deduplicate and normalize to lowercase without #
+            let finalTags: string[] = extractedTagsMatches 
+                ? Array.from(new Set(extractedTagsMatches.map(t => t.toLowerCase().replace('#', '')))) 
+                : [];
 
             if (isGlobalMode) {
-                // Ensure #global tag exists
-                if (!finalTags.some((t) => t.toLowerCase() === '#global')) {
-                    finalTags = [...finalTags, '#global'];
+                // Ensure 'global' tag exists
+                if (!finalTags.includes('global')) {
+                    finalTags = [...finalTags, 'global'];
                 }
             }
 
@@ -1444,8 +1467,11 @@ export default function VoiceView() {
                 }
             }
 
-            // Extract hashtags
-            const extractedTags = Array.from(new Set(editContent.match(/#[a-zA-Z\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c70-9]+/g) || [])).map(t => t.toLowerCase());
+            // Extract hashtags and normalize (lowercase, deduplicate, remove #)
+            const extractedTagsMatches = editContent.match(/#[\w\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c70-9]+/g);
+            const extractedTags = extractedTagsMatches 
+                ? Array.from(new Set(extractedTagsMatches.map(t => t.toLowerCase().replace('#', '')))) 
+                : [];
 
             const res = await fetch(`/api/voices/${vId}`, {
                 method: 'PUT',
@@ -1497,11 +1523,14 @@ export default function VoiceView() {
         } else if (isBilkent) {
              // Bilkent Start Date: Jan 18, 2026
              start = new Date(2026, 0, 18);
+        } else if (isCankaya) {
+             // Çankaya Start Date: Jan 21, 2026
+             start = new Date(2026, 0, 21);
         }
 
         const diffTime = current.getTime() - start.getTime();
         return Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
-    }, [isGlobalMode, isBilkent]);
+    }, [isGlobalMode, isBilkent, isCankaya]);
 
     const formattedDate = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -1731,31 +1760,42 @@ export default function VoiceView() {
                     ) : isAdminSession ? (
                         <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
                              {/* ODTÜ Button */}
-                             <button 
-                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }} 
-                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                             <button
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }}
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent && !isCankaya ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                  title="ODTÜ Kampüsü"
                              >
                                  <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
-                                 {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                                 {!isGlobalMode && !isBilkent && !isCankaya && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                              </button>
-                             
+
                              {/* Bilkent Button */}
-                             <button 
-                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }} 
+                             <button
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }}
                                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                  title="Bilkent Kampüsü"
                              >
-                                                                       <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
-                                      <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
-                                  </div>
-
+                                 <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                     <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
+                                 </div>
                                  {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                              </button>
 
+                             {/* Çankaya Button */}
+                             <button
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('cankaya'); }}
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isCankaya ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="Çankaya Kampüsü"
+                             >
+                                 <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                     <img src="/universities/cankaya_logo.png" className="w-full h-full object-contain" />
+                                 </div>
+                                 {!isGlobalMode && isCankaya && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+
                              {/* Global Button */}
-                             <button 
-                                 onClick={() => { setPostsLoading(true); handleModeSwitch(true); }} 
+                             <button
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(true); }}
                                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                                  title="Global Gündem"
                              >
@@ -1768,7 +1808,7 @@ export default function VoiceView() {
                         <div 
                             className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
                             onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
-                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : isCankaya ? "Çankaya Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
                         >
                                 <div 
                                     className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
@@ -1777,7 +1817,7 @@ export default function VoiceView() {
                                 {/* Front: Uni Logo */}
                                 <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
                                      <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : isCankaya ? "/universities/cankaya_logo.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
                                      </div>
                                 </div>
                                 {/* Back: Global */}
@@ -1899,12 +1939,10 @@ export default function VoiceView() {
                                             <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
                                         </div>
                                     ) : (
-                                        <AnimatePresence mode="wait">
                                             <motion.div
                                                 key="voices-list"
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}
-                                                exit={{ opacity: 0, x: 20 }}
                                                 transition={{ duration: 0.3 }}
                                                 className="space-y-4"
                                             >
@@ -1955,7 +1993,6 @@ export default function VoiceView() {
                                                     />
                                                 ))}
                                             </motion.div>
-                                        </AnimatePresence>
                                     )}
                                 </div>
                             </div>
@@ -2058,7 +2095,7 @@ export default function VoiceView() {
                                 </button>
                             </div>
                             <div className="px-6 py-4 bg-white dark:bg-neutral-900 border-b-2 border-neutral-100 dark:border-neutral-800">
-                                <div className="flex overflow-x-auto gap-2 no-scrollbar pb-2">
+                                <div className="flex overflow-x-auto gap-2 pb-2 w-full">
                                     {activePoll?.options.map((option, idx) => {
                                         const count = voters.filter(v => v.option_index === idx).length;
                                         const isActive = selectedVoterOption === idx;

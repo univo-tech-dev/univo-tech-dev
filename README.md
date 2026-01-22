@@ -65,10 +65,11 @@ This update marks our transition to a **commercial-grade organization**, unifyin
     - Migrated to dedicated **Supabase** instance with 29 synchronized tables.
 - **👤 Elite Guest Mode (Global Access):**
     - Non-registered users can now browse **Global** campus content.
-    - University-specific feeds (METU/Bilkent) remain restricted for privacy.
+    - University-specific feeds (METU/Bilkent/Çankaya) remain restricted for privacy.
 - **🏫 Multi-University Architecture:**
-    - **Smart Domain Auto-Detection:** Registration now automatically identifies a student's university (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Smart Domain Auto-Detection:** Registration now automatically identifies a student's university (`@metu.edu.tr`, `@bilkent.edu.tr`, `@cankaya.edu.tr`).
     - **Bilkent Integration:** Added full support for Bilkent University infrastructure.
+    - **Çankaya Integration:** Added full support for Çankaya University infrastructure.
 - **🛡️ UI Hardening:**
     - **Zero-Wait Redirection:** Eliminated "Stuck at Loading" bug.
     - **Unified Skeletons:** Harmonized loaders for a premium feel.
