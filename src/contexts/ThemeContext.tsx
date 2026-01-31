@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from './AuthContext';
 
 export type Theme = 'light' | 'dark' | 'system';
-export type ColorTheme = 'default' | 'blue' | 'green' | 'purple' | 'orange';
+export type ColorTheme = 'default' | 'blue' | 'green' | 'purple' | 'orange' | 'cosmic';
 
 interface ThemeContextType {
   theme: Theme;
@@ -30,7 +30,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       const savedTheme = localStorage.getItem('theme') as Theme | null;
       const savedColorTheme = localStorage.getItem('colorTheme') as ColorTheme | null;
-      
+
       if (savedTheme) setTheme(savedTheme);
       if (savedColorTheme) setColorTheme(savedColorTheme);
     } catch (e) {
@@ -43,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (profile && (profile as any).theme_preference) {
       const { theme: dbTheme, colorTheme: dbColorTheme } = (profile as any).theme_preference;
-      
+
       if (dbTheme && dbTheme !== theme) {
         setTheme(dbTheme);
       }
@@ -78,7 +78,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         } else {
           localStorage.removeItem('theme');
         }
-      } catch (e) {}
+      } catch (e) { }
 
       // Sync to DB (debounced/checked)
       if (!isInitialLoad && user) {
@@ -105,7 +105,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.setAttribute('data-theme-color', colorTheme);
     try {
       localStorage.setItem('colorTheme', colorTheme);
-    } catch (e) {}
+    } catch (e) { }
 
     // Sync to DB
     if (!isInitialLoad && user) {
@@ -115,11 +115,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   const syncThemeToDb = async (t: Theme, ct: ColorTheme) => {
     if (!user) return;
-    
+
     // Check if truly different from last sync
     const syncKey = JSON.stringify({ theme: t, colorTheme: ct });
     if (lastSyncedRef.current === syncKey) return;
-    
+
     lastSyncedRef.current = syncKey;
 
     try {

@@ -15,7 +15,7 @@ export default function CommunityList({ communities }: CommunityListProps) {
     if (communities.length === 0) {
         return (
             <div className="text-center py-20">
-                <p className="text-neutral-500 text-lg">
+                <p className="text-muted text-lg">
                     Bu kategoride henüz topluluk bulunmuyor.
                 </p>
             </div>

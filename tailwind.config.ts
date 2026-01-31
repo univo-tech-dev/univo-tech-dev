@@ -19,11 +19,18 @@ export default {
     extend: {
       colors: {
         primary: {
-            DEFAULT: 'rgb(var(--primary-rgb) / <alpha-value>)',
-            hover: 'rgb(var(--primary-hover-rgb) / <alpha-value>)',
-            light: 'rgb(var(--primary-light-rgb) / <alpha-value>)',
-            dark: 'rgb(var(--primary-dark-rgb) / <alpha-value>)',
-        }
+          DEFAULT: 'rgb(var(--primary-rgb) / <alpha-value>)',
+          hover: 'rgb(var(--primary-hover-rgb) / <alpha-value>)',
+          light: 'rgb(var(--primary-light-rgb) / <alpha-value>)',
+          dark: 'rgb(var(--primary-dark-rgb) / <alpha-value>)',
+        },
+        page: 'var(--bg-page)',
+        card: 'var(--bg-card)',
+        subtle: 'var(--bg-subtle)',
+        border: 'var(--border-color)',
+        'border-strong': 'var(--border-strong)',
+        main: 'var(--text-main)',
+        muted: 'var(--text-muted)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

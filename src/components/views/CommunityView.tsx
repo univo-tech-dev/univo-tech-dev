@@ -48,7 +48,7 @@ const CommunitySkeletonContent = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <div key={i} className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+            <div key={i} className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
               <SkeletonLoader width="100%" height={160} className="rounded-none translate-x-[0%] translate-y-[0%]" />
               <div className="p-4 space-y-3">
                 <div className="flex justify-between">
@@ -243,9 +243,9 @@ export default function CommunityView() {
     <div className="container mx-auto px-4 pt-8 pb-32 min-h-[100dvh]">
       {/* Newspaper Header - Static on mobile */}
 
-      <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-12 -mt-4 -mx-4 px-4 min-h-[240px]">
+      <div className="relative border-b-4 border-border pb-4 mb-8 text-center transition-colors md:static bg-subtle pt-12 -mt-4 -mx-4 px-4 min-h-[240px]">
         <div className="flex flex-col items-center justify-center gap-4">
-          <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">Topluluk Meydanı</h2>
+          <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-main leading-none">Topluluk Meydanı</h2>
 
           {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
           <div className="flex items-center gap-3">
@@ -314,7 +314,7 @@ export default function CommunityView() {
           </div>
         </div>
 
-        <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
+        <div className="flex justify-between items-center text-sm font-medium border-t-2 border-border pt-2 mt-4 max-w-2xl mx-auto text-muted h-8">
           <span>SAYI: {issueNumber}</span>
           <span>ÖĞRENCİ BÜLTENİ</span>
           <span>{formattedDate.toUpperCase()}</span>
@@ -342,16 +342,16 @@ export default function CommunityView() {
                 </div>
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-black font-serif text-neutral-900 dark:text-white mb-6">
+              <h2 className="text-4xl md:text-5xl font-black font-serif text-main mb-6">
                 Global Topluluk
               </h2>
 
-              <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto mb-10 leading-relaxed font-serif">
+              <p className="text-lg md:text-xl text-muted max-w-lg mx-auto mb-10 leading-relaxed font-serif">
                 Sınırlar kalkıyor! Dünyanın dört bir yanındaki öğrenci topluluklarıyla çok yakında burada buluşacaksın.
               </p>
 
               <div className="flex gap-4">
-                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
+                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-subtle text-muted font-bold border border-border">
                   <Lock size={18} />
                   Erişime Kapalı
                 </span>
@@ -370,17 +370,16 @@ export default function CommunityView() {
                 {/* Left Sidebar / Navigation (Category Filter) */}
                 <div className="lg:col-span-1">
                   <div className="">
-                    <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif dark:text-white transition-colors">Kategoriler</h3>
+                    <h3 className="text-xl font-bold border-b-2 border-border pb-2 mb-4 font-serif text-main transition-colors">Kategoriler</h3>
                     <CategoryFilter
                       selectedCategory={selectedCategory}
                       onCategoryChange={setSelectedCategory}
                     />
 
                     <div className="mt-8">
-                      {/* Popular Events - Real Data */}
-                      <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                        <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 text-neutral-900 dark:text-white transition-colors">
-                          <Calendar size={20} className="text-neutral-900 dark:text-white" />
+                      <div className="border-4 border-border p-6 bg-card transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                        <h3 className="text-lg font-black border-b-2 border-border pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 text-main transition-colors">
+                          <Calendar size={20} className="text-main" />
                           Popüler
                         </h3>
                         <div className="space-y-4">

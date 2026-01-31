@@ -16,6 +16,7 @@ const colorThemes: { id: ColorTheme; label: string; color: string; bg: string }[
     { id: 'green', label: 'Orman Yeşili', color: '#22c55e', bg: 'bg-green-500' },
     { id: 'purple', label: 'Kraliyet Moru', color: '#a855f7', bg: 'bg-purple-500' },
     { id: 'orange', label: 'Gün Batımı', color: '#f97316', bg: 'bg-orange-500' },
+    { id: 'cosmic', label: 'Kozmik', color: '#008BFF', bg: 'bg-blue-600' },
 ];
 
 type SettingsTab = 'account' | 'appearance' | 'privacy' | 'notifications';
@@ -153,8 +154,8 @@ export default function SettingsPage() {
                             onClick={() => setActiveTab('account')}
                             className={cn(
                                 "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium",
-                                activeTab === 'account' 
-                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                                activeTab === 'account'
+                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
                                     : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                             )}
                         >
@@ -165,8 +166,8 @@ export default function SettingsPage() {
                             onClick={() => setActiveTab('appearance')}
                             className={cn(
                                 "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium",
-                                activeTab === 'appearance' 
-                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                                activeTab === 'appearance'
+                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
                                     : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                             )}
                         >
@@ -177,8 +178,8 @@ export default function SettingsPage() {
                             onClick={() => setActiveTab('privacy')}
                             className={cn(
                                 "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium",
-                                activeTab === 'privacy' 
-                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                                activeTab === 'privacy'
+                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
                                     : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                             )}
                         >
@@ -189,8 +190,8 @@ export default function SettingsPage() {
                             onClick={() => setActiveTab('notifications')}
                             className={cn(
                                 "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-left font-medium",
-                                activeTab === 'notifications' 
-                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                                activeTab === 'notifications'
+                                    ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm"
                                     : "text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
                             )}
                         >
@@ -211,16 +212,16 @@ export default function SettingsPage() {
                 </div>
             </div>
 
-                <div className="flex-1 max-w-2xl bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 shadow-sm h-fit">
+            <div className="flex-1 max-w-2xl bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 shadow-sm h-fit">
                 {activeTab === 'account' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <section>
                             <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Hesap Bilgileri</h2>
                             <p className="text-sm text-neutral-500 mb-6">Kişisel bilgilerinizi ve hesap detaylarınızı buradan yönetin.</p>
-                            
+
                             {/* Email Card */}
                             <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 mb-4">
-                                <div 
+                                <div
                                     className="h-12 w-12 rounded-full flex items-center justify-center text-xl font-bold font-serif text-white shadow-sm"
                                     style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                                 >
@@ -275,7 +276,7 @@ export default function SettingsPage() {
 
                             {/* Admin Panel Link - Only for authenticated admins */}
                             {isAdminSession && (
-                                <div 
+                                <div
                                     onClick={() => router.push('/admin')}
                                     className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors mt-4"
                                 >
@@ -302,7 +303,7 @@ export default function SettingsPage() {
                         <section>
                             <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Tema Seçenekleri</h2>
                             <p className="text-sm text-neutral-500 mb-6">Uygulamanın görünümünü tercihlerinize göre özelleştirin.</p>
-                            
+
                             {/* Mode Switch */}
                             <div className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 mb-6">
                                 <div className="flex items-center gap-4">
@@ -325,7 +326,7 @@ export default function SettingsPage() {
                                         className={cn(
                                             "absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-300 shadow-sm",
                                             resolvedTheme === 'dark' ? "translate-x-7" : "translate-x-0"
-                                        )} 
+                                        )}
                                     />
                                 </button>
                             </div>
@@ -342,12 +343,12 @@ export default function SettingsPage() {
                                             onClick={() => setColorTheme(t.id)}
                                             className={cn(
                                                 "group relative aspect-square rounded-xl flex flex-col items-center justify-center gap-2 transition-all border",
-                                                colorTheme === t.id 
-                                                    ? "border-[var(--primary-color)] bg-[var(--primary-color)]/5" 
+                                                colorTheme === t.id
+                                                    ? "border-[var(--primary-color)] bg-[var(--primary-color)]/5"
                                                     : "border-transparent hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:border-neutral-200 dark:hover:border-neutral-700"
                                             )}
                                         >
-                                            <div 
+                                            <div
                                                 className="w-8 h-8 rounded-full shadow-sm flex items-center justify-center transition-transform group-hover:scale-110"
                                                 style={{ backgroundColor: t.color }}
                                             >
@@ -369,7 +370,7 @@ export default function SettingsPage() {
                         <section>
                             <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Gizlilik Ayarları</h2>
                             <p className="text-sm text-neutral-500 mb-6">Profilinizin başkaları tarafından nasıl görüneceğini kontrol edin.</p>
-                            
+
                             <div className="space-y-4">
                                 {[
                                     { id: 'show_friends', label: 'Arkadaş Listesi', desc: 'Arkadaşlarını profilinde göster', icon: Users, color: 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400' },
@@ -391,18 +392,18 @@ export default function SettingsPage() {
                                             onClick={() => updatePrivacy(item.id, !privacySettings[item.id as keyof typeof privacySettings])}
                                             className={cn(
                                                 "relative w-12 h-6 rounded-full transition-colors duration-300 ease-in-out",
-                                                privacySettings[item.id as keyof typeof privacySettings] 
-                                                    ? "bg-[var(--primary-color)]" 
+                                                privacySettings[item.id as keyof typeof privacySettings]
+                                                    ? "bg-[var(--primary-color)]"
                                                     : "bg-neutral-300 dark:bg-neutral-600"
                                             )}
                                         >
-                                            <span 
+                                            <span
                                                 className={cn(
                                                     "absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm",
-                                                    privacySettings[item.id as keyof typeof privacySettings] 
-                                                        ? "translate-x-6" 
+                                                    privacySettings[item.id as keyof typeof privacySettings]
+                                                        ? "translate-x-6"
                                                         : "translate-x-0"
-                                                )} 
+                                                )}
                                             />
                                         </button>
                                     </div>
@@ -417,7 +418,7 @@ export default function SettingsPage() {
                         <section>
                             <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Bildirim Tercihleri</h2>
                             <p className="text-sm text-neutral-500 mb-6">Hangi durumlarda bildirim almak istediğinizi seçin.</p>
-                            
+
                             <div className="space-y-4">
                                 {[
                                     { id: 'likes', label: 'Beğeniler', desc: 'Gönderileriniz beğenildiğinde bildirim alın', icon: Heart, color: 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400' },
@@ -440,18 +441,18 @@ export default function SettingsPage() {
                                             onClick={() => updateNotificationSettings(item.id, !notificationSettings[item.id as keyof typeof notificationSettings])}
                                             className={cn(
                                                 "relative w-12 h-6 rounded-full transition-colors duration-300 ease-in-out",
-                                                notificationSettings[item.id as keyof typeof notificationSettings] 
-                                                    ? "bg-[var(--primary-color)]" 
+                                                notificationSettings[item.id as keyof typeof notificationSettings]
+                                                    ? "bg-[var(--primary-color)]"
                                                     : "bg-neutral-300 dark:bg-neutral-600"
                                             )}
                                         >
-                                            <span 
+                                            <span
                                                 className={cn(
                                                     "absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm",
-                                                    notificationSettings[item.id as keyof typeof notificationSettings] 
-                                                        ? "translate-x-6" 
+                                                    notificationSettings[item.id as keyof typeof notificationSettings]
+                                                        ? "translate-x-6"
                                                         : "translate-x-0"
-                                                )} 
+                                                )}
                                             />
                                         </button>
                                     </div>
@@ -468,7 +469,7 @@ export default function SettingsPage() {
     const MobileView = () => (
         <div className="md:hidden min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] pb-24">
             <div className="sticky top-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 h-16 flex items-center gap-4">
-                <button 
+                <button
                     onClick={() => router.back()}
                     className="p-2 -ml-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors"
                 >
@@ -529,7 +530,7 @@ export default function SettingsPage() {
                         </div>
                         {/* Admin Panel Link */}
                         {isAdminSession && (
-                            <div 
+                            <div
                                 onClick={() => router.push('/admin')}
                                 className="p-4 flex items-center justify-between cursor-pointer active:bg-neutral-50 dark:active:bg-neutral-800 border-t border-neutral-100 dark:border-neutral-800"
                             >
@@ -552,7 +553,7 @@ export default function SettingsPage() {
                 <section>
                     <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Görünüm</h2>
                     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden p-4 space-y-6">
-                        
+
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
@@ -560,7 +561,7 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="font-medium text-neutral-900 dark:text-white">Karanlık Mod</div>
                             </div>
-                            
+
                             <button
                                 onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
                                 className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200 dark:bg-neutral-700"
@@ -581,9 +582,9 @@ export default function SettingsPage() {
                                         onClick={() => setColorTheme(t.id)}
                                         className={cn(
                                             "group relative aspect-square rounded-full flex items-center justify-center transition-all",
-                                            colorTheme === t.id 
-                                            ? 'ring-2 ring-offset-2 ring-black dark:ring-white dark:ring-offset-neutral-900' 
-                                            : 'hover:scale-110'
+                                            colorTheme === t.id
+                                                ? 'ring-2 ring-offset-2 ring-black dark:ring-white dark:ring-offset-neutral-900'
+                                                : 'hover:scale-110'
                                         )}
                                         style={{ backgroundColor: t.color }}
                                         title={t.label}
@@ -664,7 +665,7 @@ export default function SettingsPage() {
                     </div>
                 </section>
 
-                <button 
+                <button
                     onClick={handleSignOut}
                     className="w-full p-4 flex items-center justify-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 rounded-xl font-bold transition-colors shadow-sm border border-red-100 dark:border-red-900/30"
                 >

@@ -14,11 +14,12 @@ body {
 }
 
 /* Hide spin buttons */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
+
 input[type=number] {
   -moz-appearance: textfield;
   appearance: textfield;
@@ -105,11 +106,35 @@ html.dark p {
   --primary-dark-rgb: 138 11 32;
   /* #8a0b20 */
 
+
   /* Derived variables for compatibility */
   --primary-color: rgb(var(--primary-rgb));
   --primary-color-hover: rgb(var(--primary-hover-rgb));
   --primary-color-light: rgb(var(--primary-light-rgb));
   --primary-color-dark: rgb(var(--primary-dark-rgb));
+
+  /* Semantic Colors - Default (Light) */
+  --bg-page: #ffffff;
+  --bg-card: #ffffff;
+  --bg-subtle: #f9fafb;
+  /* neutral-50 */
+  --text-main: #171717;
+  --text-muted: #737373;
+  --border-color: #e5e5e5;
+  --border-strong: #000000;
+}
+
+html.dark :root {
+  /* Semantic Colors - Dark */
+  --bg-page: #0a0a0a;
+  --bg-card: #0a0a0a;
+  --bg-subtle: #171717;
+  /* neutral-900 */
+  --text-main: #ededed;
+  --text-muted: #a3a3a3;
+  --border-color: #262626;
+  --border-strong: #525252;
+  /* neutral-600 */
 }
 
 :root[data-theme-color="blue"] {
@@ -154,6 +179,33 @@ html.dark p {
   /* #fb923c */
   --primary-dark-rgb: 194 65 12;
   /* #c2410c */
+}
+
+:root[data-theme-color="cosmic"] {
+  /* Cosmic Theme */
+  --primary-rgb: 0 139 255;
+  /* #008BFF */
+  --primary-hover-rgb: 0 110 204;
+  --primary-light-rgb: 77 174 255;
+  --primary-dark-rgb: 0 83 153;
+
+  --bg-page: #362F4F;
+  --bg-card: #0C2C55;
+  --bg-subtle: #0C2C55;
+  /* Same as card for now or slightly different? Using card color for 'bg-neutral-50' spots */
+  --text-main: #E4FF30;
+  --text-muted: #aaddff;
+  /* Lighter blue/white for muted text */
+  --border-color: #5d5485;
+  /* Purple-ish border */
+  --border-strong: #008BFF;
+  /* Bright blue for strong borders in Cosmic to pop */
+}
+
+/* Force overrides when cosmic theme is active */
+:root[data-theme-color="cosmic"] body {
+  background-color: var(--bg-page) !important;
+  color: var(--text-main) !important;
 }
 
 a {
@@ -213,21 +265,25 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4d4d4; /* neutral-300 */
+  background: #d4d4d4;
+  /* neutral-300 */
   border-radius: 5px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a3a3a3; /* neutral-400 */
+  background: #a3a3a3;
+  /* neutral-400 */
 }
 
 /* Dark mode scrollbar */
 html.dark ::-webkit-scrollbar-thumb {
-  background: #404040; /* neutral-700 */
+  background: #404040;
+  /* neutral-700 */
 }
 
 html.dark ::-webkit-scrollbar-thumb:hover {
-  background: #525252; /* neutral-600 */
+  background: #525252;
+  /* neutral-600 */
 }

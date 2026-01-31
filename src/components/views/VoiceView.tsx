@@ -23,14 +23,14 @@ import SkeletonLoader from '../ui/SkeletonLoader';
 const VoiceViewSkeleton = () => {
     return (
         <div className="container mx-auto px-4 pt-8 pb-32 relative animate-in fade-in duration-500 min-h-[100dvh] overflow-x-hidden">
-            <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center md:static pt-12 -mt-4 -mx-4 px-4 relative min-h-[240px] bg-neutral-50 dark:bg-[#0a0a0a]">
+            <div className="border-b-4 border-border pb-4 mb-8 text-center md:static pt-12 -mt-4 -mx-4 px-4 relative min-h-[240px] bg-subtle">
                 <div className="flex flex-col items-center justify-center gap-4">
                     <SkeletonLoader width={300} height={60} className="mb-2" />
                     <div className="flex items-center gap-3 mb-2">
                         <SkeletonLoader width={56} height={56} className="rounded-full" />
                     </div>
                 </div>
-                <div className="flex justify-between items-center border-t-2 border-neutral-200 dark:border-neutral-800 pt-2 mt-4 max-w-2xl mx-auto h-8">
+                <div className="flex justify-between items-center border-t-2 border-border pt-2 mt-4 max-w-2xl mx-auto h-8">
                     <SkeletonLoader width={80} height={20} />
                     <SkeletonLoader width={120} height={20} />
                     <SkeletonLoader width={80} height={20} />
@@ -200,7 +200,7 @@ function VoiceItem({
 
     return (
         <article
-            className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}
+            className={`bg-card border-b border-border pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}
             ref={el => { containerRefs.current[voice.id] = el as HTMLDivElement | null; }}
         >
             {voice.is_editors_choice && (
@@ -215,7 +215,7 @@ function VoiceItem({
                 <div className="flex flex-col items-center shrink-0 relative">
                     <div
                         ref={el => { postOwnerAvatarRefs.current[voice.id] = el; }}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-white dark:bg-[#0a0a0a]'}`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-border relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-main bg-card'}`}
                         style={(!voice.is_anonymous && !voice.user?.avatar_url) ? { backgroundColor: 'var(--primary-color)' } : undefined}
                     >
                         {voice.is_anonymous ? (
@@ -238,12 +238,12 @@ function VoiceItem({
                                 {voice.user?.nickname || 'Anonim'}
                             </span>
                         ) : (
-                            <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
+                            <Link href={`/profile/${voice.user_id}`} className="font-bold text-main hover:underline">
                                 {voice.user?.full_name || 'Kullanıcı'}
                             </Link>
                         )}
                         {(voice.user?.department || voice.user?.class_year || (isGlobalMode && voice.user?.university)) && (
-                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium capitalize">
+                            <span className="text-xs text-muted font-medium capitalize">
                                 <span className="mx-1 opacity-50">|</span>
                                 {[isGlobalMode ? voice.user?.university : null, voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
                             </span>
@@ -377,11 +377,11 @@ function VoiceItem({
                             </form>
                         ) : (
                             <div className="mb-4 group/content relative">
-                                <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif mb-3">
+                                <p className="text-main leading-relaxed text-lg font-serif mb-3">
                                     {renderContentWithTags(voice.content)}
                                 </p>
                                 {voice.image_url && (
-                                    <div className="rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 mb-3">
+                                    <div className="rounded-lg overflow-hidden border border-border bg-subtle mb-3">
                                         {voice.image_url.match(/\.(mp4|webm|ogg|mov)/i) ? (
                                             <div
                                                 className="w-full bg-black flex justify-center items-center autoplay-video-container"
@@ -409,10 +409,10 @@ function VoiceItem({
                     </div>
 
                     {/* Footer Actions (Votes + Comments + Share) */}
-                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900 flex-wrap gap-y-2 relative">
+                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-border flex-wrap gap-y-2 relative">
                         <div className="flex items-center gap-6">
                             {/* Votes */}
-                            <div className="flex items-center gap-1 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1.5 py-1 border border-neutral-100 dark:border-neutral-800">
+                            <div className="flex items-center gap-1 bg-subtle rounded-full px-1.5 py-1 border border-border">
                                 <button
                                     onClick={() => handleReaction(voice.id, 'like')}
                                     className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${myReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
