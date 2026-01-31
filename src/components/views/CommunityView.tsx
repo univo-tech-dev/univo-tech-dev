@@ -243,7 +243,7 @@ export default function CommunityView() {
     <div className="container mx-auto px-4 pt-8 pb-32 min-h-[100dvh]">
       {/* Newspaper Header - Static on mobile */}
 
-      <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 min-h-[240px]">
+      <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-12 -mt-4 -mx-4 px-4 min-h-[240px]">
         <div className="flex flex-col items-center justify-center gap-4">
           <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">Topluluk Meydanı</h2>
 

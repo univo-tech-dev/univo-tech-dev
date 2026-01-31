@@ -21,80 +21,80 @@ import { useReport } from '@/contexts/ReportContext';
 import SkeletonLoader from '../ui/SkeletonLoader';
 
 const VoiceViewSkeleton = () => {
-  return (
-    <div className="container mx-auto px-4 pt-8 pb-32 relative animate-in fade-in duration-500 min-h-[100dvh] overflow-x-hidden">
-      <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center md:static pt-4 -mt-4 -mx-4 px-4 relative min-h-[240px] bg-neutral-50 dark:bg-[#0a0a0a]">
-        <div className="flex flex-col items-center justify-center gap-4">
-          <SkeletonLoader width={300} height={60} className="mb-2" />
-          <div className="flex items-center gap-3 mb-2">
-             <SkeletonLoader width={56} height={56} className="rounded-full" />
-          </div>
-        </div>
-        <div className="flex justify-between items-center border-t-2 border-neutral-200 dark:border-neutral-800 pt-2 mt-4 max-w-2xl mx-auto h-8">
-           <SkeletonLoader width={80} height={20} />
-           <SkeletonLoader width={120} height={20} />
-           <SkeletonLoader width={80} height={20} />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
-             <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
-                <SkeletonLoader width={200} height={32} />
-                <SkeletonLoader width={100} height={28} className="rounded-full" />
-             </div>
-             <div className="bg-neutral-50 dark:bg-[#0a0a0a]/50 p-6 border border-neutral-200 dark:border-neutral-800 mb-8 rounded-sm">
-                <SkeletonLoader width={150} height={24} className="mb-4" />
-                <SkeletonLoader width="100%" height={100} className="mb-4 rounded-lg" />
-                <div className="flex justify-between items-center pt-2">
-                   <SkeletonLoader width={100} height={20} />
-                   <SkeletonLoader width={80} height={36} className="rounded-md" />
+    return (
+        <div className="container mx-auto px-4 pt-8 pb-32 relative animate-in fade-in duration-500 min-h-[100dvh] overflow-x-hidden">
+            <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center md:static pt-12 -mt-4 -mx-4 px-4 relative min-h-[240px] bg-neutral-50 dark:bg-[#0a0a0a]">
+                <div className="flex flex-col items-center justify-center gap-4">
+                    <SkeletonLoader width={300} height={60} className="mb-2" />
+                    <div className="flex items-center gap-3 mb-2">
+                        <SkeletonLoader width={56} height={56} className="rounded-full" />
+                    </div>
                 </div>
-             </div>
-             <div className="space-y-6">
-                 {[1, 2, 3].map((i) => (
-                     <div key={i} className="pb-6 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
-                         <div className="flex gap-4 items-start">
-                             <SkeletonLoader width={40} height={40} className="rounded-full shrink-0" />
-                             <div className="flex-1 space-y-3">
-                                 <div className="flex items-center gap-2 mb-2">
-                                     <SkeletonLoader width={120} height={20} />
-                                     <SkeletonLoader width={80} height={16} />
-                                 </div>
-                                 <SkeletonLoader width="90%" height={18} />
-                                 <SkeletonLoader width="100%" height={18} />
-                                 <SkeletonLoader width="80%" height={18} />
-                                 <div className="flex gap-6 mt-4 pt-2">
-                                     <SkeletonLoader width={40} height={16} />
-                                     <SkeletonLoader width={40} height={16} />
-                                     <SkeletonLoader width={20} height={16} className="ml-auto" />
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 ))}
-             </div>
-          </div>
-          <div className="lg:col-span-1 space-y-8">
-              <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
-                  <SkeletonLoader width={150} height={24} className="mb-6 mx-auto" />
-                  <div className="grid grid-cols-2 gap-4">
-                      <SkeletonLoader height={80} className="rounded-xl" />
-                      <SkeletonLoader height={80} className="rounded-xl" />
-                  </div>
-              </div>
-              <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
-                   <SkeletonLoader width={180} height={24} className="mb-4" />
-                   <SkeletonLoader width="100%" height={24} className="mb-6" />
-                   <div className="space-y-3">
-                       <SkeletonLoader height={40} className="rounded-lg" />
-                       <SkeletonLoader height={40} className="rounded-lg" />
-                       <SkeletonLoader height={40} className="rounded-lg" />
-                   </div>
-              </div>
-          </div>
-      </div>
-    </div>
-  );
+                <div className="flex justify-between items-center border-t-2 border-neutral-200 dark:border-neutral-800 pt-2 mt-4 max-w-2xl mx-auto h-8">
+                    <SkeletonLoader width={80} height={20} />
+                    <SkeletonLoader width={120} height={20} />
+                    <SkeletonLoader width={80} height={20} />
+                </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
+                    <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
+                        <SkeletonLoader width={200} height={32} />
+                        <SkeletonLoader width={100} height={28} className="rounded-full" />
+                    </div>
+                    <div className="bg-neutral-50 dark:bg-[#0a0a0a]/50 p-6 border border-neutral-200 dark:border-neutral-800 mb-8 rounded-sm">
+                        <SkeletonLoader width={150} height={24} className="mb-4" />
+                        <SkeletonLoader width="100%" height={100} className="mb-4 rounded-lg" />
+                        <div className="flex justify-between items-center pt-2">
+                            <SkeletonLoader width={100} height={20} />
+                            <SkeletonLoader width={80} height={36} className="rounded-md" />
+                        </div>
+                    </div>
+                    <div className="space-y-6">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="pb-6 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
+                                <div className="flex gap-4 items-start">
+                                    <SkeletonLoader width={40} height={40} className="rounded-full shrink-0" />
+                                    <div className="flex-1 space-y-3">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <SkeletonLoader width={120} height={20} />
+                                            <SkeletonLoader width={80} height={16} />
+                                        </div>
+                                        <SkeletonLoader width="90%" height={18} />
+                                        <SkeletonLoader width="100%" height={18} />
+                                        <SkeletonLoader width="80%" height={18} />
+                                        <div className="flex gap-6 mt-4 pt-2">
+                                            <SkeletonLoader width={40} height={16} />
+                                            <SkeletonLoader width={40} height={16} />
+                                            <SkeletonLoader width={20} height={16} className="ml-auto" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className="lg:col-span-1 space-y-8">
+                    <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+                        <SkeletonLoader width={150} height={24} className="mb-6 mx-auto" />
+                        <div className="grid grid-cols-2 gap-4">
+                            <SkeletonLoader height={80} className="rounded-xl" />
+                            <SkeletonLoader height={80} className="rounded-xl" />
+                        </div>
+                    </div>
+                    <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+                        <SkeletonLoader width={180} height={24} className="mb-4" />
+                        <SkeletonLoader width="100%" height={24} className="mb-6" />
+                        <div className="space-y-3">
+                            <SkeletonLoader height={40} className="rounded-lg" />
+                            <SkeletonLoader height={40} className="rounded-lg" />
+                            <SkeletonLoader height={40} className="rounded-lg" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 // --- VoiceItem INLINED ---
@@ -119,13 +119,13 @@ interface VoiceItemProps {
     loadMoreComments: (voiceId: string) => void;
     postOwnerAvatarRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
     containerRefs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
-    
+
     // Comment Handling Props
     handleCommentSubmit: (e: React.FormEvent, voiceId: string, parentId?: string | null, content?: string | null) => void;
     handleCommentReaction: (e: React.MouseEvent, voiceId: string, commentId: string, type: 'like' | 'dislike') => void;
     handleCommentDelete: (commentId: string) => void;
     handleCommentUpdate: (commentId: string, newContent: string) => void;
-    
+
     // Reply State 
     replyingTo: string | null;
     setReplyingTo: (id: string | null) => void;
@@ -199,7 +199,7 @@ function VoiceItem({
     const score = likeCount - dislikeCount;
 
     return (
-        <article 
+        <article
             className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}
             ref={el => { containerRefs.current[voice.id] = el as HTMLDivElement | null; }}
         >
@@ -213,7 +213,7 @@ function VoiceItem({
             <div className="flex gap-4 items-stretch">
                 {/* Avatar Column */}
                 <div className="flex flex-col items-center shrink-0 relative">
-                    <div 
+                    <div
                         ref={el => { postOwnerAvatarRefs.current[voice.id] = el; }}
                         className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-white dark:bg-[#0a0a0a]'}`}
                         style={(!voice.is_anonymous && !voice.user?.avatar_url) ? { backgroundColor: 'var(--primary-color)' } : undefined}
@@ -253,7 +253,7 @@ function VoiceItem({
                             {formatRelativeTime(voice.created_at)}
                         </span>
                         <div className="ml-auto relative">
-                             <button
+                            <button
                                 onClick={() => setActiveMenu(activeMenu === voice.id ? null : voice.id)}
                                 className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
                             >
@@ -287,12 +287,12 @@ function VoiceItem({
                                     ) : (
                                         <>
                                             {!voice.is_anonymous && (
-                                                <FriendButton 
-                                                    targetUserId={voice.user_id} 
+                                                <FriendButton
+                                                    targetUserId={voice.user_id}
                                                     variant="menu-item"
                                                 />
                                             )}
-                                            <Link 
+                                            <Link
                                                 href={`/profile/${voice.user_id}`}
                                                 className="w-full text-left px-4 py-2 text-sm font-medium !text-neutral-700 dark:!text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2 transition-colors"
                                             >
@@ -383,22 +383,22 @@ function VoiceItem({
                                 {voice.image_url && (
                                     <div className="rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 mb-3">
                                         {voice.image_url.match(/\.(mp4|webm|ogg|mov)/i) ? (
-                                            <div 
-                                                className="w-full bg-black flex justify-center items-center autoplay-video-container" 
+                                            <div
+                                                className="w-full bg-black flex justify-center items-center autoplay-video-container"
                                                 style={{ height: '500px' }}
                                                 data-voice-id={voice.id}
                                             >
-                                                <VideoPlayer 
-                                                    src={voice.image_url} 
+                                                <VideoPlayer
+                                                    src={voice.image_url}
                                                     className="w-full h-full"
                                                     shouldPlay={isPlaying}
                                                 />
                                             </div>
                                         ) : (
-                                            <img 
-                                                src={voice.image_url} 
-                                                alt="Paylaşım medyası" 
-                                                className="w-full h-auto max-h-[500px] object-contain cursor-pointer transition-transform hover:scale-[1.01]" 
+                                            <img
+                                                src={voice.image_url}
+                                                alt="Paylaşım medyası"
+                                                className="w-full h-auto max-h-[500px] object-contain cursor-pointer transition-transform hover:scale-[1.01]"
                                                 onClick={() => voice.image_url && setLightboxImage?.(voice.image_url)}
                                             />
                                         )}
@@ -430,7 +430,7 @@ function VoiceItem({
                                 </button>
                             </div>
 
-                            <button 
+                            <button
                                 onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
                                 className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
                             >
@@ -453,7 +453,7 @@ function VoiceItem({
                     {/* Show Comments Toggle */}
                     {voice.comments?.length > 0 && (
                         <div className="mt-2">
-                            <button 
+                            <button
                                 onClick={(e) => { e.stopPropagation(); toggleVoiceComments(voice.id); }}
                                 className={`flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full transition-colors w-full sm:w-auto justify-start uppercase ${expandedVoices[voice.id] ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
                             >
@@ -480,13 +480,13 @@ function VoiceItem({
                     {/* New Comment Input */}
                     {activeCommentBox === voice.id && (
                         <div className="pl-0 pb-4 animate-in fade-in slide-in-from-top-1">
-                            <form 
+                            <form
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     handleCommentSubmit(e, voice.id, null, newComment);
                                     setNewComment('');
                                     setActiveCommentBox(null);
-                                }} 
+                                }}
                                 className="flex gap-2 bg-neutral-50 dark:bg-neutral-900/50 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800"
                             >
                                 <input
@@ -497,7 +497,7 @@ function VoiceItem({
                                     placeholder="Yorumunu yaz..."
                                     className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors rounded-md"
                                 />
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={isCommenting || !newComment.trim()}
                                     className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors rounded-md"
@@ -511,7 +511,7 @@ function VoiceItem({
                     {/* Comments Thread */}
                     {(activeCommentBox === voice.id || (voice.comments.length > 0 && expandedVoices[voice.id])) && (
                         <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
-                             {!user && activeCommentBox === voice.id ? (
+                            {!user && activeCommentBox === voice.id ? (
                                 <div className="bg-neutral-50 dark:bg-neutral-900 border border-dashed border-neutral-300 dark:border-neutral-700 rounded p-4 text-center">
                                     <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-2">Yorumları görmek için giriş yapmalısınız.</p>
                                     <Link href="/login" className="text-sm font-bold hover:underline uppercase" style={{ color: 'var(--primary-color)' }}>Giriş Yap</Link>
@@ -520,7 +520,7 @@ function VoiceItem({
                                 <>
                                     {expandedVoices[voice.id] && (
                                         <div className="space-y-0 mb-4 pl-0">
-                                            <CommentThread 
+                                            <CommentThread
                                                 voice={voice}
                                                 user={user}
                                                 replyingTo={replyingTo}
@@ -606,7 +606,7 @@ export default function VoiceView() {
         // Legacy: Try old method primarily to keep old votes if it worked
         // But for "Global" questions which might crash it, fallback to safe hash
         const legacySlug = question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
-        
+
         // If legacy slug is too weird (e.g. mostly underscores due to Turkish chars), use hash
         const meaningfulChars = legacySlug.replace(/_/g, '').length;
         if (meaningfulChars > 5) return legacySlug;
@@ -652,7 +652,7 @@ export default function VoiceView() {
         }
         // If user logs out dynamically (rare here, but safe to handle)
         if (!user && isModeInitialized) {
-             setIsGlobalMode(true);
+            setIsGlobalMode(true);
         }
     }, [user, showSkeleton, isModeInitialized]);
 
@@ -710,7 +710,7 @@ export default function VoiceView() {
     const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
     const [photoPostsEnabled, setPhotoPostsEnabled] = useState(true);
     const [videoPostsEnabled, setVideoPostsEnabled] = useState(true);
-    
+
     // Video Optimization State
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [optimizationProgress, setOptimizationProgress] = useState(0);
@@ -740,14 +740,14 @@ export default function VoiceView() {
 
             entries.forEach(entry => {
                 const videoId = entry.target.getAttribute('data-voice-id');
-                
+
                 if (entry.isIntersecting) {
-                   if (entry.intersectionRatio > maxRatio) {
-                       maxRatio = entry.intersectionRatio;
-                       bestVideoId = videoId;
-                   }
+                    if (entry.intersectionRatio > maxRatio) {
+                        maxRatio = entry.intersectionRatio;
+                        bestVideoId = videoId;
+                    }
                 }
-                
+
                 // Check if the currently playing video is still valid/intersecting
                 if (videoId && videoId === playingVideoIdRef.current && entry.isIntersecting) {
                     currentPlayingIntersecting = true;
@@ -757,32 +757,32 @@ export default function VoiceView() {
             if (bestVideoId) {
                 setPlayingVideoId(bestVideoId);
             } else if (!currentPlayingIntersecting && entries.length > 0) {
-                 entries.forEach(entry => {
-                     const vidId = entry.target.getAttribute('data-voice-id');
-                     // Use Ref to check against current playing
-                     if (vidId === playingVideoIdRef.current && !entry.isIntersecting) {
-                         setPlayingVideoId(null);
-                     }
-                 });
+                entries.forEach(entry => {
+                    const vidId = entry.target.getAttribute('data-voice-id');
+                    // Use Ref to check against current playing
+                    if (vidId === playingVideoIdRef.current && !entry.isIntersecting) {
+                        setPlayingVideoId(null);
+                    }
+                });
             }
         };
 
         const observer = new IntersectionObserver(handleIntersection, observerOptions);
 
         let timeoutId: NodeJS.Timeout;
-        
+
         // Wait for DOM to paint (especially with animations)
         const initObserver = () => {
-             const videoElements = document.querySelectorAll('.autoplay-video-container');
-             if (videoElements.length > 0) {
-                 videoElements.forEach(el => observer.observe(el));
-             } else {
-                 // Retry once if empty (maybe too early)
-                 setTimeout(() => {
-                     const retryElements = document.querySelectorAll('.autoplay-video-container');
-                     retryElements.forEach(el => observer.observe(el));
-                 }, 1000);
-             }
+            const videoElements = document.querySelectorAll('.autoplay-video-container');
+            if (videoElements.length > 0) {
+                videoElements.forEach(el => observer.observe(el));
+            } else {
+                // Retry once if empty (maybe too early)
+                setTimeout(() => {
+                    const retryElements = document.querySelectorAll('.autoplay-video-container');
+                    retryElements.forEach(el => observer.observe(el));
+                }, 1000);
+            }
         };
 
         timeoutId = setTimeout(initObserver, 500);
@@ -800,7 +800,7 @@ export default function VoiceView() {
             const isImage = file.type.startsWith('image/');
 
             if (isVideo) {
-                 if (!videoPostsEnabled) {
+                if (!videoPostsEnabled) {
                     toast.error('Video yükleme özelliği geçici olarak devre dışı bırakılmıştır.');
                     if (e.target) e.target.value = '';
                     return;
@@ -810,11 +810,11 @@ export default function VoiceView() {
                     return;
                 }
                 setMediaType('video');
-                
+
                 // Start Optimization
                 setIsOptimizing(true);
                 setOptimizationProgress(0);
-                
+
                 // Show initial preview (might be broken on Windows if HEVC, but better than nothing)
                 const reader = new FileReader();
                 reader.onload = (e) => setMediaPreview(e.target?.result as string);
@@ -826,7 +826,7 @@ export default function VoiceView() {
                     setMediaFile(optimizedFile);
                     setIsOptimizing(false);
                     toast.success('Video optimize edildi ve paylaşıma hazır!');
-                    
+
                     // Update preview with the optimized file (guaranteed to work)
                     const optReader = new FileReader();
                     optReader.onload = (e) => setMediaPreview(e.target?.result as string);
@@ -841,7 +841,7 @@ export default function VoiceView() {
                 return; // Return early, async logic handles the rest
 
             } else if (isImage) {
-                 if (!photoPostsEnabled) {
+                if (!photoPostsEnabled) {
                     toast.error('Fotoğraf yükleme özelliği geçici olarak devre dışı bırakılmıştır.');
                     if (e.target) e.target.value = '';
                     return;
@@ -944,30 +944,30 @@ export default function VoiceView() {
     const fetchVoices = async () => {
         // Set posts loading for skeleton display during filtering
         setPostsLoading(true);
-        
+
         // Only set full view loading on initial load (no voices yet)
         if (voices.length === 0) setViewLoading(true);
-        
+
         try {
             const params = new URLSearchParams();
             if (filters.tags.length > 0) params.append('tags', filters.tags.join(','));
             if (filters.isAnonymous !== null) params.append('is_anonymous', String(filters.isAnonymous));
             if (filters.hasImage !== null) params.append('has_image', String(filters.hasImage));
             if (filters.userId) params.append('user_id', filters.userId);
-            
+
             // Apply university filter
             if (isGlobalMode) {
                 params.append('university', 'global');
             } else {
                 params.append('university', university);
             }
-            
+
             const res = await fetch(`/api/voices?${params.toString()}`);
             const data = await res.json();
-            
+
             if (data.voices) {
                 setVoices(data.voices);
-                
+
                 if (filters.tags.length === 0) {
                     // Update tag counts for sidebar only if no tag filter is active
                     // This keeps the "Agenda" list stable while drilling down
@@ -1183,14 +1183,14 @@ export default function VoiceView() {
                 ...v,
                 comments: v.comments.map(c => {
                     if (c.id !== commentId) return c;
-                    
+
                     const currentReaction = (c.user_reaction) || (user ? (c.reactions as any)?.data?.find((r: any) => r.user_id === user.id)?.reaction_type : null);
                     // Calculate current scores if not tracked in state directly (we map them in render, but for update we need to adjust 'reactions.count')
                     // Actually, 'c.reactions' from API is { count: number, data: [] }.
                     // We need to update this count.
-                    
+
                     let newCount = c.reactions?.count || 0;
-                    
+
                     if (currentReaction === type) {
                         // Toggle off
                         newCount -= (type === 'like' ? 1 : -1);
@@ -1200,13 +1200,13 @@ export default function VoiceView() {
                     } else {
                         // Toggle on or switch
                         if (currentReaction) {
-                           newCount -= (currentReaction === 'like' ? 1 : -1);
+                            newCount -= (currentReaction === 'like' ? 1 : -1);
                         }
                         newCount += (type === 'like' ? 1 : -1);
-                        
+
                         // Start: Update reaction data array
                         const newData = [...((c.reactions as any)?.data?.filter((r: any) => r.user_id !== user.id) || []), { user_id: user.id, reaction_type: type }];
-                        
+
                         return { ...c, user_reaction: type, reactions: { count: newCount, data: newData } };
                     }
                 })
@@ -1221,7 +1221,7 @@ export default function VoiceView() {
             // Since we didn't create a specific API route for comment reactions (e.g. /api/voices/comments/react),
             // we should probably do it via Supabase directly here for speed, OR create a route.
             // Direct Supabase call is faster for now as we have the client.
-            
+
             const { data: existingReaction } = await supabase
                 .from('voice_comment_reactions')
                 .select('id, reaction_type')
@@ -1254,7 +1254,7 @@ export default function VoiceView() {
     const handleCommentSubmit = async (e: React.FormEvent, voiceId: string, parentId: string | null = null, customContent: string | null = null) => {
         e.preventDefault();
         const contentToSubmit = customContent || newComment;
-        
+
         if (!contentToSubmit.trim() || isCommenting) return;
         if (!user) return;
 
@@ -1268,7 +1268,7 @@ export default function VoiceView() {
             // Let's check that API route or just use Supabase direct insert here? 
             // Previous code used `/api/voices/${voiceId}/comment`.
             // I should update that route to accept parent_id.
-            
+
             const res = await fetch(`/api/voices/${voiceId}/comment`, {
                 method: 'POST',
                 headers: {
@@ -1296,7 +1296,7 @@ export default function VoiceView() {
 
     const handleCommentDelete = async (commentId: string) => {
         if (!confirm('Bu yorumu silmek istediğinize emin misiniz?')) return;
-        
+
         // Optimistic UI update
         setVoices(prev => prev.map(v => ({
             ...v,
@@ -1306,11 +1306,11 @@ export default function VoiceView() {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) return;
-            
-             await supabase.from('voice_comments').delete().eq('id', commentId);
-             
-             toast.success('Yorum silindi');
-             fetchVoices();
+
+            await supabase.from('voice_comments').delete().eq('id', commentId);
+
+            toast.success('Yorum silindi');
+            fetchVoices();
         } catch (e) {
             console.error(e);
             toast.error('Silme başarısız');
@@ -1320,7 +1320,7 @@ export default function VoiceView() {
 
     const handleCommentUpdate = async (commentId: string, newContent: string) => {
         if (!newContent.trim()) return;
-        
+
         // Optimistic
         setVoices(prev => prev.map(v => ({
             ...v,
@@ -1328,13 +1328,13 @@ export default function VoiceView() {
         })));
 
         try {
-             const { data: { session } } = await supabase.auth.getSession();
-             if (!session) return;
-             
-             await supabase.from('voice_comments').update({ content: newContent }).eq('id', commentId);
-             
-             toast.success('Yorum güncellendi');
-             fetchVoices();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
+            await supabase.from('voice_comments').update({ content: newContent }).eq('id', commentId);
+
+            toast.success('Yorum güncellendi');
+            fetchVoices();
         } catch (e) {
             console.error(e);
             toast.error('Güncelleme başarısız');
@@ -1377,7 +1377,7 @@ export default function VoiceView() {
         const text = newStatus;
         const before = text.substring(0, cursorPos);
         const after = text.substring(cursorPos);
-        
+
         // Find the last partial tag before cursor
         const lastHashIndex = before.lastIndexOf('#');
         if (lastHashIndex !== -1) {
@@ -1425,7 +1425,7 @@ export default function VoiceView() {
         e.preventDefault();
         if (!editingId || !editContent.trim()) return;
         const vId = editingId;
-        
+
         setIsPosting(true);
         try {
             const { data: { session } } = await supabase.auth.getSession();
@@ -1453,7 +1453,7 @@ export default function VoiceView() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${session.access_token}`
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     content: editContent,
                     tags: extractedTags,
                     image_url: finalMediaUrl // Assuming backend still expects image_url for any media
@@ -1464,12 +1464,12 @@ export default function VoiceView() {
                 const errData = await res.json();
                 throw new Error(errData.error || 'Update failed');
             }
-            
+
             const data = await res.json();
             if (data.voice) {
                 setVoices(prev => prev.map(v => v.id === vId ? { ...v, ...data.voice } : v));
             }
-            
+
             setEditingId(null);
             setMediaPreview(null);
             setMediaFile(null);
@@ -1487,16 +1487,16 @@ export default function VoiceView() {
     const issueNumber = useMemo(() => {
         const today = new Date();
         const current = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        
+
         // Default ODTÜ Date: Dec 29, 2025
-        let start = new Date(2025, 11, 29); 
+        let start = new Date(2025, 11, 29);
 
         if (isGlobalMode) {
-             // Global Start Date: Jan 20, 2026
-             start = new Date(2026, 0, 20);
+            // Global Start Date: Jan 20, 2026
+            start = new Date(2026, 0, 20);
         } else if (isBilkent) {
-             // Bilkent Start Date: Jan 18, 2026
-             start = new Date(2026, 0, 18);
+            // Bilkent Start Date: Jan 18, 2026
+            start = new Date(2026, 0, 18);
         }
 
         const diffTime = current.getTime() - start.getTime();
@@ -1702,7 +1702,7 @@ export default function VoiceView() {
     return (
         <div className="container mx-auto px-4 pt-8 pb-32 relative min-h-[100dvh]">
             {/* Newspaper Header - Static on mobile */}
-            <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 relative min-h-[240px]">
+            <div className="border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-12 -mt-4 -mx-4 px-4 relative min-h-[240px]">
                 <div className="flex flex-col items-center justify-center gap-4">
                     <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-0 text-black dark:text-white flex items-center justify-center gap-4">
                         Kampüsün Sesi
@@ -1713,7 +1713,7 @@ export default function VoiceView() {
                     {!user ? (
                         /* Guest View: Locked Global Switch */
                         <div className="flex items-center gap-3">
-                            <div 
+                            <div
                                 className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2 group active:scale-95 transition-transform"
                                 onClick={() => toast.info('Üniversite moduna geçmek için giriş yapmalısınız.', {
                                     icon: 'ℹ️',
@@ -1730,66 +1730,66 @@ export default function VoiceView() {
                         </div>
                     ) : isAdminSession ? (
                         <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
-                             {/* ODTÜ Button */}
-                             <button 
-                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }} 
-                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                 title="ODTÜ Kampüsü"
-                             >
-                                 <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
-                                 {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                             </button>
-                             
-                             {/* Bilkent Button */}
-                             <button 
-                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }} 
-                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                 title="Bilkent Kampüsü"
-                             >
-                                                                       <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
-                                      <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
-                                  </div>
+                            {/* ODTÜ Button */}
+                            <button
+                                onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                title="ODTÜ Kampüsü"
+                            >
+                                <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
+                                {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                            </button>
 
-                                 {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                             </button>
+                            {/* Bilkent Button */}
+                            <button
+                                onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                title="Bilkent Kampüsü"
+                            >
+                                <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                    <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
+                                </div>
 
-                             {/* Global Button */}
-                             <button 
-                                 onClick={() => { setPostsLoading(true); handleModeSwitch(true); }} 
-                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                 title="Global Gündem"
-                             >
+                                {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                            </button>
+
+                            {/* Global Button */}
+                            <button
+                                onClick={() => { setPostsLoading(true); handleModeSwitch(true); }}
+                                className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                title="Global Gündem"
+                            >
                                 <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
                                 {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                             </button>
+                            </button>
                         </div>
                     ) : (
-                    <div className="flex items-center gap-3">
-                        <div 
-                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
-                            onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
-                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
-                        >
-                                <div 
+                        <div className="flex items-center gap-3">
+                            <div
+                                className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
+                                onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
+                                title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                            >
+                                <div
                                     className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
                                     style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
                                 >
-                                {/* Front: Uni Logo */}
-                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
-                                     <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
-                                     </div>
-                                </div>
-                                {/* Back: Global */}
-                                <div 
-                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
-                                    style={{ transform: 'rotateY(180deg)' }}
-                                >
-                                    <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                                    {/* Front: Uni Logo */}
+                                    <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
+                                        <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                                            <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                        </div>
+                                    </div>
+                                    {/* Back: Global */}
+                                    <div
+                                        className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
+                                        style={{ transform: 'rotateY(180deg)' }}
+                                    >
+                                        <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     )}
                 </div>
 
@@ -1801,212 +1801,212 @@ export default function VoiceView() {
             </div>
 
             <AnimatePresence mode="wait">
-                    <motion.div
-                        key="odtu"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.3 }}
-                        className="w-full"
-                    >
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* Main Column: Forum / Letters - Shows last on mobile, first on desktop */}
-                            <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
-                                <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
-                                    <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
-                                        <MessageSquare size={24} />
-                                        Öğrenci Kürsüsü
-                                    </h3>
+                <motion.div
+                    key="odtu"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full"
+                >
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Main Column: Forum / Letters - Shows last on mobile, first on desktop */}
+                        <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
+                            <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
+                                <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
+                                    <MessageSquare size={24} />
+                                    Öğrenci Kürsüsü
+                                </h3>
 
-                                    <div className="flex items-center gap-4">
-                                        {filters.tags.length > 0 && (
-                                            <button
-                                                onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
-                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm hover:opacity-90 text-white"
-                                                style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
-                                            >
-                                                <span>{filters.tags[0].startsWith('#') ? filters.tags[0] : `#${filters.tags[0]}`}</span>
-                                                <X size={12} strokeWidth={3} />
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Input Area */}
-                                {user ? (
-                                    <CreateVoiceForm 
-                                        user={user}
-                                        newStatus={newStatus}
-                                        handleTextChange={handleTextChange}
-                                        cursorPos={cursorPos}
-                                        setCursorPos={setCursorPos}
-                                        textareaRef={textareaRef}
-                                        showSuggestions={showSuggestions}
-                                        suggestionList={suggestionList}
-                                        insertTag={insertTag}
-                                        isAnonymous={isAnonymous}
-                                        setIsAnonymous={setIsAnonymous}
-                                        handlePost={handlePost}
-                                        isPosting={isPosting}
-                                        activeTagFilter={null}
-                                        setActiveTagFilter={() => {}}
-                                        imagePreview={mediaPreview}
-                                        setImagePreview={setMediaPreview}
-                                        imageFile={mediaFile}
-                                        setImageFile={setMediaFile}
-                                        handleImageSelect={handleMediaSelect}
-                                        photoPostsEnabled={photoPostsEnabled}
-                                        videoPostsEnabled={videoPostsEnabled}
-                                        mediaType={mediaType}
-                                        isOptimizing={isOptimizing}
-                                        optimizationProgress={optimizationProgress}
-                                        isGlobalMode={isGlobalMode}
-                                    />
-                                ) : (
-                                    <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
-                                        <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/login" className="underline font-bold text-black dark:text-white">giriş yapmalısın</Link>.</p>
-                                    </div>
-                                )}
-
-                                <div className="space-y-6">
-                                    {showSkeleton || postsLoading ? (
-                                        <div className="space-y-6">
-                                            {[1, 2, 3].map((i) => (
-                                                <div key={i} className="pb-6 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
-                                                    <div className="flex gap-4 items-start">
-                                                        <SkeletonLoader width={40} height={40} className="rounded-full shrink-0" />
-                                                        <div className="flex-1 space-y-3">
-                                                            <div className="flex items-center gap-2 mb-2">
-                                                                <SkeletonLoader width={120} height={20} />
-                                                                <SkeletonLoader width={80} height={16} />
-                                                            </div>
-                                                            <SkeletonLoader width="90%" height={18} />
-                                                            <SkeletonLoader width="100%" height={18} />
-                                                            <SkeletonLoader width="80%" height={18} />
-                                                            <div className="flex gap-6 mt-4 pt-2">
-                                                                <SkeletonLoader width={40} height={16} />
-                                                                <SkeletonLoader width={40} height={16} />
-                                                                <SkeletonLoader width={20} height={16} className="ml-auto" />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : voices.length === 0 ? (
-                                        <div className="text-center py-20 bg-neutral-50 dark:bg-[#0a0a0a]/50 rounded-lg border-2 border-dashed border-neutral-200 dark:border-neutral-800 w-full">
-                                            <Sparkles className="mx-auto mb-4 text-neutral-300 dark:text-neutral-700" size={48} />
-                                            <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
-                                        </div>
-                                    ) : (
-                                        <AnimatePresence mode="wait">
-                                            <motion.div
-                                                key="voices-list"
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                exit={{ opacity: 0, x: 20 }}
-                                                transition={{ duration: 0.3 }}
-                                                className="space-y-4"
-                                            >
-                                                {voices.map((voice) => (
-                                                    <VoiceItem
-                                                        key={voice.id}
-                                                        voice={voice}
-                                                        user={user}
-                                                        handleReaction={handleReaction}
-                                                        handleDelete={handleDelete}
-                                                        startEdit={startEdit}
-                                                        editingId={editingId}
-                                                        handleUpdate={handleUpdate}
-                                                        editContent={editContent}
-                                                        setEditContent={setEditContent}
-                                                        setEditingId={setEditingId}
-                                                        activeMenu={activeMenu}
-                                                        setActiveMenu={setActiveMenu}
-                                                        activeCommentBox={activeCommentBox}
-                                                        setActiveCommentBox={setActiveCommentBox}
-                                                        toggleVoiceComments={toggleVoiceComments}
-                                                        expandedVoices={expandedVoices}
-                                                        visibleCommentsCount={visibleCommentsCount}
-                                                        loadMoreComments={loadMoreComments}
-                                                        postOwnerAvatarRefs={postOwnerAvatarRefs}
-                                                        containerRefs={containerRefs}
-                                                        handleCommentSubmit={handleCommentSubmit}
-                                                        handleCommentReaction={handleCommentReaction}
-                                                        handleCommentDelete={handleCommentDelete}
-                                                        handleCommentUpdate={handleCommentUpdate}
-                                                        replyingTo={replyingTo}
-                                                        setReplyingTo={setReplyingTo}
-                                                        replyContent={replyContent}
-                                                        setReplyContent={setReplyContent}
-                                                        isCommenting={isCommenting}
-                                                        newComment={newComment}
-                                                        setNewComment={setNewComment}
-                                                        formatRelativeTime={formatRelativeTime}
-                                                        renderContentWithTags={renderContentWithTags}
-                                                        setLightboxImage={setLightboxImage}
-                                                        imagePreview={mediaPreview}
-                                                        setImagePreview={setMediaPreview}
-                                                        imageFile={mediaFile}
-                                                        setImageFile={setMediaFile}
-                                                        handleImageSelect={handleMediaSelect}
-                                                        isPlaying={playingVideoId === voice.id}
-                                                        isGlobalMode={isGlobalMode}
-                                                    />
-                                                ))}
-                                            </motion.div>
-                                        </AnimatePresence>
+                                <div className="flex items-center gap-4">
+                                    {filters.tags.length > 0 && (
+                                        <button
+                                            onClick={() => setFilters(prev => ({ ...prev, tags: [] }))}
+                                            className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm hover:opacity-90 text-white"
+                                            style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                                        >
+                                            <span>{filters.tags[0].startsWith('#') ? filters.tags[0] : `#${filters.tags[0]}`}</span>
+                                            <X size={12} strokeWidth={3} />
+                                        </button>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Right Sidebar - Sticky on desktop */}
-                            <div className="lg:col-span-1 space-y-6">
-                                {showSkeleton ? (
-                                    <div className="space-y-8">
-                                        <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
-                                            <SkeletonLoader width={150} height={24} className="mb-6 mx-auto" />
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <SkeletonLoader height={80} className="rounded-xl" />
-                                                <SkeletonLoader height={80} className="rounded-xl" />
+                            {/* Input Area */}
+                            {user ? (
+                                <CreateVoiceForm
+                                    user={user}
+                                    newStatus={newStatus}
+                                    handleTextChange={handleTextChange}
+                                    cursorPos={cursorPos}
+                                    setCursorPos={setCursorPos}
+                                    textareaRef={textareaRef}
+                                    showSuggestions={showSuggestions}
+                                    suggestionList={suggestionList}
+                                    insertTag={insertTag}
+                                    isAnonymous={isAnonymous}
+                                    setIsAnonymous={setIsAnonymous}
+                                    handlePost={handlePost}
+                                    isPosting={isPosting}
+                                    activeTagFilter={null}
+                                    setActiveTagFilter={() => { }}
+                                    imagePreview={mediaPreview}
+                                    setImagePreview={setMediaPreview}
+                                    imageFile={mediaFile}
+                                    setImageFile={setMediaFile}
+                                    handleImageSelect={handleMediaSelect}
+                                    photoPostsEnabled={photoPostsEnabled}
+                                    videoPostsEnabled={videoPostsEnabled}
+                                    mediaType={mediaType}
+                                    isOptimizing={isOptimizing}
+                                    optimizationProgress={optimizationProgress}
+                                    isGlobalMode={isGlobalMode}
+                                />
+                            ) : (
+                                <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
+                                    <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/login" className="underline font-bold text-black dark:text-white">giriş yapmalısın</Link>.</p>
+                                </div>
+                            )}
+
+                            <div className="space-y-6">
+                                {showSkeleton || postsLoading ? (
+                                    <div className="space-y-6">
+                                        {[1, 2, 3].map((i) => (
+                                            <div key={i} className="pb-6 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
+                                                <div className="flex gap-4 items-start">
+                                                    <SkeletonLoader width={40} height={40} className="rounded-full shrink-0" />
+                                                    <div className="flex-1 space-y-3">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <SkeletonLoader width={120} height={20} />
+                                                            <SkeletonLoader width={80} height={16} />
+                                                        </div>
+                                                        <SkeletonLoader width="90%" height={18} />
+                                                        <SkeletonLoader width="100%" height={18} />
+                                                        <SkeletonLoader width="80%" height={18} />
+                                                        <div className="flex gap-6 mt-4 pt-2">
+                                                            <SkeletonLoader width={40} height={16} />
+                                                            <SkeletonLoader width={40} height={16} />
+                                                            <SkeletonLoader width={20} height={16} className="ml-auto" />
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
-                                            <SkeletonLoader width={180} height={24} className="mb-4" />
-                                            <SkeletonLoader width="100%" height={24} className="mb-6" />
-                                            <div className="space-y-3">
-                                                <SkeletonLoader height={40} className="rounded-lg" />
-                                                <SkeletonLoader height={40} className="rounded-lg" />
-                                                <SkeletonLoader height={40} className="rounded-lg" />
-                                            </div>
-                                        </div>
+                                        ))}
+                                    </div>
+                                ) : voices.length === 0 ? (
+                                    <div className="text-center py-20 bg-neutral-50 dark:bg-[#0a0a0a]/50 rounded-lg border-2 border-dashed border-neutral-200 dark:border-neutral-800 w-full">
+                                        <Sparkles className="mx-auto mb-4 text-neutral-300 dark:text-neutral-700" size={48} />
+                                        <p className="text-neutral-500 dark:text-neutral-400 font-serif italic">Henüz bir ses duyulmadı. İlk sen ol!</p>
                                     </div>
                                 ) : (
-                                    <VoiceStatsWidget 
-                                        activePoll={activePoll}
-                                        pollLoading={pollLoading}
-                                        pollResults={pollResults}
-                                        totalVotes={totalVotes}
-                                        userVote={userVote}
-                                        onPollVote={handlePollVote}
-                                        allTags={allTags}
-                                        activeTagFilter={filters.tags[0] || null}
-                                        onTagFilterChange={(tag) => {
-                                            if (tag) {
-                                                setFilters(prev => ({ ...prev, tags: [tag] }));
-                                            } else {
-                                                setFilters(prev => ({ ...prev, tags: [] }));
-                                            }
-                                        }}
-                                        activeUsers={activeUsers}
-                                        issueNumber={issueNumber}
-                                        onVotersClick={fetchVoters}
-                                        isGlobalMode={isGlobalMode}
-                                        university={isGlobalMode ? 'global' : university}
-                                    />
+                                    <AnimatePresence mode="wait">
+                                        <motion.div
+                                            key="voices-list"
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 20 }}
+                                            transition={{ duration: 0.3 }}
+                                            className="space-y-4"
+                                        >
+                                            {voices.map((voice) => (
+                                                <VoiceItem
+                                                    key={voice.id}
+                                                    voice={voice}
+                                                    user={user}
+                                                    handleReaction={handleReaction}
+                                                    handleDelete={handleDelete}
+                                                    startEdit={startEdit}
+                                                    editingId={editingId}
+                                                    handleUpdate={handleUpdate}
+                                                    editContent={editContent}
+                                                    setEditContent={setEditContent}
+                                                    setEditingId={setEditingId}
+                                                    activeMenu={activeMenu}
+                                                    setActiveMenu={setActiveMenu}
+                                                    activeCommentBox={activeCommentBox}
+                                                    setActiveCommentBox={setActiveCommentBox}
+                                                    toggleVoiceComments={toggleVoiceComments}
+                                                    expandedVoices={expandedVoices}
+                                                    visibleCommentsCount={visibleCommentsCount}
+                                                    loadMoreComments={loadMoreComments}
+                                                    postOwnerAvatarRefs={postOwnerAvatarRefs}
+                                                    containerRefs={containerRefs}
+                                                    handleCommentSubmit={handleCommentSubmit}
+                                                    handleCommentReaction={handleCommentReaction}
+                                                    handleCommentDelete={handleCommentDelete}
+                                                    handleCommentUpdate={handleCommentUpdate}
+                                                    replyingTo={replyingTo}
+                                                    setReplyingTo={setReplyingTo}
+                                                    replyContent={replyContent}
+                                                    setReplyContent={setReplyContent}
+                                                    isCommenting={isCommenting}
+                                                    newComment={newComment}
+                                                    setNewComment={setNewComment}
+                                                    formatRelativeTime={formatRelativeTime}
+                                                    renderContentWithTags={renderContentWithTags}
+                                                    setLightboxImage={setLightboxImage}
+                                                    imagePreview={mediaPreview}
+                                                    setImagePreview={setMediaPreview}
+                                                    imageFile={mediaFile}
+                                                    setImageFile={setMediaFile}
+                                                    handleImageSelect={handleMediaSelect}
+                                                    isPlaying={playingVideoId === voice.id}
+                                                    isGlobalMode={isGlobalMode}
+                                                />
+                                            ))}
+                                        </motion.div>
+                                    </AnimatePresence>
                                 )}
                             </div>
                         </div>
+
+                        {/* Right Sidebar - Sticky on desktop */}
+                        <div className="lg:col-span-1 space-y-6">
+                            {showSkeleton ? (
+                                <div className="space-y-8">
+                                    <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+                                        <SkeletonLoader width={150} height={24} className="mb-6 mx-auto" />
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <SkeletonLoader height={80} className="rounded-xl" />
+                                            <SkeletonLoader height={80} className="rounded-xl" />
+                                        </div>
+                                    </div>
+                                    <div className="border border-neutral-200 dark:border-neutral-800 rounded-xl p-6">
+                                        <SkeletonLoader width={180} height={24} className="mb-4" />
+                                        <SkeletonLoader width="100%" height={24} className="mb-6" />
+                                        <div className="space-y-3">
+                                            <SkeletonLoader height={40} className="rounded-lg" />
+                                            <SkeletonLoader height={40} className="rounded-lg" />
+                                            <SkeletonLoader height={40} className="rounded-lg" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <VoiceStatsWidget
+                                    activePoll={activePoll}
+                                    pollLoading={pollLoading}
+                                    pollResults={pollResults}
+                                    totalVotes={totalVotes}
+                                    userVote={userVote}
+                                    onPollVote={handlePollVote}
+                                    allTags={allTags}
+                                    activeTagFilter={filters.tags[0] || null}
+                                    onTagFilterChange={(tag) => {
+                                        if (tag) {
+                                            setFilters(prev => ({ ...prev, tags: [tag] }));
+                                        } else {
+                                            setFilters(prev => ({ ...prev, tags: [] }));
+                                        }
+                                    }}
+                                    activeUsers={activeUsers}
+                                    issueNumber={issueNumber}
+                                    onVotersClick={fetchVoters}
+                                    isGlobalMode={isGlobalMode}
+                                    university={isGlobalMode ? 'global' : university}
+                                />
+                            )}
+                        </div>
+                    </div>
                 </motion.div>
             </AnimatePresence>
 
@@ -2089,7 +2089,7 @@ export default function VoiceView() {
                                                 ) : (
                                                     <div
                                                         className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase text-xs"
-                                                        style={{ 
+                                                        style={{
                                                             backgroundColor: 'var(--primary-color, #C8102E)'
                                                         }}
                                                     >
